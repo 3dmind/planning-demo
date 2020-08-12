@@ -8,7 +8,7 @@ import { TaskRepository } from '../../task.repository';
 import { NoteTaskDto } from './note-task.dto';
 import { NoteTaskUseCase } from './note-task.use-case';
 
-describe('Note Task Use Case', () => {
+describe('NoteTaskUseCase', () => {
   const mockedLogger = mock<Logger>();
   const mockedTaskRepository = mock<TaskRepository>();
   let noteTaskUseCase: NoteTaskUseCase;

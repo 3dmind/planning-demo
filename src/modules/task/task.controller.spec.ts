@@ -1,9 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { mock, mockReset } from 'jest-mock-extended';
 import { TaskController } from './task.controller';
+import { GetAllTasksUseCase } from './use-cases/get-all-tasks/get-all-tasks.use-case';
 import { NoteTaskUseCase } from './use-cases/note-task/note-task.use-case';
 
-describe('Task Controller', () => {
+describe('TaskController', () => {
+  const mockedGetAllTasksUseCase = mock<GetAllTasksUseCase>();
   const mockedNoteTaskUseCase = mock<NoteTaskUseCase>();
   let controller: TaskController;
 
@@ -11,10 +13,8 @@ describe('Task Controller', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [TaskController],
       providers: [
-        {
-          provide: NoteTaskUseCase,
-          useValue: mockedNoteTaskUseCase,
-        },
+        { provide: GetAllTasksUseCase, useValue: mockedGetAllTasksUseCase },
+        { provide: NoteTaskUseCase, useValue: mockedNoteTaskUseCase },
       ],
     }).compile();
 
@@ -22,6 +22,7 @@ describe('Task Controller', () => {
   });
 
   afterAll(() => {
+    mockReset(mockedGetAllTasksUseCase);
     mockReset(mockedNoteTaskUseCase);
   });
 

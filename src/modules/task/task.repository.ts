@@ -36,4 +36,9 @@ export class TaskRepository {
       await taskModel.update(rawTaskModel);
     }
   }
+
+  async getTasks(): Promise<Task[]> {
+    const taskModels = await this.taskModel.findAll();
+    return taskModels.map((model) => TaskMapper.toDomain(model));
+  }
 }

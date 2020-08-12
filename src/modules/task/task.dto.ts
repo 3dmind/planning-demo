@@ -3,4 +3,5 @@ export interface TaskDto {
   readonly description: string;
   readonly id: string;
   readonly isTickedOff: boolean;
+  readonly tickedOffAt?: string;
 }

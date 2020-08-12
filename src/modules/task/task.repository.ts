@@ -41,4 +41,18 @@ export class TaskRepository {
     const taskModels = await this.taskModel.findAll();
     return taskModels.map((model) => TaskMapper.toDomain(model));
   }
+
+  async getTaskByTaskId(taskId: TaskId): Promise<[boolean, Task?]> {
+    const taskModel = await this.taskModel.findOne({
+      where: { task_id: taskId.id.toString() },
+    });
+    const found = !!taskModel === true;
+
+    if (found) {
+      const task = TaskMapper.toDomain(taskModel);
+      return [found, task];
+    } else {
+      return [found];
+    }
+  }
 }

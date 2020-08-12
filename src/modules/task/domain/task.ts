@@ -42,10 +42,20 @@ export class Task extends Entity<TaskProps> {
       description,
       createdAt: new Date(),
       tickedOff: false,
+      tickedOffAt: null,
     });
   }
 
   createSnapshot(): TaskSnapshot {
     return new TaskSnapshot(this.props, this.taskId);
+  }
+
+  tickOff(): void {
+    this.props.tickedOff = true;
+    this.props.tickedOffAt = new Date();
+  }
+
+  isTickedOff(): boolean {
+    return this.props.tickedOff;
   }
 }

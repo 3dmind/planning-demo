@@ -15,5 +15,6 @@ TaskSnapshot {
     },
     "props": null,
   },
+  "tickedOffAt": null,
 }
 `;

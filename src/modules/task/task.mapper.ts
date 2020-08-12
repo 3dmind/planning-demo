@@ -12,18 +12,19 @@ export class TaskMapper {
       description: taskSnapshot.description.value,
       taskId: taskSnapshot.taskId.id.toString(),
       tickedOff: taskSnapshot.isTickedOff,
+      tickedOffAt: taskSnapshot.tickedOffAt,
     };
   }
 
   public static toDomain(taskModel: TaskModel): Task {
-    const { tickedOff, taskId, description, createdAt } = taskModel;
-    const id = new UniqueEntityID(taskId);
-    const descriptionResult = Description.create(description);
+    const id = new UniqueEntityID(taskModel.taskId);
+    const descriptionResult = Description.create(taskModel.description);
     const taskResult = Task.create(
       {
-        createdAt: createdAt,
+        createdAt: taskModel.createdAt,
         description: descriptionResult.getValue(),
-        tickedOff: tickedOff,
+        tickedOff: taskModel.tickedOff,
+        tickedOffAt: taskModel.tickedOffAt,
       },
       id,
     );
@@ -37,6 +38,7 @@ export class TaskMapper {
       description: taskSnapshot.description.value,
       id: taskSnapshot.taskId.id.toString(),
       isTickedOff: taskSnapshot.isTickedOff,
+      tickedOffAt: taskSnapshot.tickedOffAt?.toISOString(),
     };
   }
 }

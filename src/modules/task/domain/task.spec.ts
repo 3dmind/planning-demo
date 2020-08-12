@@ -21,11 +21,13 @@ describe('Task', () => {
       createdAt: null,
       description: null,
       tickedOff: null,
+      tickedOffAt: null,
     });
     const taskResultUndefined = Task.create({
       createdAt: undefined,
       description: undefined,
       tickedOff: undefined,
+      tickedOffAt: undefined,
     });
 
     expect(taskResultNull.isFailure).toBe(true);
@@ -42,6 +44,7 @@ describe('Task', () => {
         createdAt: new Date(),
         description,
         tickedOff: false,
+        tickedOffAt: null,
       },
       entityId,
     );
@@ -63,16 +66,36 @@ describe('Task', () => {
     expect(task.taskId.id.toValue()).toBeDefined();
   });
 
+  it('should tick off task', () => {
+    const entityId = new UniqueEntityID();
+    const text = faker.lorem.words(5);
+    const description = Description.create(text).getValue();
+    const task = Task.create(
+      {
+        createdAt: new Date(),
+        description,
+        tickedOff: false,
+        tickedOffAt: null,
+      },
+      entityId,
+    ).getValue();
+
+    task.tickOff();
+
+    expect(task.isTickedOff()).toBe(true);
+  });
+
   it('should take a snapshot of its internal state', () => {
-    const uuid = '8597ccd9-4237-44a6-b434-8836693c4b51';
+    const id = '8597ccd9-4237-44a6-b434-8836693c4b51';
     const text = 'Lorem ipsum';
-    const entityId = new UniqueEntityID(uuid);
+    const entityId = new UniqueEntityID(id);
     const description = Description.create(text).getValue();
     const task = Task.create(
       {
         createdAt: new Date(Date.parse('1977-01-01')),
         description,
         tickedOff: false,
+        tickedOffAt: null,
       },
       entityId,
     ).getValue();

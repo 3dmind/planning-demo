@@ -6,6 +6,8 @@ import {
   HttpCode,
   HttpStatus,
   InternalServerErrorException,
+  NotFoundException,
+  Param,
   Post,
 } from '@nestjs/common';
 import { AppError } from '../../shared/core';
@@ -14,12 +16,15 @@ import { TaskMapper } from './task.mapper';
 import { GetAllTasksUseCase } from './use-cases/get-all-tasks/get-all-tasks.use-case';
 import { NoteTaskDto } from './use-cases/note-task/note-task.dto';
 import { NoteTaskUseCase } from './use-cases/note-task/note-task.use-case';
+import { TickOffTasksErrors } from './use-cases/tick-off-task/tick-off-task.errors';
+import { TickOffTaskUseCase } from './use-cases/tick-off-task/tick-off-task.use-case';
 
 @Controller('tasks')
 export class TaskController {
   constructor(
     private readonly getAllTasksUseCase: GetAllTasksUseCase,
     private readonly noteTaskUseCase: NoteTaskUseCase,
+    private readonly tickOffTaskUseCase: TickOffTaskUseCase,
   ) {}
 
   @Get()
@@ -54,6 +59,29 @@ export class TaskController {
         throw new InternalServerErrorException(error.errorValue().message);
       } else {
         throw new BadRequestException(error.errorValue());
+      }
+    }
+  }
+
+  @Post(':id/tickoff')
+  async tickOffTask(@Param('id') id: string): Promise<TaskDto> {
+    const result = await this.tickOffTaskUseCase.execute({ taskId: id });
+
+    if (result.isRight()) {
+      const task = result.value.getValue();
+      return TaskMapper.toDto(task);
+    }
+
+    if (result.isLeft()) {
+      const error = result.value;
+
+      switch (error.constructor) {
+        case AppError.UnexpectedError:
+          throw new InternalServerErrorException(error.errorValue().message);
+        case TickOffTasksErrors.TaskNotFoundError:
+          throw new NotFoundException(error.errorValue().message);
+        default:
+          throw new BadRequestException(error.errorValue());
       }
     }
   }

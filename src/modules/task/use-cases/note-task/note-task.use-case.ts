@@ -19,7 +19,9 @@ export class NoteTaskUseCase implements UseCase<NoteTaskDto, Response> {
   constructor(
     private readonly logger: Logger,
     private readonly taskRepository: TaskRepository,
-  ) {}
+  ) {
+    this.logger.setContext('NoteTaskUseCase');
+  }
 
   async execute(request?: NoteTaskDto): Promise<Response> {
     const { text } = request;
@@ -28,7 +30,7 @@ export class NoteTaskUseCase implements UseCase<NoteTaskDto, Response> {
       const descriptionOrError = Description.create(text);
 
       if (descriptionOrError.isFailure) {
-        this.logger.warn(descriptionOrError.errorValue());
+        this.logger.error(descriptionOrError.errorValue());
         return left(descriptionOrError);
       }
 
@@ -36,7 +38,7 @@ export class NoteTaskUseCase implements UseCase<NoteTaskDto, Response> {
       const taskOrError = Task.note(description);
 
       if (taskOrError.isFailure) {
-        this.logger.warn(taskOrError.errorValue());
+        this.logger.error(taskOrError.errorValue());
         return left(taskOrError);
       }
 

@@ -1,0 +1,15 @@
+POST http://localhost:3000/tasks
+Content-Type: application/json
+
+{
+  "text": "Lorem ipsum"
+}
+
+###
+
+POST http://localhost:3000/tasks
+Content-Type: application/json
+
+{
+  "text": ""
+}

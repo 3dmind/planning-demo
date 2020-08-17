@@ -37,7 +37,9 @@ export class TickOffTaskUseCase implements UseCase<TickOffTaskDto, Response> {
     } else {
       try {
         const taskId = taskIdResult.getValue();
-        const [found, task] = await this.taskRepository.getTaskByTaskId(taskId);
+        const { found, task } = await this.taskRepository.getTaskByTaskId(
+          taskId,
+        );
         if (!found) {
           const taskNotFoundError = TickOffTasksErrors.TaskNotFoundError.create(
             request.taskId,

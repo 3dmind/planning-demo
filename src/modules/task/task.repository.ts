@@ -40,17 +40,17 @@ export class TaskRepository {
     return taskModels.map((model) => TaskMapper.toDomain(model));
   }
 
-  async getTaskByTaskId(taskId: TaskId): Promise<[boolean, Task?]> {
-    const taskModel = await this.taskModel.findOne({
-      where: { task_id: taskId.id.toString() },
-    });
+  async getTaskByTaskId(
+    taskId: TaskId,
+  ): Promise<{ found: boolean; task?: Task }> {
+    const taskModel = await this.taskModel.findByPk(taskId.id.toString());
     const found = !!taskModel === true;
 
     if (found) {
       const task = TaskMapper.toDomain(taskModel);
-      return [found, task];
+      return { found, task };
     } else {
-      return [found];
+      return { found };
     }
   }
 }

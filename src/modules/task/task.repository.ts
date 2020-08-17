@@ -13,9 +13,7 @@ export class TaskRepository {
   ) {}
 
   async exists(taskId: TaskId): Promise<boolean> {
-    const taskModel = await this.taskModel.findOne({
-      where: { task_id: taskId.id.toString() },
-    });
+    const taskModel = await this.taskModel.findByPk(taskId.id.toString());
     return !!taskModel === true;
   }
 
@@ -30,9 +28,9 @@ export class TaskRepository {
         throw new Error(error.toString());
       }
     } else {
-      const taskModel = await this.taskModel.findOne({
-        where: { task_id: task.taskId.id.toString() },
-      });
+      const taskModel = await this.taskModel.findByPk(
+        task.taskId.id.toString(),
+      );
       await taskModel.update(rawTaskModel);
     }
   }

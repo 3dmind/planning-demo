@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { Task } from './domain/task';
-import { TaskId } from './domain/task-id';
+import { TaskIdEntity } from './domain/task-id.entity';
+import { TaskEntity } from './domain/task.entity';
 import { TaskMapper } from './task.mapper';
 import { TaskModel } from './task.model';
 
@@ -12,12 +12,12 @@ export class TaskRepository {
     private readonly taskModel: typeof TaskModel,
   ) {}
 
-  async exists(taskId: TaskId): Promise<boolean> {
+  async exists(taskId: TaskIdEntity): Promise<boolean> {
     const taskModel = await this.taskModel.findByPk(taskId.id.toString());
     return !!taskModel === true;
   }
 
-  async save(task: Task): Promise<void> {
+  async save(task: TaskEntity): Promise<void> {
     const exists = await this.exists(task.taskId);
     const rawTaskModel = TaskMapper.toPersistence(task);
 
@@ -35,14 +35,14 @@ export class TaskRepository {
     }
   }
 
-  async getTasks(): Promise<Task[]> {
+  async getTasks(): Promise<TaskEntity[]> {
     const taskModels = await this.taskModel.findAll();
     return taskModels.map((model) => TaskMapper.toDomain(model));
   }
 
   async getTaskByTaskId(
-    taskId: TaskId,
-  ): Promise<{ found: boolean; task?: Task }> {
+    taskId: TaskIdEntity,
+  ): Promise<{ found: boolean; task?: TaskEntity }> {
     const taskModel = await this.taskModel.findByPk(taskId.id.toString());
     const found = !!taskModel === true;
 

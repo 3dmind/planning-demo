@@ -1,13 +1,13 @@
 import * as faker from 'faker';
 import * as uuid from 'uuid';
-import { UniqueEntityID } from '../../../shared/domain';
-import { Description } from './description';
-import { Task } from './task';
-import { TaskId } from './task-id';
+import { UniqueEntityId } from '../../../shared/domain';
+import { DescriptionValueObject } from './description.value-object';
+import { TaskIdEntity } from './task-id.entity';
+import { TaskEntity } from './task.entity';
 
 jest.mock('uuid');
 
-describe('Task', () => {
+describe('TaskEntity', () => {
   beforeAll(() => {
     uuid.v4.mockReturnValue(faker.random.uuid());
   });
@@ -17,15 +17,17 @@ describe('Task', () => {
   });
 
   it(`should guard 'description' against 'null' or 'undefined'`, () => {
-    const taskResultNull = Task.create({
+    const taskResultNull = TaskEntity.create({
       createdAt: null,
       description: null,
+      resumedAt: null,
       tickedOff: null,
       tickedOffAt: null,
     });
-    const taskResultUndefined = Task.create({
+    const taskResultUndefined = TaskEntity.create({
       createdAt: undefined,
       description: undefined,
+      resumedAt: undefined,
       tickedOff: undefined,
       tickedOffAt: undefined,
     });
@@ -36,13 +38,14 @@ describe('Task', () => {
 
   it('should create task', () => {
     const text = faker.lorem.words(5);
-    const entityId = new UniqueEntityID();
-    const description = Description.create(text).getValue();
+    const entityId = new UniqueEntityId();
+    const description = DescriptionValueObject.create(text).getValue();
 
-    const taskResult = Task.create(
+    const taskResult = TaskEntity.create(
       {
         createdAt: new Date(),
         description,
+        resumedAt: null,
         tickedOff: false,
         tickedOffAt: null,
       },
@@ -51,15 +54,15 @@ describe('Task', () => {
     const task = taskResult.getValue();
 
     expect(taskResult.isSuccess).toBe(true);
-    expect(task.taskId).toBeInstanceOf(TaskId);
+    expect(task.taskId).toBeInstanceOf(TaskIdEntity);
     expect(task.taskId.id.equals(entityId)).toBe(true);
   });
 
   it('should note new task', () => {
     const text = faker.lorem.words(5);
-    const description = Description.create(text).getValue();
+    const description = DescriptionValueObject.create(text).getValue();
 
-    const taskResult = Task.note(description);
+    const taskResult = TaskEntity.note(description);
     const task = taskResult.getValue();
 
     expect(taskResult.isSuccess).toBe(true);
@@ -67,13 +70,14 @@ describe('Task', () => {
   });
 
   it('should tick off task', () => {
-    const entityId = new UniqueEntityID();
+    const entityId = new UniqueEntityId();
     const text = faker.lorem.words(5);
-    const description = Description.create(text).getValue();
-    const task = Task.create(
+    const description = DescriptionValueObject.create(text).getValue();
+    const task = TaskEntity.create(
       {
         createdAt: new Date(),
         description,
+        resumedAt: null,
         tickedOff: false,
         tickedOffAt: null,
       },
@@ -85,24 +89,24 @@ describe('Task', () => {
     expect(task.isTickedOff()).toBe(true);
   });
 
-  it('should take a snapshot of its internal state', () => {
-    const id = '8597ccd9-4237-44a6-b434-8836693c4b51';
-    const text = 'Lorem ipsum';
-    const entityId = new UniqueEntityID(id);
-    const description = Description.create(text).getValue();
-    const task = Task.create(
+  it('should resume task', () => {
+    expect.assertions(1);
+    const entityId = new UniqueEntityId();
+    const text = faker.lorem.words(5);
+    const description = DescriptionValueObject.create(text).getValue();
+    const task = TaskEntity.create(
       {
-        createdAt: new Date(Date.parse('1977-01-01')),
+        createdAt: new Date(),
         description,
-        tickedOff: false,
-        tickedOffAt: null,
+        resumedAt: null,
+        tickedOff: true,
+        tickedOffAt: new Date(),
       },
       entityId,
     ).getValue();
 
-    const taskSnapshot = task.createSnapshot();
+    task.resume();
 
-    expect(taskSnapshot).toMatchSnapshot();
-    expect(Object.isFrozen(taskSnapshot)).toBe(true);
+    expect(task.isTickedOff()).toBe(false);
   });
 });

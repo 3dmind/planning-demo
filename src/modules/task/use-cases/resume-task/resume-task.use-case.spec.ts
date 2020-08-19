@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import * as faker from 'faker';
 import { mock, mockReset } from 'jest-mock-extended';
 import { AppErrors, Result } from '../../../../shared/core';
@@ -7,24 +7,24 @@ import { DescriptionValueObject } from '../../domain/description.value-object';
 import { TaskIdEntity } from '../../domain/task-id.entity';
 import { TaskEntity } from '../../domain/task.entity';
 import { TaskRepository } from '../../task.repository';
-import { TickOffTasksErrors } from './tick-off-task.errors';
-import { TickOffTaskUseCase } from './tick-off-task.use-case';
+import { ResumeTaskErrors } from './resume-task.errors';
+import { ResumeTaskUseCase } from './resume-task.use-case';
 
-describe('TickOffTaskUseCase', () => {
+describe('ResumeTaskUseCase', () => {
   const mockedLogger = mock<Logger>();
   const mockedTaskRepository = mock<TaskRepository>();
-  let useCase: TickOffTaskUseCase;
+  let useCase: ResumeTaskUseCase;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    const module = await Test.createTestingModule({
       providers: [
         { provide: Logger, useValue: mockedLogger },
         { provide: TaskRepository, useValue: mockedTaskRepository },
-        TickOffTaskUseCase,
+        ResumeTaskUseCase,
       ],
     }).compile();
 
-    useCase = await module.resolve<TickOffTaskUseCase>(TickOffTaskUseCase);
+    useCase = module.get<ResumeTaskUseCase>(ResumeTaskUseCase);
   });
 
   afterAll(() => {
@@ -53,7 +53,7 @@ describe('TickOffTaskUseCase', () => {
     const result = await useCase.execute({ taskId });
 
     expect(result.isLeft()).toBe(true);
-    expect(result.value).toBeInstanceOf(TickOffTasksErrors.TaskNotFoundError);
+    expect(result.value).toBeInstanceOf(ResumeTaskErrors.TaskNotFoundError);
     expect(result.value.errorValue().message).toEqual(
       `Could not find a task by id {${taskId}}.`,
     );
@@ -74,7 +74,13 @@ describe('TickOffTaskUseCase', () => {
   it('should succeed', async () => {
     const text = faker.lorem.words(5);
     const description = DescriptionValueObject.create(text).getValue();
-    const task = TaskEntity.note(description).getValue();
+    const task = TaskEntity.create({
+      createdAt: new Date(),
+      description,
+      resumedAt: null,
+      tickedOff: true,
+      tickedOffAt: new Date(),
+    }).getValue();
     mockedTaskRepository.getTaskByTaskId.mockResolvedValueOnce({
       found: true,
       task,
@@ -84,7 +90,7 @@ describe('TickOffTaskUseCase', () => {
 
     expect(result.isRight()).toBe(true);
 
-    const tickedOffTask: TaskEntity = result.value.getValue();
-    expect(tickedOffTask.isTickedOff()).toBe(true);
+    const resumedTask: TaskEntity = result.value.getValue();
+    expect(resumedTask.isTickedOff()).toBe(false);
   });
 });

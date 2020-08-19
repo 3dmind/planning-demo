@@ -1,28 +1,23 @@
-import { Description } from './description';
-import { TaskId } from './task-id';
-import { TaskProps } from './task-props';
+import { DescriptionValueObject } from './description.value-object';
+import { TaskIdEntity } from './task-id.entity';
+import { TaskPropsInterface } from './task-props.interface';
 
-interface TaskSnapshotProps {
+export class TaskSnapshot {
   readonly createdAt: Date;
-  readonly description: Description;
+  readonly description: DescriptionValueObject;
   readonly isTickedOff: boolean;
-  readonly taskId: TaskId;
-  readonly tickedOffAt?: Date;
-}
+  readonly resumedAt: Date;
+  readonly taskId: TaskIdEntity;
+  readonly tickedOffAt: Date;
 
-export class TaskSnapshot implements TaskSnapshotProps {
-  readonly createdAt: Date;
-  readonly description: Description;
-  readonly isTickedOff: boolean;
-  readonly taskId: TaskId;
-  readonly tickedOffAt?: Date;
-
-  constructor(props: Readonly<TaskProps>, taskId: TaskId) {
-    this.createdAt = props.createdAt;
-    this.description = props.description;
-    this.isTickedOff = props.tickedOff;
+  constructor(props: Readonly<TaskPropsInterface>, taskId: TaskIdEntity) {
+    const { createdAt, description, resumedAt, tickedOff, tickedOffAt } = props;
+    this.createdAt = createdAt;
+    this.description = description;
+    this.isTickedOff = tickedOff;
+    this.resumedAt = resumedAt;
     this.taskId = taskId;
-    this.tickedOffAt = props.tickedOffAt;
+    this.tickedOffAt = tickedOffAt;
 
     Object.freeze(this);
   }

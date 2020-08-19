@@ -1,11 +1,11 @@
 import * as faker from 'faker';
 import * as uuid from 'uuid';
-import { UniqueEntityID } from '../../../shared/domain';
-import { TaskId } from './task-id';
+import { UniqueEntityId } from '../../../shared/domain';
+import { TaskIdEntity } from './task-id.entity';
 
 jest.mock('uuid');
 
-describe('TaskId', () => {
+describe('TaskIdEntity', () => {
   beforeAll(() => {
     uuid.v4.mockReturnValue(faker.random.uuid());
   });
@@ -17,7 +17,7 @@ describe('TaskId', () => {
   it('should accept existing ID', () => {
     const expectedId: string = uuid.v4();
 
-    const taskIdResult = TaskId.create(new UniqueEntityID(expectedId));
+    const taskIdResult = TaskIdEntity.create(new UniqueEntityId(expectedId));
     const taskId = taskIdResult.getValue();
 
     expect(taskIdResult.isSuccess).toBe(true);
@@ -25,7 +25,7 @@ describe('TaskId', () => {
   });
 
   it('should create new ID', () => {
-    const taskIdResult = TaskId.create();
+    const taskIdResult = TaskIdEntity.create();
     const taskId = taskIdResult.getValue();
 
     expect(taskIdResult.isSuccess).toBe(true);

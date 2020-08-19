@@ -1,19 +1,19 @@
 import { Injectable, Logger } from '@nestjs/common';
 import {
-  AppError,
+  AppErrors,
   Either,
   left,
   Result,
   right,
-  UseCase,
+  UseCaseInterface,
 } from '../../../../shared/core';
-import { Task } from '../../domain/task';
+import { TaskEntity } from '../../domain/task.entity';
 import { TaskRepository } from '../../task.repository';
 
-type Response = Either<AppError.UnexpectedError, Result<Task[]>>;
+type Response = Either<AppErrors.UnexpectedError, Result<TaskEntity[]>>;
 
 @Injectable()
-export class GetAllTasksUseCase implements UseCase<void, Response> {
+export class GetAllTasksUseCase implements UseCaseInterface<void, Response> {
   constructor(
     private readonly logger: Logger,
     private readonly taskRepository: TaskRepository,
@@ -24,10 +24,10 @@ export class GetAllTasksUseCase implements UseCase<void, Response> {
   async execute(): Promise<Response> {
     try {
       const tasks = await this.taskRepository.getTasks();
-      return right(Result.ok<Task[]>(tasks));
+      return right(Result.ok<TaskEntity[]>(tasks));
     } catch (error) {
       this.logger.error(error.message, error);
-      return left(AppError.UnexpectedError.create(error));
+      return left(AppErrors.UnexpectedError.create(error));
     }
   }
 }

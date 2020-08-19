@@ -11,27 +11,26 @@ import { UniqueEntityId } from '../../../../shared/domain';
 import { TaskIdEntity } from '../../domain/task-id.entity';
 import { TaskEntity } from '../../domain/task.entity';
 import { TaskRepository } from '../../task.repository';
-import { TickOffTaskDto } from './tick-off-task.dto';
-import { TickOffTasksErrors } from './tick-off-task.errors';
+import { ResumeTaskDto } from './resume-task.dto';
+import { ResumeTaskErrors } from './resume-task.errors';
 
 type Response = Either<
-  | AppErrors.UnexpectedError
-  | TickOffTasksErrors.TaskNotFoundError
-  | Result<any>,
+  AppErrors.UnexpectedError | ResumeTaskErrors.TaskNotFoundError | Result<any>,
   Result<TaskEntity>
 >;
 
 @Injectable()
-export class TickOffTaskUseCase
-  implements UseCaseInterface<TickOffTaskDto, Response> {
+export class ResumeTaskUseCase
+  implements UseCaseInterface<ResumeTaskDto, Response> {
   constructor(
     private readonly logger: Logger,
     private readonly taskRepository: TaskRepository,
   ) {
-    this.logger.setContext('TickOffTaskUseCase');
+    this.logger.setContext('ResumeTaskUseCase');
   }
 
-  async execute(request: TickOffTaskDto): Promise<Response> {
+  async execute(request: ResumeTaskDto): Promise<Response> {
+    this.logger.debug(`Executed with request: ${request}`);
     const taskIdResult = TaskIdEntity.create(
       new UniqueEntityId(request.taskId),
     );
@@ -46,13 +45,13 @@ export class TickOffTaskUseCase
           taskId,
         );
         if (!found) {
-          const taskNotFoundError = TickOffTasksErrors.TaskNotFoundError.create(
+          const taskNotFoundError = ResumeTaskErrors.TaskNotFoundError.create(
             request.taskId,
           );
           this.logger.error(taskNotFoundError.errorValue().message);
           return left(taskNotFoundError) as Response;
         } else {
-          task.tickOff();
+          task.resume();
           await this.taskRepository.save(task);
           return right(Result.ok<TaskEntity>(task));
         }

@@ -10,12 +10,14 @@ import {
   Param,
   Post,
 } from '@nestjs/common';
-import { AppError } from '../../shared/core';
+import { AppErrors } from '../../shared/core';
 import { TaskDto } from './task.dto';
 import { TaskMapper } from './task.mapper';
 import { GetAllTasksUseCase } from './use-cases/get-all-tasks/get-all-tasks.use-case';
 import { NoteTaskDto } from './use-cases/note-task/note-task.dto';
 import { NoteTaskUseCase } from './use-cases/note-task/note-task.use-case';
+import { ResumeTaskErrors } from './use-cases/resume-task/resume-task.errors';
+import { ResumeTaskUseCase } from './use-cases/resume-task/resume-task.use-case';
 import { TickOffTasksErrors } from './use-cases/tick-off-task/tick-off-task.errors';
 import { TickOffTaskUseCase } from './use-cases/tick-off-task/tick-off-task.use-case';
 
@@ -25,6 +27,7 @@ export class TaskController {
     private readonly getAllTasksUseCase: GetAllTasksUseCase,
     private readonly noteTaskUseCase: NoteTaskUseCase,
     private readonly tickOffTaskUseCase: TickOffTaskUseCase,
+    private readonly resumeTaskUseCase: ResumeTaskUseCase,
   ) {}
 
   @Get()
@@ -55,7 +58,7 @@ export class TaskController {
     if (result.isLeft()) {
       const error = result.value;
 
-      if (error.constructor === AppError.UnexpectedError) {
+      if (error.constructor === AppErrors.UnexpectedError) {
         throw new InternalServerErrorException(error.errorValue().message);
       } else {
         throw new BadRequestException(error.errorValue());
@@ -64,6 +67,7 @@ export class TaskController {
   }
 
   @Post(':id/tickoff')
+  @HttpCode(HttpStatus.OK)
   async tickOffTask(@Param('id') id: string): Promise<TaskDto> {
     const result = await this.tickOffTaskUseCase.execute({ taskId: id });
 
@@ -76,9 +80,32 @@ export class TaskController {
       const error = result.value;
 
       switch (error.constructor) {
-        case AppError.UnexpectedError:
+        case AppErrors.UnexpectedError:
           throw new InternalServerErrorException(error.errorValue().message);
         case TickOffTasksErrors.TaskNotFoundError:
+          throw new NotFoundException(error.errorValue().message);
+        default:
+          throw new BadRequestException(error.errorValue());
+      }
+    }
+  }
+
+  @Post(':id/resume')
+  @HttpCode(HttpStatus.OK)
+  async resumeTask(@Param('id') id: string): Promise<TaskDto> {
+    const result = await this.resumeTaskUseCase.execute({ taskId: id });
+
+    if (result.isRight()) {
+      const task = result.value.getValue();
+      return TaskMapper.toDto(task);
+    }
+
+    if (result.isLeft()) {
+      const error = result.value;
+      switch (error.constructor) {
+        case AppErrors.UnexpectedError:
+          throw new InternalServerErrorException(error.errorValue().message);
+        case ResumeTaskErrors.TaskNotFoundError:
           throw new NotFoundException(error.errorValue().message);
         default:
           throw new BadRequestException(error.errorValue());

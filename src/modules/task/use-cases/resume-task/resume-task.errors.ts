@@ -1,6 +1,6 @@
 import { Result, UseCaseErrorAbstract } from '../../../../shared/core';
 
-export namespace TickOffTasksErrors {
+export namespace ResumeTaskErrors {
   export class TaskNotFoundError extends Result<UseCaseErrorAbstract> {
     constructor(id: string) {
       super(false, {

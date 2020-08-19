@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
 import { mock, mockReset } from 'jest-mock-extended';
 import { Result } from '../../../../shared/core';
-import { Task } from '../../domain/task';
+import { TaskEntity } from '../../domain/task.entity';
 import { TaskRepository } from '../../task.repository';
 import { NoteTaskDto } from './note-task.dto';
 import { NoteTaskUseCase } from './note-task.use-case';
@@ -39,10 +39,10 @@ describe('NoteTaskUseCase', () => {
     expect(result.isLeft()).toBe(true);
   });
 
-  it('should fail if Task cannot be noted', async () => {
+  it('should fail if TaskEntity cannot be noted', async () => {
     const spy = jest
-      .spyOn(Task, 'note')
-      .mockReturnValue(Result.fail<Task>('error'));
+      .spyOn(TaskEntity, 'note')
+      .mockReturnValue(Result.fail<TaskEntity>('error'));
     const text = faker.lorem.words(5);
     const noteTaskDto: NoteTaskDto = { text };
 
@@ -54,7 +54,7 @@ describe('NoteTaskUseCase', () => {
   });
 
   it('should fail on any other error', async () => {
-    const spy = jest.spyOn(Task, 'note').mockImplementation(() => {
+    const spy = jest.spyOn(TaskEntity, 'note').mockImplementation(() => {
       throw new Error();
     });
     const text = faker.lorem.words(5);
@@ -71,7 +71,7 @@ describe('NoteTaskUseCase', () => {
     const noteTaskDto: NoteTaskDto = { text };
 
     const result = await noteTaskUseCase.execute(noteTaskDto);
-    const task: Task = result.value.getValue();
+    const task: TaskEntity = result.value.getValue();
 
     expect(result.isRight()).toBe(true);
     expect(task).toBeDefined();

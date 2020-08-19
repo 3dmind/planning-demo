@@ -1,1 +1,1 @@
-POST http://localhost:3000/tasks/:id/tickoff
+POST http://localhost:3000/tasks/{{taskId}}/tickoff

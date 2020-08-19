@@ -1,17 +1,19 @@
-export interface IGuardResult {
+interface GuardResultInterface {
   succeeded: boolean;
   message?: string;
 }
 
-export interface IGuardArgument {
+interface GuardArgumentInterface {
   argument: any;
   argumentName: string;
 }
 
-export type GuardArgumentCollection = IGuardArgument[];
+type GuardArgumentCollection = GuardArgumentInterface[];
 
 export class Guard {
-  public static combine(guardResults: IGuardResult[]): IGuardResult {
+  public static combine(
+    guardResults: GuardResultInterface[],
+  ): GuardResultInterface {
     for (const result of guardResults) {
       if (result.succeeded === false) {
         return result;
@@ -24,7 +26,7 @@ export class Guard {
   public static greaterThan(
     minValue: number,
     actualValue: number,
-  ): IGuardResult {
+  ): GuardResultInterface {
     return actualValue > minValue
       ? { succeeded: true }
       : {
@@ -33,7 +35,10 @@ export class Guard {
         };
   }
 
-  public static againstAtLeast(numChars: number, text: string): IGuardResult {
+  public static againstAtLeast(
+    numChars: number,
+    text: string,
+  ): GuardResultInterface {
     return text.length >= numChars
       ? { succeeded: true }
       : {
@@ -42,7 +47,10 @@ export class Guard {
         };
   }
 
-  public static againstAtMost(numChars: number, text: string): IGuardResult {
+  public static againstAtMost(
+    numChars: number,
+    text: string,
+  ): GuardResultInterface {
     return text.length <= numChars
       ? { succeeded: true }
       : {
@@ -54,7 +62,7 @@ export class Guard {
   public static againstNullOrUndefined(
     argument: any,
     argumentName: string,
-  ): IGuardResult {
+  ): GuardResultInterface {
     if (argument === null || argument === undefined) {
       return {
         succeeded: false,
@@ -67,7 +75,7 @@ export class Guard {
 
   public static againstNullOrUndefinedBulk(
     args: GuardArgumentCollection,
-  ): IGuardResult {
+  ): GuardResultInterface {
     for (const arg of args) {
       const result = this.againstNullOrUndefined(
         arg.argument,
@@ -85,7 +93,7 @@ export class Guard {
     value: any,
     validValues: any[],
     argumentName: string,
-  ): IGuardResult {
+  ): GuardResultInterface {
     let isValid = false;
     for (const validValue of validValues) {
       if (value === validValue) {
@@ -110,7 +118,7 @@ export class Guard {
     min: number,
     max: number,
     argumentName: string,
-  ): IGuardResult {
+  ): GuardResultInterface {
     const isInRange = num >= min && num <= max;
     if (!isInRange) {
       return {
@@ -127,8 +135,8 @@ export class Guard {
     min: number,
     max: number,
     argumentName: string,
-  ): IGuardResult {
-    let failingResult: IGuardResult = null;
+  ): GuardResultInterface {
+    let failingResult: GuardResultInterface = null;
     for (const num of numbers) {
       const numIsInRangeResult = this.inRange(num, min, max, argumentName);
       if (!numIsInRangeResult.succeeded) {

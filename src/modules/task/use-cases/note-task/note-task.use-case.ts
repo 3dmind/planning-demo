@@ -1,21 +1,25 @@
 import { Injectable, Logger } from '@nestjs/common';
 import {
-  AppError,
+  AppErrors,
   Either,
   left,
   Result,
   right,
-  UseCase,
+  UseCaseInterface,
 } from '../../../../shared/core';
-import { Description } from '../../domain/description';
-import { Task } from '../../domain/task';
+import { DescriptionValueObject } from '../../domain/description.value-object';
+import { TaskEntity } from '../../domain/task.entity';
 import { TaskRepository } from '../../task.repository';
 import { NoteTaskDto } from './note-task.dto';
 
-type Response = Either<AppError.UnexpectedError | Result<any>, Result<Task>>;
+type Response = Either<
+  AppErrors.UnexpectedError | Result<any>,
+  Result<TaskEntity>
+>;
 
 @Injectable()
-export class NoteTaskUseCase implements UseCase<NoteTaskDto, Response> {
+export class NoteTaskUseCase
+  implements UseCaseInterface<NoteTaskDto, Response> {
   constructor(
     private readonly logger: Logger,
     private readonly taskRepository: TaskRepository,
@@ -27,7 +31,7 @@ export class NoteTaskUseCase implements UseCase<NoteTaskDto, Response> {
     const { text } = request;
 
     try {
-      const descriptionOrError = Description.create(text);
+      const descriptionOrError = DescriptionValueObject.create(text);
 
       if (descriptionOrError.isFailure) {
         this.logger.error(descriptionOrError.errorValue());
@@ -35,7 +39,7 @@ export class NoteTaskUseCase implements UseCase<NoteTaskDto, Response> {
       }
 
       const description = descriptionOrError.getValue();
-      const taskOrError = Task.note(description);
+      const taskOrError = TaskEntity.note(description);
 
       if (taskOrError.isFailure) {
         this.logger.error(taskOrError.errorValue());
@@ -44,11 +48,11 @@ export class NoteTaskUseCase implements UseCase<NoteTaskDto, Response> {
 
       const task = taskOrError.getValue();
       await this.taskRepository.save(task);
-      this.logger.log('Task successfully created.');
-      return right(Result.ok<Task>(task));
+      this.logger.log('TaskEntity successfully created.');
+      return right(Result.ok<TaskEntity>(task));
     } catch (error) {
       this.logger.error(error.toString());
-      return left(AppError.UnexpectedError.create(error));
+      return left(AppErrors.UnexpectedError.create(error));
     }
   }
 }

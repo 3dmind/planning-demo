@@ -1,13 +1,13 @@
-import { Result } from './Result';
-import { UseCaseError } from './UseCaseError';
+import { Result } from './result';
+import { UseCaseErrorAbstract } from './use-case-error.abstract';
 
-export namespace AppError {
-  export class UnexpectedError extends Result<UseCaseError> {
+export namespace AppErrors {
+  export class UnexpectedError extends Result<UseCaseErrorAbstract> {
     public constructor(err: any) {
       super(false, {
         message: `An unexpected error occurred.`,
         error: err,
-      } as UseCaseError);
+      } as UseCaseErrorAbstract);
     }
 
     public static create(err: any): UnexpectedError {

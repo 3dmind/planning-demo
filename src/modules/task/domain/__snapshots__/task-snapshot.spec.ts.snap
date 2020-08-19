@@ -1,16 +1,17 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Task should take a snapshot of its internal state 1`] = `
+exports[`TaskSnapshot should take a snapshot of a task's internal state 1`] = `
 TaskSnapshot {
   "createdAt": 1977-01-01T00:00:00.000Z,
-  "description": Description {
+  "description": DescriptionValueObject {
     "props": Object {
       "value": "Lorem ipsum",
     },
   },
   "isTickedOff": false,
-  "taskId": TaskId {
-    "_id": UniqueEntityID {
+  "resumedAt": null,
+  "taskId": TaskIdEntity {
+    "_id": UniqueEntityId {
       "value": "8597ccd9-4237-44a6-b434-8836693c4b51",
     },
     "props": null,

@@ -36,4 +36,8 @@ export class TaskModel extends Model<TaskModel> {
   @AllowNull(true)
   @Column
   tickedOffAt: Date;
+
+  @AllowNull(true)
+  @Column
+  resumedAt: Date;
 }

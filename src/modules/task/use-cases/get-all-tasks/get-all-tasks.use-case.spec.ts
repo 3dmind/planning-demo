@@ -2,8 +2,8 @@ import { Logger } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
 import { mock, mockReset } from 'jest-mock-extended';
-import { Description } from '../../domain/description';
-import { Task } from '../../domain/task';
+import { DescriptionValueObject } from '../../domain/description.value-object';
+import { TaskEntity } from '../../domain/task.entity';
 import { TaskRepository } from '../../task.repository';
 import { GetAllTasksUseCase } from './get-all-tasks.use-case';
 
@@ -43,8 +43,8 @@ describe('GetAllTasksUseCase', () => {
 
   it('should succeed', async () => {
     const text = faker.lorem.words(5);
-    const description = Description.create(text).getValue();
-    const task = Task.note(description).getValue();
+    const description = DescriptionValueObject.create(text).getValue();
+    const task = TaskEntity.note(description).getValue();
     mockedTaskRepository.getTasks.mockResolvedValue([task]);
 
     const result = await getAllTasksUseCase.execute();

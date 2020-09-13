@@ -7,24 +7,24 @@ import { AppErrors, Result } from '../../../../shared/core';
 import { TaskIdEntity } from '../../domain/task-id.entity';
 import { TaskEntity } from '../../domain/task.entity';
 import { TaskRepository } from '../../task.repository';
-import { TickOffTasksErrors } from './tick-off-task.errors';
-import { TickOffTaskUseCase } from './tick-off-task.use-case';
+import { ArchiveTaskErrors } from './archive-task.errors';
+import { ArchiveTaskUseCase } from './archive-task.use-case';
 
-describe('TickOffTaskUseCase', () => {
+describe('ArchiveTaskUseCase', () => {
   const mockedLogger = mock<Logger>();
   const mockedTaskRepository = mock<TaskRepository>();
-  let useCase: TickOffTaskUseCase;
+  let useCase: ArchiveTaskUseCase;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         { provide: Logger, useValue: mockedLogger },
         { provide: TaskRepository, useValue: mockedTaskRepository },
-        TickOffTaskUseCase,
+        ArchiveTaskUseCase,
       ],
     }).compile();
 
-    useCase = await module.resolve<TickOffTaskUseCase>(TickOffTaskUseCase);
+    useCase = await module.resolve<ArchiveTaskUseCase>(ArchiveTaskUseCase);
   });
 
   afterAll(() => {
@@ -53,7 +53,7 @@ describe('TickOffTaskUseCase', () => {
     const result = await useCase.execute({ taskId });
 
     expect(result.isLeft()).toBe(true);
-    expect(result.value).toBeInstanceOf(TickOffTasksErrors.TaskNotFoundError);
+    expect(result.value).toBeInstanceOf(ArchiveTaskErrors.TaskNotFoundError);
     expect(result.value.errorValue().message).toEqual(
       `Could not find a task by id {${taskId}}.`,
     );
@@ -83,7 +83,7 @@ describe('TickOffTaskUseCase', () => {
 
     expect(result.isRight()).toBe(true);
 
-    const tickedOffTask: TaskEntity = result.value.getValue();
-    expect(tickedOffTask.isTickedOff()).toBe(true);
+    const archivedTask: TaskEntity = result.value.getValue();
+    expect(archivedTask.isArchived()).toBe(true);
   });
 });

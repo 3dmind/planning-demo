@@ -1,5 +1,6 @@
 import * as faker from 'faker';
 import * as uuid from 'uuid';
+import { TaskEntityBuilder } from '../../../../test/builder/task-entity.builder';
 import { UniqueEntityId } from '../../../shared/domain';
 import { DescriptionValueObject } from './description.value-object';
 import { TaskIdEntity } from './task-id.entity';
@@ -18,6 +19,8 @@ describe('TaskEntity', () => {
 
   it(`should guard 'description' against 'null' or 'undefined'`, () => {
     const taskResultNull = TaskEntity.create({
+      archived: null,
+      archivedAt: null,
       createdAt: null,
       description: null,
       resumedAt: null,
@@ -25,6 +28,8 @@ describe('TaskEntity', () => {
       tickedOffAt: null,
     });
     const taskResultUndefined = TaskEntity.create({
+      archived: undefined,
+      archivedAt: undefined,
       createdAt: undefined,
       description: undefined,
       resumedAt: undefined,
@@ -43,6 +48,8 @@ describe('TaskEntity', () => {
 
     const taskResult = TaskEntity.create(
       {
+        archived: false,
+        archivedAt: null,
         createdAt: new Date(),
         description,
         resumedAt: null,
@@ -70,19 +77,8 @@ describe('TaskEntity', () => {
   });
 
   it('should tick off task', () => {
-    const entityId = new UniqueEntityId();
     const text = faker.lorem.words(5);
-    const description = DescriptionValueObject.create(text).getValue();
-    const task = TaskEntity.create(
-      {
-        createdAt: new Date(),
-        description,
-        resumedAt: null,
-        tickedOff: false,
-        tickedOffAt: null,
-      },
-      entityId,
-    ).getValue();
+    const task = new TaskEntityBuilder(text).build();
 
     task.tickOff();
 
@@ -91,22 +87,21 @@ describe('TaskEntity', () => {
 
   it('should resume task', () => {
     expect.assertions(1);
-    const entityId = new UniqueEntityId();
     const text = faker.lorem.words(5);
-    const description = DescriptionValueObject.create(text).getValue();
-    const task = TaskEntity.create(
-      {
-        createdAt: new Date(),
-        description,
-        resumedAt: null,
-        tickedOff: true,
-        tickedOffAt: new Date(),
-      },
-      entityId,
-    ).getValue();
+    const task = new TaskEntityBuilder(text).makeTickedOff().build();
 
     task.resume();
 
     expect(task.isTickedOff()).toBe(false);
+  });
+
+  it('should archive task', () => {
+    expect.assertions(1);
+    const text = faker.lorem.words(5);
+    const task = new TaskEntityBuilder(text).build();
+
+    task.archive();
+
+    expect(task.isArchived()).toBe(true);
   });
 });

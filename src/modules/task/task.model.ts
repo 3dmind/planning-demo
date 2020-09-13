@@ -5,12 +5,14 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
+import { RawTaskModelInterface } from './raw-task-model.interface';
 
 @Table({
   tableName: 'tasks',
   underscored: true,
 })
-export class TaskModel extends Model<TaskModel> {
+export class TaskModel extends Model<TaskModel>
+  implements RawTaskModelInterface {
   @Column({
     allowNull: false,
     defaultValue: DataType.UUIDV4,
@@ -40,4 +42,12 @@ export class TaskModel extends Model<TaskModel> {
   @AllowNull(true)
   @Column
   resumedAt: Date;
+
+  @AllowNull(false)
+  @Column
+  archived: boolean;
+
+  @AllowNull(true)
+  @Column
+  archivedAt: Date;
 }

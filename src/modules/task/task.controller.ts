@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   InternalServerErrorException,
+  Logger,
   NotFoundException,
   Param,
   Post,
@@ -13,6 +14,8 @@ import {
 import { AppErrors } from '../../shared/core';
 import { TaskDto } from './task.dto';
 import { TaskMapper } from './task.mapper';
+import { ArchiveTaskErrors } from './use-cases/archive-task/archive-task.errors';
+import { ArchiveTaskUseCase } from './use-cases/archive-task/archive-task.use-case';
 import { GetAllTasksUseCase } from './use-cases/get-all-tasks/get-all-tasks.use-case';
 import { NoteTaskDto } from './use-cases/note-task/note-task.dto';
 import { NoteTaskUseCase } from './use-cases/note-task/note-task.use-case';
@@ -24,11 +27,15 @@ import { TickOffTaskUseCase } from './use-cases/tick-off-task/tick-off-task.use-
 @Controller('tasks')
 export class TaskController {
   constructor(
+    private readonly logger: Logger,
     private readonly getAllTasksUseCase: GetAllTasksUseCase,
     private readonly noteTaskUseCase: NoteTaskUseCase,
     private readonly tickOffTaskUseCase: TickOffTaskUseCase,
     private readonly resumeTaskUseCase: ResumeTaskUseCase,
-  ) {}
+    private readonly archivedTasksUseCase: ArchiveTaskUseCase,
+  ) {
+    this.logger.setContext('TaskController');
+  }
 
   @Get()
   async getTasks(): Promise<TaskDto[]> {
@@ -106,6 +113,29 @@ export class TaskController {
         case AppErrors.UnexpectedError:
           throw new InternalServerErrorException(error.errorValue().message);
         case ResumeTaskErrors.TaskNotFoundError:
+          throw new NotFoundException(error.errorValue().message);
+        default:
+          throw new BadRequestException(error.errorValue());
+      }
+    }
+  }
+
+  @Post(':id/archive')
+  @HttpCode(HttpStatus.OK)
+  async archiveTask(@Param('id') id: string): Promise<TaskDto> {
+    const result = await this.archivedTasksUseCase.execute({ taskId: id });
+
+    if (result.isRight()) {
+      const task = result.value.getValue();
+      return TaskMapper.toDto(task);
+    }
+
+    if (result.isLeft()) {
+      const error = result.value;
+      switch (error.constructor) {
+        case AppErrors.UnexpectedError:
+          throw new InternalServerErrorException(error.errorValue().messge);
+        case ArchiveTaskErrors.TaskNotFoundError:
           throw new NotFoundException(error.errorValue().message);
         default:
           throw new BadRequestException(error.errorValue());

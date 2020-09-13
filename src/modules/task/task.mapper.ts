@@ -1,13 +1,16 @@
 import { UniqueEntityId } from '../../shared/domain';
 import { DescriptionValueObject } from './domain/description.value-object';
 import { TaskEntity } from './domain/task.entity';
+import { RawTaskModelInterface } from './raw-task-model.interface';
 import { TaskDto } from './task.dto';
 import { TaskModel } from './task.model';
 
 export class TaskMapper {
-  public static toPersistence(task: TaskEntity): any {
+  public static toPersistence(task: TaskEntity): RawTaskModelInterface {
     const taskSnapshot = task.createSnapshot();
     return {
+      archived: taskSnapshot.isArchived,
+      archivedAt: taskSnapshot.archivedAt,
       createdAt: taskSnapshot.createdAt,
       description: taskSnapshot.description.value,
       resumedAt: taskSnapshot.resumedAt,
@@ -24,6 +27,8 @@ export class TaskMapper {
     );
     const taskResult = TaskEntity.create(
       {
+        archived: taskModel.archived,
+        archivedAt: taskModel.archivedAt,
         createdAt: taskModel.createdAt,
         description: descriptionResult.getValue(),
         resumedAt: taskModel.resumedAt,
@@ -38,12 +43,14 @@ export class TaskMapper {
   public static toDto(task: TaskEntity): TaskDto {
     const taskSnapshot = task.createSnapshot();
     return {
+      archivedAt: taskSnapshot.archivedAt?.toISOString() ?? null,
       createdAt: taskSnapshot.createdAt.toISOString(),
       description: taskSnapshot.description.value,
       id: taskSnapshot.taskId.id.toString(),
+      isArchived: taskSnapshot.isArchived,
       isTickedOff: taskSnapshot.isTickedOff,
-      tickedOffAt: taskSnapshot.tickedOffAt?.toISOString() ?? null,
       resumedAt: taskSnapshot.resumedAt?.toISOString() ?? null,
+      tickedOffAt: taskSnapshot.tickedOffAt?.toISOString() ?? null,
     };
   }
 }

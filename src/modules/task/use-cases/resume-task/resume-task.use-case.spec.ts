@@ -2,8 +2,8 @@ import { Logger } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import * as faker from 'faker';
 import { mock, mockReset } from 'jest-mock-extended';
+import { TaskEntityBuilder } from '../../../../../test/builder/task-entity.builder';
 import { AppErrors, Result } from '../../../../shared/core';
-import { DescriptionValueObject } from '../../domain/description.value-object';
 import { TaskIdEntity } from '../../domain/task-id.entity';
 import { TaskEntity } from '../../domain/task.entity';
 import { TaskRepository } from '../../task.repository';
@@ -73,14 +73,7 @@ describe('ResumeTaskUseCase', () => {
 
   it('should succeed', async () => {
     const text = faker.lorem.words(5);
-    const description = DescriptionValueObject.create(text).getValue();
-    const task = TaskEntity.create({
-      createdAt: new Date(),
-      description,
-      resumedAt: null,
-      tickedOff: true,
-      tickedOffAt: new Date(),
-    }).getValue();
+    const task = new TaskEntityBuilder(text).makeTickedOff().build();
     mockedTaskRepository.getTaskByTaskId.mockResolvedValueOnce({
       found: true,
       task,

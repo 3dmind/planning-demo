@@ -31,6 +31,10 @@ export class TaskEntity extends Entity<TaskPropsInterface> {
         argument: props.tickedOff,
         argumentName: 'tickedOff',
       },
+      {
+        argument: props.archived,
+        argumentName: 'archived',
+      },
     ]);
 
     if (!nullGuard.succeeded) {
@@ -42,6 +46,8 @@ export class TaskEntity extends Entity<TaskPropsInterface> {
 
   public static note(description: DescriptionValueObject): Result<TaskEntity> {
     return TaskEntity.create({
+      archived: false,
+      archivedAt: null,
       createdAt: new Date(),
       description,
       resumedAt: null,
@@ -66,5 +72,14 @@ export class TaskEntity extends Entity<TaskPropsInterface> {
   resume(): void {
     this.props.tickedOff = false;
     this.props.resumedAt = new Date();
+  }
+
+  archive(): void {
+    this.props.archived = true;
+    this.props.archivedAt = new Date();
+  }
+
+  isArchived(): boolean {
+    return this.props.archived;
   }
 }

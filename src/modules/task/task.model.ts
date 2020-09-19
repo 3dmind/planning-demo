@@ -43,6 +43,10 @@ export class TaskModel extends Model<TaskModel>
   @Column
   resumedAt: Date;
 
+  @AllowNull(true)
+  @Column
+  editedAt: Date;
+
   @AllowNull(false)
   @Column
   archived: boolean;

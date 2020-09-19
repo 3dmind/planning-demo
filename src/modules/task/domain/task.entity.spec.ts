@@ -23,6 +23,7 @@ describe('TaskEntity', () => {
       archivedAt: null,
       createdAt: null,
       description: null,
+      editedAt: null,
       resumedAt: null,
       tickedOff: null,
       tickedOffAt: null,
@@ -32,6 +33,7 @@ describe('TaskEntity', () => {
       archivedAt: undefined,
       createdAt: undefined,
       description: undefined,
+      editedAt: undefined,
       resumedAt: undefined,
       tickedOff: undefined,
       tickedOffAt: undefined,
@@ -52,6 +54,7 @@ describe('TaskEntity', () => {
         archivedAt: null,
         createdAt: new Date(),
         description,
+        editedAt: null,
         resumedAt: null,
         tickedOff: false,
         tickedOffAt: null,
@@ -103,5 +106,17 @@ describe('TaskEntity', () => {
     task.archive();
 
     expect(task.isArchived()).toBe(true);
+  });
+
+  it('should edit description', () => {
+    expect.assertions(1);
+    const text = faker.lorem.words(5);
+    const task = new TaskEntityBuilder(text).build();
+    const newText = faker.lorem.words(5);
+    const newDescription = DescriptionValueObject.create(newText).getValue();
+
+    task.edit(newDescription);
+
+    expect(task.props.description.equals(newDescription)).toBe(true);
   });
 });

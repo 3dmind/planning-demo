@@ -3,6 +3,7 @@ export interface RawTaskModelInterface {
   archivedAt: Date;
   createdAt: Date;
   description: string;
+  editedAt: Date;
   resumedAt: Date;
   taskId: string;
   tickedOff: boolean;

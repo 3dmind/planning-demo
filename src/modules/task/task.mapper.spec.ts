@@ -18,6 +18,7 @@ describe('TaskMapper', () => {
         archivedAt: null,
         createdAt: expect.any(String),
         description: text,
+        editedAt: null,
         id: expect.any(String),
         isArchived: false,
         isTickedOff: false,
@@ -36,6 +37,7 @@ describe('TaskMapper', () => {
         archivedAt: null,
         createdAt: expect.any(String),
         description: text,
+        editedAt: null,
         id: expect.any(String),
         isArchived: false,
         isTickedOff: true,
@@ -57,6 +59,7 @@ describe('TaskMapper', () => {
         archivedAt: null,
         createdAt: expect.any(String),
         description: text,
+        editedAt: null,
         id: expect.any(String),
         isArchived: false,
         isTickedOff: false,
@@ -79,11 +82,31 @@ describe('TaskMapper', () => {
         archivedAt: expect.any(String),
         createdAt: expect.any(String),
         description: text,
+        editedAt: null,
         id: expect.any(String),
         isArchived: true,
         isTickedOff: false,
         resumedAt: expect.any(String),
         tickedOffAt: expect.any(String),
+      });
+    });
+
+    it('should map edited Task to DTO', () => {
+      const newText = faker.lorem.words(5);
+      const task = new TaskEntityBuilder().makeEdited(newText).build();
+
+      const dto = TaskMapper.toDto(task);
+
+      expect(dto).toMatchObject<TaskDto>({
+        archivedAt: null,
+        createdAt: expect.any(String),
+        description: newText,
+        editedAt: expect.any(String),
+        id: expect.any(String),
+        isArchived: false,
+        isTickedOff: false,
+        resumedAt: null,
+        tickedOffAt: null,
       });
     });
   });
@@ -100,6 +123,7 @@ describe('TaskMapper', () => {
         archivedAt: null,
         createdAt: expect.any(Date),
         description: text,
+        editedAt: null,
         resumedAt: null,
         taskId: expect.any(String),
         tickedOff: false,
@@ -118,6 +142,7 @@ describe('TaskMapper', () => {
         archivedAt: null,
         createdAt: expect.any(Date),
         description: text,
+        editedAt: null,
         resumedAt: null,
         taskId: expect.any(String),
         tickedOff: true,
@@ -139,6 +164,7 @@ describe('TaskMapper', () => {
         archivedAt: null,
         createdAt: expect.any(Date),
         description: text,
+        editedAt: null,
         resumedAt: expect.any(Date),
         taskId: expect.any(String),
         tickedOff: false,
@@ -161,10 +187,30 @@ describe('TaskMapper', () => {
         archivedAt: expect.any(Date),
         createdAt: expect.any(Date),
         description: text,
+        editedAt: null,
         resumedAt: expect.any(Date),
         taskId: expect.any(String),
         tickedOff: false,
         tickedOffAt: expect.any(Date),
+      });
+    });
+
+    it('should map edited Task to Model', () => {
+      const newText = faker.lorem.words(5);
+      const task = new TaskEntityBuilder().makeEdited(newText).build();
+
+      const rawModel = TaskMapper.toPersistence(task);
+
+      expect(rawModel).toMatchObject<RawTaskModelInterface>({
+        archived: false,
+        archivedAt: null,
+        createdAt: expect.any(Date),
+        description: newText,
+        editedAt: expect.any(Date),
+        resumedAt: null,
+        taskId: expect.any(String),
+        tickedOff: false,
+        tickedOffAt: null,
       });
     });
   });
@@ -179,6 +225,7 @@ describe('TaskMapper', () => {
         archivedAt: mockedDate,
         createdAt: mockedDate,
         description: mockedText,
+        editedAt: mockedDate,
         resumedAt: mockedDate,
         taskId: mockedId,
         tickedOff: true,

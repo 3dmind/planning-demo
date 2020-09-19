@@ -6,8 +6,9 @@ import { UniqueEntityId } from '../../src/shared/domain';
 export class TaskEntityBuilder {
   private archived: boolean;
   private archivedAt: Date;
-  private readonly createdAt: Date;
   private description: DescriptionValueObject;
+  private editedAt: Date;
+  private readonly createdAt: Date;
   private readonly id: UniqueEntityId;
   private resumedAt: Date;
   private tickedOff: boolean;
@@ -22,6 +23,7 @@ export class TaskEntityBuilder {
     this.archivedAt = null;
     this.createdAt = createdAt;
     this.description = DescriptionValueObject.create(text).getValue();
+    this.editedAt = null;
     this.id = new UniqueEntityId(id);
     this.resumedAt = null;
     this.tickedOff = false;
@@ -46,6 +48,12 @@ export class TaskEntityBuilder {
     return this;
   }
 
+  makeEdited(newText: string = faker.lorem.words(5)): TaskEntityBuilder {
+    this.description = DescriptionValueObject.create(newText).getValue();
+    this.editedAt = new Date();
+    return this;
+  }
+
   build(): TaskEntity {
     return TaskEntity.create(
       {
@@ -53,6 +61,7 @@ export class TaskEntityBuilder {
         archivedAt: this.archivedAt,
         createdAt: this.createdAt,
         description: this.description,
+        editedAt: this.editedAt,
         resumedAt: this.resumedAt,
         tickedOff: this.tickedOff,
         tickedOffAt: this.tickedOffAt,

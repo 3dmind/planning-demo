@@ -6,6 +6,7 @@ export class TaskSnapshot {
   readonly archivedAt: Date;
   readonly createdAt: Date;
   readonly description: DescriptionValueObject;
+  readonly editedAt: Date;
   readonly isArchived: boolean;
   readonly isTickedOff: boolean;
   readonly resumedAt: Date;
@@ -18,6 +19,7 @@ export class TaskSnapshot {
       archivedAt,
       createdAt,
       description,
+      editedAt,
       resumedAt,
       tickedOff,
       tickedOffAt,
@@ -25,6 +27,7 @@ export class TaskSnapshot {
     this.archivedAt = archivedAt;
     this.createdAt = createdAt;
     this.description = description;
+    this.editedAt = editedAt;
     this.isArchived = archived;
     this.isTickedOff = tickedOff;
     this.resumedAt = resumedAt;

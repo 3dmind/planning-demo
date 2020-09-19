@@ -9,6 +9,7 @@ TaskSnapshot {
       "value": "Lorem ipsum",
     },
   },
+  "editedAt": null,
   "isArchived": false,
   "isTickedOff": false,
   "resumedAt": null,

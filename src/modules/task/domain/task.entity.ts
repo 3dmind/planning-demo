@@ -50,6 +50,7 @@ export class TaskEntity extends Entity<TaskPropsInterface> {
       archivedAt: null,
       createdAt: new Date(),
       description,
+      editedAt: null,
       resumedAt: null,
       tickedOff: false,
       tickedOffAt: null,
@@ -81,5 +82,10 @@ export class TaskEntity extends Entity<TaskPropsInterface> {
 
   isArchived(): boolean {
     return this.props.archived;
+  }
+
+  edit(newDescription: DescriptionValueObject): void {
+    this.props.description = newDescription;
+    this.props.editedAt = new Date();
   }
 }

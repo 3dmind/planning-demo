@@ -5,6 +5,7 @@ export interface TaskPropsInterface {
   archivedAt: Date;
   createdAt: Date;
   description: DescriptionValueObject;
+  editedAt: Date;
   resumedAt: Date;
   tickedOff: boolean;
   tickedOffAt: Date;

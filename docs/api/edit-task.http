@@ -1,0 +1,17 @@
+POST http://localhost:3000/tasks
+Content-Type: application/json
+
+{
+  "text": "{{text}}"
+}
+
+> {% client.global.set('taskId', response.body.id); %}
+
+###
+
+POST http://localhost:3000/tasks/{{taskId}}/edit
+Content-Type: application/json
+
+{
+  "text": "{{newText}}"
+}

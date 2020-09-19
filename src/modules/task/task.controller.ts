@@ -16,6 +16,9 @@ import { TaskDto } from './task.dto';
 import { TaskMapper } from './task.mapper';
 import { ArchiveTaskErrors } from './use-cases/archive-task/archive-task.errors';
 import { ArchiveTaskUseCase } from './use-cases/archive-task/archive-task.use-case';
+import { EditTaskDto } from './use-cases/edit-task/edit-task.dto';
+import { EditTaskErrors } from './use-cases/edit-task/edit-task.errors';
+import { EditTaskUseCase } from './use-cases/edit-task/edit-task.use-case';
 import { GetAllTasksUseCase } from './use-cases/get-all-tasks/get-all-tasks.use-case';
 import { NoteTaskDto } from './use-cases/note-task/note-task.dto';
 import { NoteTaskUseCase } from './use-cases/note-task/note-task.use-case';
@@ -33,6 +36,7 @@ export class TaskController {
     private readonly tickOffTaskUseCase: TickOffTaskUseCase,
     private readonly resumeTaskUseCase: ResumeTaskUseCase,
     private readonly archivedTasksUseCase: ArchiveTaskUseCase,
+    private readonly editTaskUseCase: EditTaskUseCase,
   ) {
     this.logger.setContext('TaskController');
   }
@@ -136,6 +140,35 @@ export class TaskController {
         case AppErrors.UnexpectedError:
           throw new InternalServerErrorException(error.errorValue().messge);
         case ArchiveTaskErrors.TaskNotFoundError:
+          throw new NotFoundException(error.errorValue().message);
+        default:
+          throw new BadRequestException(error.errorValue());
+      }
+    }
+  }
+
+  @Post(':id/edit')
+  @HttpCode(HttpStatus.OK)
+  async editTask(
+    @Param('id') id: string,
+    @Body() dto: EditTaskDto,
+  ): Promise<TaskDto> {
+    const result = await this.editTaskUseCase.execute({
+      taskId: id,
+      text: dto.text,
+    });
+
+    if (result.isRight()) {
+      const task = result.value.getValue();
+      return TaskMapper.toDto(task);
+    }
+
+    if (result.isLeft()) {
+      const error = result.value;
+      switch (error.constructor) {
+        case AppErrors.UnexpectedError:
+          throw new InternalServerErrorException(error.errorValue().messge);
+        case EditTaskErrors.TaskNotFoundError:
           throw new NotFoundException(error.errorValue().message);
         default:
           throw new BadRequestException(error.errorValue());

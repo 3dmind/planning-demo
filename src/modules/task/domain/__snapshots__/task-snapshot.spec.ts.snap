@@ -9,8 +9,10 @@ TaskSnapshot {
       "value": "Lorem ipsum",
     },
   },
+  "discardedAt": null,
   "editedAt": null,
   "isArchived": false,
+  "isDiscarded": false,
   "isTickedOff": false,
   "resumedAt": null,
   "taskId": TaskIdEntity {

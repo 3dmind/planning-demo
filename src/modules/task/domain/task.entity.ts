@@ -35,6 +35,10 @@ export class TaskEntity extends Entity<TaskPropsInterface> {
         argument: props.archived,
         argumentName: 'archived',
       },
+      {
+        argument: props.discarded,
+        argumentName: 'discarded',
+      },
     ]);
 
     if (!nullGuard.succeeded) {
@@ -50,6 +54,8 @@ export class TaskEntity extends Entity<TaskPropsInterface> {
       archivedAt: null,
       createdAt: new Date(),
       description,
+      discarded: false,
+      discardedAt: null,
       editedAt: null,
       resumedAt: null,
       tickedOff: false,
@@ -87,5 +93,14 @@ export class TaskEntity extends Entity<TaskPropsInterface> {
   edit(newDescription: DescriptionValueObject): void {
     this.props.description = newDescription;
     this.props.editedAt = new Date();
+  }
+
+  discard(): void {
+    this.props.discarded = true;
+    this.props.discardedAt = new Date();
+  }
+
+  isDiscarded(): boolean {
+    return this.props.discarded;
   }
 }

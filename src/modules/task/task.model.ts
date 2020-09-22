@@ -54,4 +54,12 @@ export class TaskModel extends Model<TaskModel>
   @AllowNull(true)
   @Column
   archivedAt: Date;
+
+  @AllowNull(false)
+  @Column
+  discarded: boolean;
+
+  @AllowNull(true)
+  @Column
+  discardedAt: Date;
 }

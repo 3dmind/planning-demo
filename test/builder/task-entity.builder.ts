@@ -7,6 +7,8 @@ export class TaskEntityBuilder {
   private archived: boolean;
   private archivedAt: Date;
   private description: DescriptionValueObject;
+  private discarded: boolean;
+  private discardedAt: Date;
   private editedAt: Date;
   private readonly createdAt: Date;
   private readonly id: UniqueEntityId;
@@ -23,6 +25,8 @@ export class TaskEntityBuilder {
     this.archivedAt = null;
     this.createdAt = createdAt;
     this.description = DescriptionValueObject.create(text).getValue();
+    this.discarded = false;
+    this.discardedAt = null;
     this.editedAt = null;
     this.id = new UniqueEntityId(id);
     this.resumedAt = null;
@@ -54,6 +58,12 @@ export class TaskEntityBuilder {
     return this;
   }
 
+  makeDiscarded(): TaskEntityBuilder {
+    this.discarded = true;
+    this.discardedAt = new Date();
+    return this;
+  }
+
   build(): TaskEntity {
     return TaskEntity.create(
       {
@@ -61,6 +71,8 @@ export class TaskEntityBuilder {
         archivedAt: this.archivedAt,
         createdAt: this.createdAt,
         description: this.description,
+        discarded: this.discarded,
+        discardedAt: this.discardedAt,
         editedAt: this.editedAt,
         resumedAt: this.resumedAt,
         tickedOff: this.tickedOff,

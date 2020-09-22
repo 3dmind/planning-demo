@@ -16,6 +16,8 @@ import { TaskDto } from './task.dto';
 import { TaskMapper } from './task.mapper';
 import { ArchiveTaskErrors } from './use-cases/archive-task/archive-task.errors';
 import { ArchiveTaskUseCase } from './use-cases/archive-task/archive-task.use-case';
+import { DiscardTaskErrors } from './use-cases/discard-task/discard-task.errors';
+import { DiscardTaskUseCase } from './use-cases/discard-task/discard-task.use-case';
 import { EditTaskDto } from './use-cases/edit-task/edit-task.dto';
 import { EditTaskErrors } from './use-cases/edit-task/edit-task.errors';
 import { EditTaskUseCase } from './use-cases/edit-task/edit-task.use-case';
@@ -37,6 +39,7 @@ export class TaskController {
     private readonly resumeTaskUseCase: ResumeTaskUseCase,
     private readonly archivedTasksUseCase: ArchiveTaskUseCase,
     private readonly editTaskUseCase: EditTaskUseCase,
+    private readonly discardTaskUseCase: DiscardTaskUseCase,
   ) {
     this.logger.setContext('TaskController');
   }
@@ -169,6 +172,29 @@ export class TaskController {
         case AppErrors.UnexpectedError:
           throw new InternalServerErrorException(error.errorValue().messge);
         case EditTaskErrors.TaskNotFoundError:
+          throw new NotFoundException(error.errorValue().message);
+        default:
+          throw new BadRequestException(error.errorValue());
+      }
+    }
+  }
+
+  @Post(':id/discard')
+  @HttpCode(HttpStatus.OK)
+  async discardTask(@Param('id') id: string): Promise<TaskDto> {
+    const result = await this.discardTaskUseCase.execute({ taskId: id });
+
+    if (result.isRight()) {
+      const task = result.value.getValue();
+      return TaskMapper.toDto(task);
+    }
+
+    if (result.isLeft()) {
+      const error = result.value;
+      switch (error.constructor) {
+        case AppErrors.UnexpectedError:
+          throw new InternalServerErrorException(error.errorValue().message);
+        case DiscardTaskErrors.TaskNotFoundError:
           throw new NotFoundException(error.errorValue().message);
         default:
           throw new BadRequestException(error.errorValue());

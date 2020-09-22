@@ -4,6 +4,7 @@ import { TaskController } from './task.controller';
 import { TaskModel } from './task.model';
 import { TaskRepository } from './task.repository';
 import { ArchiveTaskUseCase } from './use-cases/archive-task/archive-task.use-case';
+import { DiscardTaskUseCase } from './use-cases/discard-task/discard-task.use-case';
 import { EditTaskUseCase } from './use-cases/edit-task/edit-task.use-case';
 import { GetAllTasksUseCase } from './use-cases/get-all-tasks/get-all-tasks.use-case';
 import { NoteTaskUseCase } from './use-cases/note-task/note-task.use-case';
@@ -22,6 +23,7 @@ import { TickOffTaskUseCase } from './use-cases/tick-off-task/tick-off-task.use-
     ResumeTaskUseCase,
     ArchiveTaskUseCase,
     EditTaskUseCase,
+    DiscardTaskUseCase,
   ],
 })
 export class TaskModule {}

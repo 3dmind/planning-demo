@@ -6,8 +6,10 @@ export class TaskSnapshot {
   readonly archivedAt: Date;
   readonly createdAt: Date;
   readonly description: DescriptionValueObject;
+  readonly discardedAt: Date;
   readonly editedAt: Date;
   readonly isArchived: boolean;
+  readonly isDiscarded: boolean;
   readonly isTickedOff: boolean;
   readonly resumedAt: Date;
   readonly taskId: TaskIdEntity;
@@ -19,6 +21,8 @@ export class TaskSnapshot {
       archivedAt,
       createdAt,
       description,
+      discarded,
+      discardedAt,
       editedAt,
       resumedAt,
       tickedOff,
@@ -27,8 +31,10 @@ export class TaskSnapshot {
     this.archivedAt = archivedAt;
     this.createdAt = createdAt;
     this.description = description;
+    this.discardedAt = discardedAt;
     this.editedAt = editedAt;
     this.isArchived = archived;
+    this.isDiscarded = discarded;
     this.isTickedOff = tickedOff;
     this.resumedAt = resumedAt;
     this.taskId = taskId;

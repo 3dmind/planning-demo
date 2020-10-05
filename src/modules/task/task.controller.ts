@@ -21,6 +21,7 @@ import { DiscardTaskUseCase } from './use-cases/discard-task/discard-task.use-ca
 import { EditTaskDto } from './use-cases/edit-task/edit-task.dto';
 import { EditTaskErrors } from './use-cases/edit-task/edit-task.errors';
 import { EditTaskUseCase } from './use-cases/edit-task/edit-task.use-case';
+import { GetAllActiveTasksUseCase } from './use-cases/get-all-active-tasks/get-all-active-tasks.use-case';
 import { GetAllTasksUseCase } from './use-cases/get-all-tasks/get-all-tasks.use-case';
 import { NoteTaskDto } from './use-cases/note-task/note-task.dto';
 import { NoteTaskUseCase } from './use-cases/note-task/note-task.use-case';
@@ -40,6 +41,7 @@ export class TaskController {
     private readonly archivedTasksUseCase: ArchiveTaskUseCase,
     private readonly editTaskUseCase: EditTaskUseCase,
     private readonly discardTaskUseCase: DiscardTaskUseCase,
+    private readonly getAllActiveTasksUseCase: GetAllActiveTasksUseCase,
   ) {
     this.logger.setContext('TaskController');
   }
@@ -199,6 +201,21 @@ export class TaskController {
         default:
           throw new BadRequestException(error.errorValue());
       }
+    }
+  }
+
+  @Get('/active')
+  async getActiveTasks(): Promise<TaskDto[]> {
+    const result = await this.getAllActiveTasksUseCase.execute();
+
+    if (result.isRight()) {
+      const tasks = result.value.getValue();
+      return tasks.map((task) => TaskMapper.toDto(task));
+    }
+
+    if (result.isLeft()) {
+      const error = result.value;
+      throw new InternalServerErrorException(error.errorValue().message);
     }
   }
 }

@@ -53,4 +53,14 @@ export class TaskRepository {
       return { found };
     }
   }
+
+  async getActiveTasks(): Promise<TaskEntity[]> {
+    const taskModels = await this.taskModel.findAll({
+      where: {
+        archived: false,
+        discarded: false,
+      },
+    });
+    return taskModels.map((model) => TaskMapper.toDomain(model));
+  }
 }

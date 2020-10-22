@@ -1,7 +1,6 @@
 import { Logger, Module } from '@nestjs/common';
-import { SequelizeModule } from '@nestjs/sequelize';
+import { PrismaModule } from '../../prisma/prisma.module';
 import { TaskController } from './task.controller';
-import { TaskModel } from './task.model';
 import { TaskRepository } from './task.repository';
 import { ArchiveTaskUseCase } from './use-cases/archive-task/archive-task.use-case';
 import { DiscardTaskUseCase } from './use-cases/discard-task/discard-task.use-case';
@@ -13,7 +12,7 @@ import { ResumeTaskUseCase } from './use-cases/resume-task/resume-task.use-case'
 import { TickOffTaskUseCase } from './use-cases/tick-off-task/tick-off-task.use-case';
 
 @Module({
-  imports: [SequelizeModule.forFeature([TaskModel])],
+  imports: [PrismaModule],
   controllers: [TaskController],
   providers: [
     Logger,

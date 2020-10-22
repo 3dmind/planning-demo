@@ -37,4 +37,6 @@ lerna-debug.log*
 *.db
 
 # Environment
+.env
+!.env.template
 /docs/api/http-client.private.env.json

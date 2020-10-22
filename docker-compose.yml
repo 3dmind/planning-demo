@@ -1,0 +1,31 @@
+version: '3'
+
+networks:
+  default:
+    name: planning
+
+services:
+  planning-db:
+    container_name: planning_db_container
+    image: postgres:13-alpine
+    env_file:
+      - .env
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+  planning-migrate:
+    container_name: planning_migrate_container
+    build:
+      context: prisma
+      dockerfile: Dockerfile
+    image: planning_migrate
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@planning-db:${DB_PORT}/${POSTGRES_DB}?schema=${DB_SCHEMA}&sslmode=prefer
+    depends_on:
+      - planning-db
+
+volumes:
+  postgres:
+    name: planning-db

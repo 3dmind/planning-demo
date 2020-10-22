@@ -1,5 +1,4 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
-import { SequelizeModule } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
 import * as request from 'supertest';
@@ -8,6 +7,7 @@ import { TaskDto } from '../src/modules/task/task.dto';
 import { TaskModule } from '../src/modules/task/task.module';
 import { EditTaskDto } from '../src/modules/task/use-cases/edit-task/edit-task.dto';
 import { NoteTaskDto } from '../src/modules/task/use-cases/note-task/note-task.dto';
+import { PrismaService } from '../src/prisma/prisma.service';
 
 describe('TaskController (e2e)', () => {
   const baseUrl = '/tasks';
@@ -20,31 +20,27 @@ describe('TaskController (e2e)', () => {
 
   let app: INestApplication;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [
-        SequelizeModule.forRoot({
-          dialect: 'sqlite',
-          storage: 'planning-e2e.db',
-          autoLoadModels: true,
-          synchronize: true,
-          logging: false,
-        }),
-        TaskModule,
-      ],
+      imports: [TaskModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
   });
 
-  it('/tasks (GET)', () => {
+  afterAll(async () => {
+    const prismaService = await app.resolve<PrismaService>(PrismaService);
+    await prismaService.$disconnect();
+  });
+
+  it('/tasks (GET)', async () => {
     return request(app.getHttpServer())
       .get(baseUrl)
       .expect(HttpStatus.OK);
   });
 
-  it('/tasks (POST)', () => {
+  it('/tasks (POST)', async () => {
     const text = faker.lorem.words(5);
     const dto: NoteTaskDto = { text };
     return request(app.getHttpServer())

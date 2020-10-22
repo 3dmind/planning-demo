@@ -1,19 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
+import { PrismaService } from '../../prisma/prisma.service';
 import { TaskIdEntity } from './domain/task-id.entity';
 import { TaskEntity } from './domain/task.entity';
 import { TaskMapper } from './task.mapper';
-import { TaskModel } from './task.model';
 
 @Injectable()
 export class TaskRepository {
-  constructor(
-    @InjectModel(TaskModel)
-    private readonly taskModel: typeof TaskModel,
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   async exists(taskId: TaskIdEntity): Promise<boolean> {
-    const taskModel = await this.taskModel.findByPk(taskId.id.toString());
+    const taskModel = await this.prismaService.taskModel.findOne({
+      where: {
+        taskId: taskId.id.toString(),
+      },
+    });
     return !!taskModel === true;
   }
 
@@ -23,27 +23,35 @@ export class TaskRepository {
 
     if (!exists) {
       try {
-        await this.taskModel.create(rawTaskModel);
+        await this.prismaService.taskModel.create({
+          data: rawTaskModel,
+        });
       } catch (error) {
         throw new Error(error.toString());
       }
     } else {
-      const taskModel = await this.taskModel.findByPk(
-        task.taskId.id.toString(),
-      );
-      await taskModel.update(rawTaskModel);
+      await this.prismaService.taskModel.update({
+        where: {
+          taskId: task.taskId.id.toString(),
+        },
+        data: rawTaskModel,
+      });
     }
   }
 
   async getTasks(): Promise<TaskEntity[]> {
-    const taskModels = await this.taskModel.findAll();
+    const taskModels = await this.prismaService.taskModel.findMany();
     return taskModels.map((model) => TaskMapper.toDomain(model));
   }
 
   async getTaskByTaskId(
     taskId: TaskIdEntity,
   ): Promise<{ found: boolean; task?: TaskEntity }> {
-    const taskModel = await this.taskModel.findByPk(taskId.id.toString());
+    const taskModel = await this.prismaService.taskModel.findOne({
+      where: {
+        taskId: taskId.id.toString(),
+      },
+    });
     const found = !!taskModel === true;
 
     if (found) {
@@ -55,7 +63,7 @@ export class TaskRepository {
   }
 
   async getActiveTasks(): Promise<TaskEntity[]> {
-    const taskModels = await this.taskModel.findAll({
+    const taskModels = await this.prismaService.taskModel.findMany({
       where: {
         archived: false,
         discarded: false,

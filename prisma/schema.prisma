@@ -1,0 +1,24 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model TaskModel {
+  @@map("Task")
+  taskId      String    @id
+  updatedAt   DateTime  @updatedAt
+  description String
+  createdAt   DateTime
+  tickedOff   Boolean
+  tickedOffAt DateTime?
+  resumedAt   DateTime?
+  editedAt    DateTime?
+  archived    Boolean
+  archivedAt  DateTime?
+  discarded   Boolean
+  discardedAt DateTime?
+}

@@ -1,10 +1,10 @@
+import type { TaskModel } from '@prisma/client';
 import * as faker from 'faker';
 import { TaskEntityBuilder } from '../../../test/builder/task-entity.builder';
 import { TaskEntity } from './domain/task.entity';
 import { RawTaskModelInterface } from './raw-task-model.interface';
 import { TaskDto } from './task.dto';
 import { TaskMapper } from './task.mapper';
-import { TaskModel } from './task.model';
 
 describe('TaskMapper', () => {
   describe('map Entity to DTO', () => {

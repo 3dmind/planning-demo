@@ -1,12 +1,11 @@
+import type { TaskModel } from '@prisma/client';
 import { UniqueEntityId } from '../../shared/domain';
 import { DescriptionValueObject } from './domain/description.value-object';
 import { TaskEntity } from './domain/task.entity';
-import { RawTaskModelInterface } from './raw-task-model.interface';
 import { TaskDto } from './task.dto';
-import { TaskModel } from './task.model';
 
 export class TaskMapper {
-  public static toPersistence(task: TaskEntity): RawTaskModelInterface {
+  public static toPersistence(task: TaskEntity): Omit<TaskModel, 'updatedAt'> {
     const taskSnapshot = task.createSnapshot();
     return {
       archived: taskSnapshot.isArchived,

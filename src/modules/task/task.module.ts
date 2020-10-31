@@ -6,6 +6,7 @@ import { ArchiveTaskUseCase } from './use-cases/archive-task/archive-task.use-ca
 import { DiscardTaskUseCase } from './use-cases/discard-task/discard-task.use-case';
 import { EditTaskUseCase } from './use-cases/edit-task/edit-task.use-case';
 import { GetAllActiveTasksUseCase } from './use-cases/get-all-active-tasks/get-all-active-tasks.use-case';
+import { GetAllArchivedTasksUseCase } from './use-cases/get-all-archived-tasks/get-all-archived-tasks.use-case';
 import { GetAllTasksUseCase } from './use-cases/get-all-tasks/get-all-tasks.use-case';
 import { NoteTaskUseCase } from './use-cases/note-task/note-task.use-case';
 import { ResumeTaskUseCase } from './use-cases/resume-task/resume-task.use-case';
@@ -25,6 +26,7 @@ import { TickOffTaskUseCase } from './use-cases/tick-off-task/tick-off-task.use-
     EditTaskUseCase,
     DiscardTaskUseCase,
     GetAllActiveTasksUseCase,
+    GetAllArchivedTasksUseCase,
   ],
 })
 export class TaskModule {}

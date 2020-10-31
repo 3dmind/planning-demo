@@ -6,6 +6,7 @@ import { ArchiveTaskUseCase } from './use-cases/archive-task/archive-task.use-ca
 import { DiscardTaskUseCase } from './use-cases/discard-task/discard-task.use-case';
 import { EditTaskUseCase } from './use-cases/edit-task/edit-task.use-case';
 import { GetAllActiveTasksUseCase } from './use-cases/get-all-active-tasks/get-all-active-tasks.use-case';
+import { GetAllArchivedTasksUseCase } from './use-cases/get-all-archived-tasks/get-all-archived-tasks.use-case';
 import { GetAllTasksUseCase } from './use-cases/get-all-tasks/get-all-tasks.use-case';
 import { NoteTaskUseCase } from './use-cases/note-task/note-task.use-case';
 import { ResumeTaskUseCase } from './use-cases/resume-task/resume-task.use-case';
@@ -21,6 +22,7 @@ describe('TaskController', () => {
   const mockedEditTaskUseCase = mock<EditTaskUseCase>();
   const mockedDiscardTaskUseCase = mock<DiscardTaskUseCase>();
   const mockedGetAllActiveTasksUseCase = mock<GetAllActiveTasksUseCase>();
+  const mockedGetAllArchivedTasksUseCase = mock<GetAllArchivedTasksUseCase>();
   let controller: TaskController;
 
   beforeEach(async () => {
@@ -39,6 +41,10 @@ describe('TaskController', () => {
           provide: GetAllActiveTasksUseCase,
           useValue: mockedGetAllActiveTasksUseCase,
         },
+        {
+          provide: GetAllArchivedTasksUseCase,
+          useValue: mockedGetAllArchivedTasksUseCase,
+        },
       ],
     }).compile();
 
@@ -54,6 +60,7 @@ describe('TaskController', () => {
     mockReset(mockedArchiveTaskUseCase);
     mockReset(mockedEditTaskUseCase);
     mockReset(mockedGetAllActiveTasksUseCase);
+    mockReset(mockedGetAllArchivedTasksUseCase);
   });
 
   it('should be defined', () => {

@@ -71,4 +71,14 @@ export class TaskRepository {
     });
     return taskModels.map((model) => TaskMapper.toDomain(model));
   }
+
+  async getArchivedTasks(): Promise<TaskEntity[]> {
+    const taskModels = await this.prismaService.taskModel.findMany({
+      where: {
+        archived: true,
+        discarded: false,
+      },
+    });
+    return taskModels.map((model) => TaskMapper.toDomain(model));
+  }
 }

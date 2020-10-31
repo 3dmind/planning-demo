@@ -17,6 +17,7 @@ describe('TaskController (e2e)', () => {
   const editPath = '/:id/edit';
   const discardPath = '/:id/discard';
   const activePath = '/active';
+  const archivedPath = '/archived';
 
   let app: INestApplication;
 
@@ -130,6 +131,26 @@ describe('TaskController (e2e)', () => {
   it('/tasks/active (GET)', async () => {
     const response = await request(app.getHttpServer())
       .get(urlcat(baseUrl, activePath))
+      .expect(HttpStatus.OK);
+    const tasks: TaskDto[] = response.body;
+
+    expect(tasks.length).toBeGreaterThan(0);
+  });
+
+  it('/tasks/archived (GET)', async () => {
+    const httpServer = app.getHttpServer();
+
+    const text = faker.lorem.words(5);
+    const noteTaskDto: NoteTaskDto = { text };
+    const noteTaskResponse = await request(httpServer)
+      .post(baseUrl)
+      .send(noteTaskDto);
+
+    const { id }: TaskDto = noteTaskResponse.body;
+    await request(httpServer).post(urlcat(baseUrl, archivePath, { id }));
+
+    const response = await request(httpServer)
+      .get(urlcat(baseUrl, archivedPath))
       .expect(HttpStatus.OK);
     const tasks: TaskDto[] = response.body;
 

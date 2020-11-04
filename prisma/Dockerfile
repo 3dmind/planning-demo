@@ -5,7 +5,7 @@ RUN echo $DATABASE_URL
 WORKDIR /app
 
 # Install @prisma/cli for the migration
-RUN npm install -g @prisma/cli@2.9 --unsafe-perm
+RUN npm install -g @prisma/cli@2.10 --unsafe-perm
 
 # Copy schema and migration folder
 ADD ./ ./prisma/

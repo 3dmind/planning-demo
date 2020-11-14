@@ -1,0 +1,30 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UserSnapshot should be defined 1`] = `
+UserSnapshot {
+  "createdAt": 1977-01-01T00:00:00.000Z,
+  "email": UserEmailValueObject {
+    "props": Object {
+      "value": "tom.test@gmail.com",
+    },
+  },
+  "isEmailVerified": false,
+  "password": UserPasswordValueObject {
+    "props": Object {
+      "hashed": false,
+      "value": "123456",
+    },
+  },
+  "userId": UserIdEntity {
+    "_id": UniqueEntityId {
+      "value": "8597ccd9-4237-44a6-b434-8836693c4b51",
+    },
+    "props": null,
+  },
+  "username": UserNameValueObject {
+    "props": Object {
+      "value": "TomTest",
+    },
+  },
+}
+`;

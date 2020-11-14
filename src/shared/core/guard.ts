@@ -59,6 +59,15 @@ export class Guard {
         };
   }
 
+  public static againstEmpty(text: string): GuardResultInterface {
+    return text.trim().length !== 0
+      ? { succeeded: true }
+      : {
+          succeeded: false,
+          message: `Text is empty.`,
+        };
+  }
+
   public static againstNullOrUndefined(
     argument: any,
     argumentName: string,

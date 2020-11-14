@@ -1,8 +1,7 @@
-import type { TaskModel } from '@prisma/client';
+import type { TaskModel, TaskModelCreateInput } from '@prisma/client';
 import * as faker from 'faker';
 import { TaskEntityBuilder } from '../../../test/builder/task-entity.builder';
 import { TaskEntity } from './domain/task.entity';
-import { RawTaskModelInterface } from './raw-task-model.interface';
 import { TaskDto } from './task.dto';
 import { TaskMapper } from './task.mapper';
 
@@ -148,7 +147,7 @@ describe('TaskMapper', () => {
 
       const rawModel = TaskMapper.toPersistence(task);
 
-      expect(rawModel).toMatchObject<RawTaskModelInterface>({
+      expect(rawModel).toMatchObject<TaskModelCreateInput>({
         archived: false,
         archivedAt: null,
         createdAt: expect.any(Date),
@@ -169,7 +168,7 @@ describe('TaskMapper', () => {
 
       const rawModel = TaskMapper.toPersistence(task);
 
-      expect(rawModel).toMatchObject<RawTaskModelInterface>({
+      expect(rawModel).toMatchObject<TaskModelCreateInput>({
         archived: false,
         archivedAt: null,
         createdAt: expect.any(Date),
@@ -193,7 +192,7 @@ describe('TaskMapper', () => {
 
       const rawModel = TaskMapper.toPersistence(task);
 
-      expect(rawModel).toMatchObject<RawTaskModelInterface>({
+      expect(rawModel).toMatchObject<TaskModelCreateInput>({
         archived: false,
         archivedAt: null,
         createdAt: expect.any(Date),
@@ -218,7 +217,7 @@ describe('TaskMapper', () => {
 
       const rawModel = TaskMapper.toPersistence(task);
 
-      expect(rawModel).toMatchObject<RawTaskModelInterface>({
+      expect(rawModel).toMatchObject<TaskModelCreateInput>({
         archived: true,
         archivedAt: expect.any(Date),
         createdAt: expect.any(Date),
@@ -239,7 +238,7 @@ describe('TaskMapper', () => {
 
       const rawModel = TaskMapper.toPersistence(task);
 
-      expect(rawModel).toMatchObject<RawTaskModelInterface>({
+      expect(rawModel).toMatchObject<TaskModelCreateInput>({
         archived: false,
         archivedAt: null,
         createdAt: expect.any(Date),
@@ -260,7 +259,7 @@ describe('TaskMapper', () => {
 
       const rawModel = TaskMapper.toPersistence(task);
 
-      expect(rawModel).toMatchObject<RawTaskModelInterface>({
+      expect(rawModel).toMatchObject<TaskModelCreateInput>({
         archived: false,
         archivedAt: null,
         createdAt: expect.any(Date),
@@ -281,7 +280,7 @@ describe('TaskMapper', () => {
       const mockedText = faker.lorem.words(5);
       const mockedId = faker.random.uuid();
       const mockedDate = new Date();
-      const mockedTaskModel = {
+      const mockedTaskModel: TaskModel = {
         archived: true,
         archivedAt: mockedDate,
         createdAt: mockedDate,
@@ -293,7 +292,8 @@ describe('TaskMapper', () => {
         taskId: mockedId,
         tickedOff: true,
         tickedOffAt: mockedDate,
-      } as TaskModel;
+        updatedAt: mockedDate,
+      };
 
       const taskEntity = TaskMapper.toDomain(mockedTaskModel);
 

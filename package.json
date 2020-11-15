@@ -30,6 +30,7 @@
     "@nestjs/platform-express": "^7.0.0",
     "@prisma/client": "^2.11.0",
     "bcrypt": "^5.0.0",
+    "class-validator": "^0.12.2",
     "faker": "^5.1.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",

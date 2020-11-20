@@ -1,3 +1,4 @@
 # Prisma Migrate lockfile v1
 
 20201022203630-create-task-table
+20201120002849-create-user-table

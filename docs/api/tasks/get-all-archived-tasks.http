@@ -1,4 +1,4 @@
-POST http://localhost:3000/tasks
+POST http://localhost:{{port}}/tasks
 Content-Type: application/json
 
 { "text": "{{text}}" }
@@ -7,11 +7,11 @@ Content-Type: application/json
 
 ###
 
-POST http://localhost:3000/tasks/{{taskId}}/archive
+POST http://localhost:{{port}}/tasks/{{taskId}}/archive
 
 ###
 
-POST http://localhost:3000/tasks
+POST http://localhost:{{port}}/tasks
 Content-Type: application/json
 
 { "text": "{{text}}" }
@@ -20,10 +20,10 @@ Content-Type: application/json
 
 ###
 
-POST http://localhost:3000/tasks/{{taskId}}/archive
+POST http://localhost:{{port}}/tasks/{{taskId}}/archive
 
 ###
 
-GET http://localhost:3000/tasks/archived
+GET http://localhost:{{port}}/tasks/archived
 
 ###

@@ -1,24 +1,11 @@
-POST http://localhost:3000/tasks
+POST http://localhost:{{port}}/tasks
 Content-Type: application/json
 
 { "text": "{{text}}" }
 
 ###
 
-POST http://localhost:3000/tasks
-Content-Type: application/json
-
-{ "text": "{{text}}" }
-
-> {% client.global.set('taskId', response.body.id); %}
-
-###
-
-POST http://localhost:3000/tasks/{{taskId}}/tickoff
-
-###
-
-POST http://localhost:3000/tasks
+POST http://localhost:{{port}}/tasks
 Content-Type: application/json
 
 { "text": "{{text}}" }
@@ -27,11 +14,11 @@ Content-Type: application/json
 
 ###
 
-POST http://localhost:3000/tasks/{{taskId}}/archive
+POST http://localhost:{{port}}/tasks/{{taskId}}/tickoff
 
 ###
 
-POST http://localhost:3000/tasks
+POST http://localhost:{{port}}/tasks
 Content-Type: application/json
 
 { "text": "{{text}}" }
@@ -40,10 +27,23 @@ Content-Type: application/json
 
 ###
 
-POST http://localhost:3000/tasks/{{taskId}}/discard
+POST http://localhost:{{port}}/tasks/{{taskId}}/archive
 
 ###
 
-GET http://localhost:3000/tasks/active
+POST http://localhost:{{port}}/tasks
+Content-Type: application/json
+
+{ "text": "{{text}}" }
+
+> {% client.global.set('taskId', response.body.id); %}
+
+###
+
+POST http://localhost:{{port}}/tasks/{{taskId}}/discard
+
+###
+
+GET http://localhost:{{port}}/tasks/active
 
 ###

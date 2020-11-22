@@ -1,0 +1,16 @@
+POST http://localhost:{{port}}/tasks
+Content-Type: application/json
+
+{
+  "text": "{{text}}"
+}
+
+> {% client.global.set('taskId', response.body.id); %}
+
+###
+
+POST http://localhost:{{port}}/tasks/{{taskId}}/tickoff
+
+###
+
+POST http://localhost:{{port}}/tasks/{{taskId}}/resume

@@ -8,11 +8,17 @@ import {
   Logger,
   Post,
   UnprocessableEntityException,
+  UseGuards,
 } from '@nestjs/common';
+import { LocalAuthGuard } from '../../guards/local-auth.guard';
 import { AppErrors } from '../../shared/core';
+import { UserEntity } from './domain/user.entity';
 import { CreateUserDto } from './use-cases/create-user/create-user.dto';
 import { CreateUserErrors } from './use-cases/create-user/create-user.errors';
 import { CreateUserUseCase } from './use-cases/create-user/create-user.use-case';
+import { User } from './user.decorator';
+import { UserDto } from './user.dto';
+import { UserMapper } from './user.mapper';
 
 @Controller('users')
 export class UsersController {
@@ -40,5 +46,12 @@ export class UsersController {
           throw new UnprocessableEntityException(error.errorValue());
       }
     }
+  }
+
+  @UseGuards(LocalAuthGuard)
+  @Post('/login')
+  @HttpCode(HttpStatus.OK)
+  async login(@User() user: UserEntity): Promise<UserDto> {
+    return UserMapper.toDto(user);
   }
 }

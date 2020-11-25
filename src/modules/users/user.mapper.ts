@@ -4,6 +4,7 @@ import { UserEmailValueObject } from './domain/user-email.value-object';
 import { UserNameValueObject } from './domain/user-name.value-object';
 import { UserPasswordValueObject } from './domain/user-password.value-object';
 import { UserEntity } from './domain/user.entity';
+import { UserDto } from './user.dto';
 
 export class UserMapper {
   public static async toPersistence(user: UserEntity): Promise<BaseUserModelCreateInput> {
@@ -51,5 +52,20 @@ export class UserMapper {
       username: userNameResult.getValue(),
     }, entityId);
     return userEntityResult.getValue();
+  }
+
+  public static toDto(userEntity: UserEntity): UserDto {
+    const {
+      createdAt,
+      email,
+      isEmailVerified,
+      username,
+    } = userEntity.createSnapshot();
+    return {
+      createdAt: createdAt.toISOString(),
+      email: email.value,
+      isEmailVerified: isEmailVerified,
+      username: username.value,
+    }
   }
 }

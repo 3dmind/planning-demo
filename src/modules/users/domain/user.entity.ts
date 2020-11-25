@@ -2,6 +2,7 @@ import { Guard, Result } from '../../../shared/core';
 import { Entity, UniqueEntityId } from '../../../shared/domain';
 import { UserEmailValueObject } from './user-email.value-object';
 import { UserIdEntity } from './user-id.entity';
+import { UserPasswordValueObject } from './user-password.value-object';
 import { UserPropsInterface } from './user-props.interface';
 import { UserSnapshot } from './user-snapshot';
 
@@ -16,6 +17,10 @@ export class UserEntity extends Entity<UserPropsInterface> {
 
   get email(): UserEmailValueObject {
     return this.props.email;
+  }
+
+  get password(): UserPasswordValueObject {
+    return this.props.password;
   }
 
   public static create(

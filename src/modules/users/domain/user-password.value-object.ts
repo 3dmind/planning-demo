@@ -57,4 +57,8 @@ export class UserPasswordValueObject extends ValueObject<UserPasswordProps> {
 
     return bcrypt.hash(this.props.value, SALT_ROUNDS);
   }
+
+  public async comparePassword(plainTextPassword: string): Promise<boolean> {
+    return bcrypt.compare(plainTextPassword, this.props.value);
+  }
 }

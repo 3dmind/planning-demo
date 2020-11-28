@@ -16,15 +16,16 @@ import { UserEntity } from './domain/user.entity';
 import { CreateUserDto } from './use-cases/create-user/create-user.dto';
 import { CreateUserErrors } from './use-cases/create-user/create-user.errors';
 import { CreateUserUseCase } from './use-cases/create-user/create-user.use-case';
+import { LoginResponseDto } from './use-cases/login/login-response.dto';
+import { LoginUseCase } from './use-cases/login/login.usecase';
 import { User } from './user.decorator';
-import { UserDto } from './user.dto';
-import { UserMapper } from './user.mapper';
 
 @Controller('users')
 export class UsersController {
   constructor(
     private readonly logger: Logger,
     private readonly createUserUseCase: CreateUserUseCase,
+    private readonly loginUseCase: LoginUseCase,
   ) {
     this.logger.setContext('UsersController');
   }
@@ -51,7 +52,14 @@ export class UsersController {
   @UseGuards(LocalAuthGuard)
   @Post('/login')
   @HttpCode(HttpStatus.OK)
-  async login(@User() user: UserEntity): Promise<UserDto> {
-    return UserMapper.toDto(user);
+  async login(@User() validatedUser: UserEntity): Promise<LoginResponseDto> {
+    const result = await this.loginUseCase.execute(validatedUser);
+
+    if (result.isLeft()) {
+      const error = result.value;
+      throw new InternalServerErrorException(error.errorValue().message);
+    }
+
+    return result.value.getValue();
   }
 }

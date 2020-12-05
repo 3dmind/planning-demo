@@ -1,9 +1,9 @@
 import { Logger } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
 import { mock, mockReset } from 'jest-mock-extended';
 import { AppErrors } from '../../../../shared/core';
+import { AuthService } from '../../auth.service';
 import { UserEmailValueObject } from '../../domain/user-email.value-object';
 import { UserNameValueObject } from '../../domain/user-name.value-object';
 import { UserPasswordValueObject } from '../../domain/user-password.value-object';
@@ -13,7 +13,7 @@ import { LoginUseCase } from './login.usecase';
 
 describe('LoginUseCase', () => {
   const mockedLogger = mock<Logger>();
-  const mockedJwtService = mock<JwtService>();
+  const mockedAuthService = mock<AuthService>();
 
   const usernameFixture = faker.internet.userName();
   const passwordFixture = faker.internet.password(6);
@@ -30,7 +30,7 @@ describe('LoginUseCase', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         { provide: Logger, useValue: mockedLogger },
-        { provide: JwtService, useValue: mockedJwtService },
+        { provide: AuthService, useValue: mockedAuthService },
         LoginUseCase,
       ],
     }).compile();
@@ -40,7 +40,7 @@ describe('LoginUseCase', () => {
 
   afterAll(() => {
     mockReset(mockedLogger);
-    mockReset(mockedJwtService);
+    mockReset(mockedAuthService);
   });
 
   it('should fail on any error', async () => {
@@ -50,7 +50,7 @@ describe('LoginUseCase', () => {
       password,
       email,
     }).getValue();
-    mockedJwtService.sign.mockImplementationOnce(() => {
+    mockedAuthService.createAccessToken.mockImplementationOnce(() => {
       throw new Error('BOOM!');
     });
 
@@ -63,18 +63,21 @@ describe('LoginUseCase', () => {
   it('should succeed', async () => {
     expect.assertions(2);
     const accessTokenFixture = faker.random.alphaNumeric(256);
+    const refreshTokenFixture = faker.random.alphaNumeric(256);
     const validatedUser = UserEntity.create({
       username,
       password,
       email,
     }).getValue();
-    mockedJwtService.sign.mockReturnValue(accessTokenFixture);
+    mockedAuthService.createAccessToken.mockReturnValue(accessTokenFixture);
+    mockedAuthService.createRefreshToken.mockReturnValue(refreshTokenFixture);
 
     const result = await useCase.execute(validatedUser);
 
     expect(result.isRight()).toBe(true);
     expect(result.value.getValue()).toMatchObject<LoginResponseDto>({
       access_token: accessTokenFixture,
+      refresh_token: refreshTokenFixture,
     });
   });
 });

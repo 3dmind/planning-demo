@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import {
   AppErrors,
   Either,
@@ -8,6 +7,7 @@ import {
   right,
   UseCaseInterface,
 } from '../../../../shared/core';
+import { AuthService } from '../../auth.service';
 import { JwtToken } from '../../domain/jwt';
 import { JwtClaimsInterface } from '../../domain/jwt-claims.interface';
 import { UserEntity } from '../../domain/user.entity';
@@ -19,7 +19,7 @@ type Response = Either<AppErrors.UnexpectedError, Result<LoginResponseDto>>;
 export class LoginUseCase implements UseCaseInterface<UserEntity, Response> {
   constructor(
     private readonly logger: Logger,
-    private readonly jwtService: JwtService,
+    private readonly authService: AuthService,
   ) {
     this.logger.setContext('LoginUseCase');
   }
@@ -28,14 +28,17 @@ export class LoginUseCase implements UseCaseInterface<UserEntity, Response> {
     try {
       const userSnapshot = validatedUser.createSnapshot();
       const payload: JwtClaimsInterface = {
-        email: userSnapshot.email.value,
-        isEmailVerified: userSnapshot.isEmailVerified,
-        userId: userSnapshot.userId.id.toString(),
         username: userSnapshot.username.value,
       };
-      const accessToken: JwtToken = this.jwtService.sign(payload);
+      const accessToken: JwtToken = this.authService.createAccessToken(payload);
+      const refreshToken: JwtToken = this.authService.createRefreshToken(
+        payload,
+      );
       return right(
-        Result.ok<LoginResponseDto>({ access_token: accessToken }),
+        Result.ok<LoginResponseDto>({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        }),
       );
     } catch (error) {
       this.logger.error(error.message, error);

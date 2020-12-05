@@ -11,13 +11,13 @@ import { UserEntity } from '../domain/user.entity';
 import { ValidateUserErrors } from '../use-cases/validate-user/validate-user.errors';
 import { ValidateUserUseCase } from '../use-cases/validate-user/validate-user.usecase';
 import { UserRepository } from '../user.repository';
-import { LocalPassportStrategy } from './local-passport.strategy';
+import { LocalStrategy } from './local.strategy';
 
-describe('LocalPassportStrategy', () => {
+describe('LocalStrategy', () => {
   const mockedLogger = mock<Logger>();
   const mockedUserRepository = mock<UserRepository>();
   const mockedValidateUserUseCase = mock<ValidateUserUseCase>();
-  let strategy: LocalPassportStrategy;
+  let strategy: LocalStrategy;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -25,13 +25,11 @@ describe('LocalPassportStrategy', () => {
         { provide: Logger, useValue: mockedLogger },
         { provide: UserRepository, useValue: mockedUserRepository },
         { provide: ValidateUserUseCase, useValue: mockedValidateUserUseCase },
-        LocalPassportStrategy,
+        LocalStrategy,
       ],
     }).compile();
 
-    strategy = await module.resolve<LocalPassportStrategy>(
-      LocalPassportStrategy,
-    );
+    strategy = await module.resolve<LocalStrategy>(LocalStrategy);
   });
 
   afterAll(() => {

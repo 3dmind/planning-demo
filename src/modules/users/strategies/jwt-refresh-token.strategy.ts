@@ -5,12 +5,15 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { JwtClaimsInterface } from '../domain/jwt-claims.interface';
 
 @Injectable()
-export class JwtPassportStrategy extends PassportStrategy(Strategy) {
+export class JwtRefreshTokenStrategy extends PassportStrategy(
+  Strategy,
+  'JwtRefreshToken',
+) {
   constructor(private readonly configService: ConfigService) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromBodyField('refresh_token'),
       ignoreExpiration: false,
-      secretOrKey: configService.get('APP_SECRET'),
+      secretOrKey: configService.get('JWT_REFRESH_TOKEN_SECRET'),
     });
   }
 

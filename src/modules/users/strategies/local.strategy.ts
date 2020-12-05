@@ -11,7 +11,7 @@ import { ValidateUserErrors } from '../use-cases/validate-user/validate-user.err
 import { ValidateUserUseCase } from '../use-cases/validate-user/validate-user.usecase';
 
 @Injectable()
-export class LocalPassportStrategy extends PassportStrategy(Strategy) {
+export class LocalStrategy extends PassportStrategy(Strategy) {
   constructor(private readonly validateUserUseCase: ValidateUserUseCase) {
     super();
   }

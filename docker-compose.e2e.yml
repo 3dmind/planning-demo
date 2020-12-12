@@ -23,3 +23,9 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@planning-db-e2e:${DB_PORT}/${POSTGRES_DB}?schema=${DB_SCHEMA}&sslmode=prefer
     depends_on:
       - planning-db-e2e
+
+  planning-cache-e2e:
+    container_name: planning_cache_e2e_container
+    image: redis:6-alpine
+    ports:
+      - 6379:6379

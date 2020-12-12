@@ -26,6 +26,12 @@ services:
     depends_on:
       - planning-db
 
+  planning-cache:
+    container_name: planning_cache_container
+    image: redis:6-alpine
+    ports:
+      - 6379:6379
+
 volumes:
   postgres:
     name: planning-db

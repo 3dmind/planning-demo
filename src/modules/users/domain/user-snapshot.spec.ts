@@ -15,12 +15,16 @@ describe('UserSnapshot', () => {
     }).getValue();
     const email = UserEmailValueObject.create('tom.test@gmail.com').getValue();
     const createdAt = new Date(Date.parse('1977-01-01'));
+    const accessToken = '8597ccd9423744a6b4348836693c4b51';
+    const refreshToken = '8597ccd9423744a6b4348836693c4b51';
     const userEntity = UserEntity.create(
       {
+        accessToken,
         createdAt,
         email,
         isEmailVerified: false,
         password,
+        refreshToken,
         username,
       },
       id,

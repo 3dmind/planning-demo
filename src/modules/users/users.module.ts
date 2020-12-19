@@ -2,6 +2,7 @@ import { Logger, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { PrismaModule } from '../../prisma/prisma.module';
+import { RedisCacheModule } from '../../redis-cache/redis-cache.module';
 import { AuthService } from './auth.service';
 import { JwtAccessTokenStrategy } from './strategies/jwt-access-token.strategy';
 import { JwtRefreshTokenStrategy } from './strategies/jwt-refresh-token.strategy';
@@ -15,7 +16,12 @@ import { UserRepository } from './user.repository';
 import { UsersController } from './users.controller';
 
 @Module({
-  imports: [PrismaModule, PassportModule, JwtModule.register({})],
+  imports: [
+    JwtModule.register({}),
+    PassportModule,
+    PrismaModule,
+    RedisCacheModule,
+  ],
   controllers: [UsersController],
   providers: [
     AuthService,

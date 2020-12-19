@@ -1,5 +1,6 @@
 import { Guard, Result } from '../../../shared/core';
 import { Entity, UniqueEntityId } from '../../../shared/domain';
+import { AccessToken, RefreshToken } from './jwt';
 import { UserEmailValueObject } from './user-email.value-object';
 import { UserIdEntity } from './user-id.entity';
 import { UserPasswordValueObject } from './user-password.value-object';
@@ -50,5 +51,14 @@ export class UserEntity extends Entity<UserPropsInterface> {
 
   public createSnapshot(): UserSnapshot {
     return new UserSnapshot(this.props, this.userId);
+  }
+
+  public setTokens(accessToken: AccessToken, refreshToken: RefreshToken): void {
+    this.props.accessToken = accessToken;
+    this.props.refreshToken = refreshToken;
+  }
+
+  public isLoggedIn(): boolean {
+    return !!this.props.accessToken && !!this.props.refreshToken;
   }
 }

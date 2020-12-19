@@ -4,7 +4,7 @@ import { Cache } from 'cache-manager';
 import * as faker from 'faker';
 import { RedisCacheService } from './redis-cache.service';
 
-describe.only('RedisCacheService', () => {
+describe('RedisCacheService', () => {
   let cache: Cache;
   let service: RedisCacheService;
 

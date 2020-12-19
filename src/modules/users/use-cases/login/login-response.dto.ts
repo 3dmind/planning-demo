@@ -1,6 +1,6 @@
-import { JwtToken } from '../../domain/jwt';
+import { AccessToken, RefreshToken } from '../../domain/jwt';
 
 export class LoginResponseDto {
-  access_token: JwtToken;
-  refresh_token: JwtToken;
+  access_token: AccessToken;
+  refresh_token: RefreshToken;
 }

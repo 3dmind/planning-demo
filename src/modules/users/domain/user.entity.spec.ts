@@ -76,4 +76,20 @@ describe('UserEntity', () => {
     expect(userEntity.email).toBe(email);
     expect(userEntity.password).toBe(password);
   });
+
+  it('should determine if user is logged in', () => {
+    const accessTokenFixture = faker.random.alphaNumeric(20);
+    const refreshTokenFixture = faker.random.alphaNumeric(20);
+    const user = UserEntity.create({
+      email,
+      password,
+      username,
+    }).getValue();
+
+    expect(user.isLoggedIn()).toBe(false);
+
+    user.setTokens(accessTokenFixture, refreshTokenFixture);
+
+    expect(user.isLoggedIn()).toBe(true);
+  });
 });

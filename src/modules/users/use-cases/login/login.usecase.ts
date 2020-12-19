@@ -8,7 +8,7 @@ import {
   UseCaseInterface,
 } from '../../../../shared/core';
 import { AuthService } from '../../auth.service';
-import { JwtToken } from '../../domain/jwt';
+import { AccessToken, RefreshToken } from '../../domain/jwt';
 import { JwtClaimsInterface } from '../../domain/jwt-claims.interface';
 import { UserEntity } from '../../domain/user.entity';
 import { LoginResponseDto } from './login-response.dto';
@@ -24,16 +24,22 @@ export class LoginUseCase implements UseCaseInterface<UserEntity, Response> {
     this.logger.setContext('LoginUseCase');
   }
 
-  async execute(validatedUser: UserEntity): Promise<Response> {
+  async execute(user: UserEntity): Promise<Response> {
     try {
-      const userSnapshot = validatedUser.createSnapshot();
+      const userSnapshot = user.createSnapshot();
       const payload: JwtClaimsInterface = {
         username: userSnapshot.username.value,
       };
-      const accessToken: JwtToken = this.authService.createAccessToken(payload);
-      const refreshToken: JwtToken = this.authService.createRefreshToken(
+      const accessToken: AccessToken = this.authService.createAccessToken(
         payload,
       );
+      const refreshToken: RefreshToken = this.authService.createRefreshToken(
+        payload,
+      );
+
+      user.setTokens(accessToken, refreshToken);
+      await this.authService.saveAuthenticatedUser(user);
+
       return right(
         Result.ok<LoginResponseDto>({
           access_token: accessToken,

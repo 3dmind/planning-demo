@@ -2,6 +2,7 @@
 
 exports[`UserSnapshot should be defined 1`] = `
 UserSnapshot {
+  "accessToken": "8597ccd9423744a6b4348836693c4b51",
   "createdAt": 1977-01-01T00:00:00.000Z,
   "email": UserEmailValueObject {
     "props": Object {
@@ -15,6 +16,7 @@ UserSnapshot {
       "value": "123456",
     },
   },
+  "refreshToken": "8597ccd9423744a6b4348836693c4b51",
   "userId": UserIdEntity {
     "_id": UniqueEntityId {
       "value": "8597ccd9-4237-44a6-b434-8836693c4b51",

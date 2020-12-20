@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { ApiConfigService } from '../../api-config/api-config.service';
 import { RedisCacheService } from '../../redis-cache/redis-cache.service';
 import { AccessToken, RefreshToken } from './domain/jwt';
 import { JwtClaimsInterface } from './domain/jwt-claims.interface';
@@ -15,23 +15,15 @@ export class AuthService {
   private readonly refreshTokenTtl: number;
 
   constructor(
-    private readonly configService: ConfigService,
+    private readonly apiConfigService: ApiConfigService,
     private readonly jwtService: JwtService,
     private readonly redisCacheService: RedisCacheService,
   ) {
-    this.accessTokenSecret = this.configService.get('JWT_ACCESS_TOKEN_SECRET');
-    this.accessTokenTtl = Number.parseInt(
-      this.configService.get('JWT_ACCESS_TOKEN_TTL'),
-      10,
-    );
+    this.accessTokenSecret = this.apiConfigService.getAccessTokenSecret();
+    this.accessTokenTtl = this.apiConfigService.getAccessTokenTtl();
 
-    this.refreshTokenSecret = this.configService.get(
-      'JWT_REFRESH_TOKEN_SECRET',
-    );
-    this.refreshTokenTtl = Number.parseInt(
-      this.configService.get('JWT_REFRESH_TOKEN_TTL'),
-      10,
-    );
+    this.refreshTokenSecret = this.apiConfigService.getRefreshTokenSecret();
+    this.refreshTokenTtl = this.apiConfigService.getRefreshTokenTtl();
   }
 
   public createAccessToken(payload: JwtClaimsInterface): AccessToken {

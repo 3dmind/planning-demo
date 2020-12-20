@@ -1,6 +1,7 @@
 import { Logger, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
+import { ApiConfigModule } from '../../api-config/api-config.module';
 import { PrismaModule } from '../../prisma/prisma.module';
 import { RedisCacheModule } from '../../redis-cache/redis-cache.module';
 import { AuthService } from './auth.service';
@@ -17,6 +18,7 @@ import { UsersController } from './users.controller';
 
 @Module({
   imports: [
+    ApiConfigModule,
     JwtModule.register({}),
     PassportModule,
     PrismaModule,

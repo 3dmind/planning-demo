@@ -4,6 +4,7 @@ import { mock } from 'jest-mock-extended';
 import { CreateUserUseCase } from './use-cases/create-user/create-user.use-case';
 import { GetUserByUserNameUseCase } from './use-cases/get-user-by-user-name/get-user-by-user-name.usecase';
 import { LoginUseCase } from './use-cases/login/login.usecase';
+import { LogoutUseCase } from './use-cases/logout/logout.usecase';
 import { RefreshAccessTokenUseCase } from './use-cases/refresh-access-token/refresh-access-token.usecase';
 import { UsersController } from './users.controller';
 
@@ -13,6 +14,7 @@ describe('Users Controller', () => {
   const mockedLoginUseCase = mock<LoginUseCase>();
   const mockedGetUserByUserNameUseCase = mock<GetUserByUserNameUseCase>();
   const mockedRefreshAccessTokenUseCase = mock<RefreshAccessTokenUseCase>();
+  const mockedLogoutUseCase = mock<LogoutUseCase>();
   let controller: UsersController;
 
   beforeEach(async () => {
@@ -38,6 +40,10 @@ describe('Users Controller', () => {
         {
           provide: RefreshAccessTokenUseCase,
           useValue: mockedRefreshAccessTokenUseCase,
+        },
+        {
+          provide: LogoutUseCase,
+          useValue: mockedLogoutUseCase,
         },
       ],
     }).compile();

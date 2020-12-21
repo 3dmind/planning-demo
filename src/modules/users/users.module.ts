@@ -11,6 +11,7 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { CreateUserUseCase } from './use-cases/create-user/create-user.use-case';
 import { GetUserByUserNameUseCase } from './use-cases/get-user-by-user-name/get-user-by-user-name.usecase';
 import { LoginUseCase } from './use-cases/login/login.usecase';
+import { LogoutUseCase } from './use-cases/logout/logout.usecase';
 import { RefreshAccessTokenUseCase } from './use-cases/refresh-access-token/refresh-access-token.usecase';
 import { ValidateUserUseCase } from './use-cases/validate-user/validate-user.usecase';
 import { UserRepository } from './user.repository';
@@ -34,6 +35,7 @@ import { UsersController } from './users.controller';
     LocalStrategy,
     Logger,
     LoginUseCase,
+    LogoutUseCase,
     RefreshAccessTokenUseCase,
     UserRepository,
     ValidateUserUseCase,

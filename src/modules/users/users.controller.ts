@@ -26,6 +26,8 @@ import { GetUserByUserNameError } from './use-cases/get-user-by-user-name/get-us
 import { GetUserByUserNameUseCase } from './use-cases/get-user-by-user-name/get-user-by-user-name.usecase';
 import { LoginResponseDto } from './use-cases/login/login-response.dto';
 import { LoginUseCase } from './use-cases/login/login.usecase';
+import { LogoutErrors } from './use-cases/logout/logout.errors';
+import { LogoutUseCase } from './use-cases/logout/logout.usecase';
 import { RefreshAccessTokenResponseDto } from './use-cases/refresh-access-token/refresh-access-token-response.dto';
 import { RefreshAccessTokenErrors } from './use-cases/refresh-access-token/refresh-access-token.errors';
 import { RefreshAccessTokenUseCase } from './use-cases/refresh-access-token/refresh-access-token.usecase';
@@ -42,6 +44,7 @@ export class UsersController {
     private readonly loginUseCase: LoginUseCase,
     private readonly getUserByUserNameUseCase: GetUserByUserNameUseCase,
     private readonly refreshAccessTokenUseCase: RefreshAccessTokenUseCase,
+    private readonly logoutUseCase: LogoutUseCase,
   ) {
     this.logger.setContext('UsersController');
   }
@@ -124,6 +127,24 @@ export class UsersController {
       switch (error.constructor) {
         case RefreshAccessTokenErrors.UserNotFoundError:
           throw new NotFoundException(error.errorValue().message);
+        case AppErrors.UnexpectedError:
+          throw new InternalServerErrorException(error.errorValue().message);
+        default:
+          throw new UnprocessableEntityException(error.errorValue());
+      }
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/logout')
+  @HttpCode(HttpStatus.OK)
+  async logout(@Username() username: string): Promise<void> {
+    const result = await this.logoutUseCase.execute({ username });
+    if (result.isLeft()) {
+      const error = result.value;
+      switch (error.constructor) {
+        case LogoutErrors.UserNotFoundError:
+          throw new NotFoundException(error.errorValue().messge);
         case AppErrors.UnexpectedError:
           throw new InternalServerErrorException(error.errorValue().message);
         default:

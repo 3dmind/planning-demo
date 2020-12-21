@@ -19,7 +19,7 @@ describe('AuthService', () => {
 
   let jwtService: JwtService;
   let redisCacheService: RedisCacheService;
-  let authService: AuthService;
+  let service: AuthService;
 
   beforeAll(async () => {
     mockedApiConfigService.getAccessTokenSecret.mockReturnValueOnce(
@@ -49,7 +49,7 @@ describe('AuthService', () => {
 
     jwtService = module.get<JwtService>(JwtService);
     redisCacheService = module.get<RedisCacheService>(RedisCacheService);
-    authService = module.get<AuthService>(AuthService);
+    service = module.get<AuthService>(AuthService);
   });
 
   afterAll(() => {
@@ -63,7 +63,7 @@ describe('AuthService', () => {
       username: usernameFixture,
     };
 
-    const accessToken = authService.createAccessToken(payloadFixture);
+    const accessToken = service.createAccessToken(payloadFixture);
 
     expect(jwtService.decode(accessToken)).toMatchObject<JwtClaimsInterface>({
       username: usernameFixture,
@@ -77,7 +77,7 @@ describe('AuthService', () => {
       username: usernameFixture,
     };
 
-    const refreshToken = authService.createRefreshToken(payloadFixture);
+    const refreshToken = service.createRefreshToken(payloadFixture);
 
     expect(jwtService.decode(refreshToken)).toMatchObject<JwtClaimsInterface>({
       username: usernameFixture,
@@ -88,17 +88,34 @@ describe('AuthService', () => {
     expect.assertions(1);
     const user = new UserEntityBuilder().build();
     const userSnapshot = user.createSnapshot();
-    const accessToken = authService.createAccessToken({
+    const accessToken = service.createAccessToken({
       username: userSnapshot.username.value,
     });
-    const refreshToken = authService.createRefreshToken({
+    const refreshToken = service.createRefreshToken({
       username: userSnapshot.username.value,
     });
     user.setTokens(accessToken, refreshToken);
 
-    await authService.saveAuthenticatedUser(user);
+    await service.saveAuthenticatedUser(user);
     const result = await redisCacheService.get(userSnapshot.username.value);
 
     expect(result).toBeDefined();
+  });
+
+  it('should remove authenticated user', async () => {
+    expect.assertions(2);
+    const username = 'tomtest';
+    const user = new UserEntityBuilder({ username }).makeLoggedIn().build();
+    let value;
+
+    await service.saveAuthenticatedUser(user);
+    value = await redisCacheService.get(username);
+
+    expect(value).toBeDefined();
+
+    await service.deAuthenticateUser(user);
+    value = await redisCacheService.get(username);
+
+    expect(value).toBeUndefined();
   });
 });

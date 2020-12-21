@@ -52,4 +52,9 @@ export class AuthService {
       });
     }
   }
+
+  public async deAuthenticateUser(user: UserEntity): Promise<void> {
+    const userSnapshot = user.createSnapshot();
+    await this.redisCacheService.del(userSnapshot.username.value);
+  }
 }

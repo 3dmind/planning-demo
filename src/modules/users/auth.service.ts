@@ -6,6 +6,11 @@ import { AccessToken, RefreshToken } from './domain/jwt';
 import { JwtClaimsInterface } from './domain/jwt-claims.interface';
 import { UserEntity } from './domain/user.entity';
 
+type Tokens = {
+  accessToken: AccessToken;
+  refreshToken: RefreshToken;
+};
+
 @Injectable()
 export class AuthService {
   private readonly accessTokenSecret: string;
@@ -43,11 +48,11 @@ export class AuthService {
   public async saveAuthenticatedUser(user: UserEntity): Promise<void> {
     if (user.isLoggedIn()) {
       const userSnapshot = user.createSnapshot();
-      const tokens = JSON.stringify({
+      const value = JSON.stringify({
         accessToken: userSnapshot.accessToken,
         refreshToken: userSnapshot.refreshToken,
       });
-      await this.redisCacheService.set(userSnapshot.username.value, tokens, {
+      await this.redisCacheService.set(userSnapshot.username.value, value, {
         ttl: this.refreshTokenTtl,
       });
     }
@@ -56,5 +61,18 @@ export class AuthService {
   public async deAuthenticateUser(user: UserEntity): Promise<void> {
     const userSnapshot = user.createSnapshot();
     await this.redisCacheService.del(userSnapshot.username.value);
+  }
+
+  public async validateAccessToken(
+    username: string,
+    accessToken: AccessToken,
+  ): Promise<boolean> {
+    const savedTokens = await this.redisCacheService.get<string>(username);
+    if (!!savedTokens === false) {
+      return false;
+    }
+
+    const parsedTokens: Tokens = JSON.parse(savedTokens);
+    return parsedTokens.accessToken === accessToken;
   }
 }

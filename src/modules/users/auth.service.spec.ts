@@ -118,4 +118,26 @@ describe('AuthService', () => {
 
     expect(value).toBeUndefined();
   });
+
+  it('should validate access token', async () => {
+    expect.assertions(2);
+    const username = faker.internet.userName();
+    const validAccessToken = faker.random.alphaNumeric(10);
+    const invalidAccessToken = faker.random.alphaNumeric(10);
+    const userEntity = new UserEntityBuilder({
+      username,
+    })
+      .makeLoggedIn(validAccessToken)
+      .build();
+    let result: boolean;
+    await service.saveAuthenticatedUser(userEntity);
+
+    result = await service.validateAccessToken(username, validAccessToken);
+
+    expect(result).toBe(true);
+
+    result = await service.validateAccessToken(username, invalidAccessToken);
+
+    expect(result).toBe(false);
+  });
 });

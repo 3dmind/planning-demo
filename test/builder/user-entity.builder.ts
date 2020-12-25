@@ -49,9 +49,12 @@ export class UserEntityBuilder {
     return this;
   }
 
-  makeLoggedIn(): UserEntityBuilder {
-    this.accessToken = faker.random.alphaNumeric(20);
-    this.refreshToken = faker.random.alphaNumeric(20);
+  makeLoggedIn(
+    accessToken = faker.random.alphaNumeric(20),
+    refreshToken = faker.random.alphaNumeric(20),
+  ): UserEntityBuilder {
+    this.accessToken = accessToken;
+    this.refreshToken = refreshToken;
     return this;
   }
 

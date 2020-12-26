@@ -8,7 +8,7 @@ import {
   UseCaseInterface,
 } from '../../../../shared/core';
 import { AuthService } from '../../auth.service';
-import { JwtToken } from '../../domain/jwt';
+import { AccessToken } from '../../domain/jwt';
 import { JwtClaimsInterface } from '../../domain/jwt-claims.interface';
 import { UserNameValueObject } from '../../domain/user-name.value-object';
 import { UserRepository } from '../../user.repository';
@@ -19,7 +19,7 @@ type Response = Either<
   | RefreshAccessTokenErrors.UserNotFoundError
   | AppErrors.UnexpectedError
   | Result<any>,
-  Result<JwtToken>
+  Result<AccessToken>
 >;
 
 @Injectable()
@@ -52,12 +52,18 @@ export class RefreshAccessTokenUseCase
         );
       }
 
-      const userSnapshot = userEntity.createSnapshot();
+      const savedTokens = await this.authService.getTokens(username.value);
       const payload: JwtClaimsInterface = {
-        username: userSnapshot.username.value,
+        username: username.value,
       };
-      const accessToken: JwtToken = this.authService.createAccessToken(payload);
-      return right(Result.ok<JwtToken>(accessToken));
+      const newAccessToken: AccessToken = this.authService.createAccessToken(
+        payload,
+      );
+
+      userEntity.setTokens(newAccessToken, savedTokens.refreshToken);
+      await this.authService.saveAuthenticatedUser(userEntity);
+
+      return right(Result.ok<AccessToken>(newAccessToken));
     } catch (error) {
       this.logger.error(error.message, error);
       return left(AppErrors.UnexpectedError.create(error));

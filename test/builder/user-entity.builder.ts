@@ -49,10 +49,13 @@ export class UserEntityBuilder {
     return this;
   }
 
-  makeLoggedIn(
+  makeLoggedIn({
     accessToken = faker.random.alphaNumeric(20),
     refreshToken = faker.random.alphaNumeric(20),
-  ): UserEntityBuilder {
+  }: {
+    accessToken?: string;
+    refreshToken?: string;
+  } = {}): UserEntityBuilder {
     this.accessToken = accessToken;
     this.refreshToken = refreshToken;
     return this;

@@ -63,6 +63,15 @@ export class AuthService {
     await this.redisCacheService.del(userSnapshot.username.value);
   }
 
+  public async getTokens(username: string): Promise<Tokens> {
+    const value = await this.redisCacheService.get<string>(username);
+    if (!!value) {
+      return JSON.parse(value);
+    } else {
+      return null;
+    }
+  }
+
   public async validateAccessToken(
     username: string,
     accessToken: AccessToken,
@@ -74,5 +83,18 @@ export class AuthService {
 
     const parsedTokens: Tokens = JSON.parse(savedTokens);
     return parsedTokens.accessToken === accessToken;
+  }
+
+  public async validateRefreshToken(
+    username: string,
+    refreshToken: RefreshToken,
+  ): Promise<boolean> {
+    const savedTokens = await this.redisCacheService.get<string>(username);
+    if (!!savedTokens === false) {
+      return false;
+    }
+
+    const parsedTokens: Tokens = JSON.parse(savedTokens);
+    return parsedTokens.refreshToken === refreshToken;
   }
 }

@@ -7,26 +7,26 @@ import { UserEmailValueObject } from '../../domain/user-email.value-object';
 import { UserNameValueObject } from '../../domain/user-name.value-object';
 import { UserPasswordValueObject } from '../../domain/user-password.value-object';
 import { UserEntity } from '../../domain/user.entity';
-import { UserRepository } from '../../user.repository';
+import { UserRepository } from '../../repositories/user.repository';
 import { CreateUserDto } from './create-user.dto';
 import { CreateUserErrors } from './create-user.errors';
-import { CreateUserUseCase } from './create-user.use-case';
+import { CreateUserUsecase } from './create-user.usecase';
 
-describe('CreateUserUseCase', () => {
+describe('CreateUserUsecase', () => {
   const mockedLogger = mock<Logger>();
   const mockedUserRepository = mock<UserRepository>();
-  let useCase: CreateUserUseCase;
+  let useCase: CreateUserUsecase;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         { provide: Logger, useValue: mockedLogger },
         { provide: UserRepository, useValue: mockedUserRepository },
-        CreateUserUseCase,
+        CreateUserUsecase,
       ],
     }).compile();
 
-    useCase = await module.resolve<CreateUserUseCase>(CreateUserUseCase);
+    useCase = await module.resolve<CreateUserUsecase>(CreateUserUsecase);
   });
 
   afterAll(() => {

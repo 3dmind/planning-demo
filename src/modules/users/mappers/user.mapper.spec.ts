@@ -1,12 +1,12 @@
 import { BaseUserModel, Prisma } from '@prisma/client';
 import * as faker from 'faker';
-import { UniqueEntityId } from '../../shared/domain';
-import { UserEmailValueObject } from './domain/user-email.value-object';
-import { UserNameValueObject } from './domain/user-name.value-object';
-import { UserPasswordValueObject } from './domain/user-password.value-object';
-import { UserPropsInterface } from './domain/user-props.interface';
-import { UserEntity } from './domain/user.entity';
-import { UserDto } from './user.dto';
+import { UniqueEntityId } from '../../../shared/domain';
+import { UserEmailValueObject } from '../domain/user-email.value-object';
+import { UserNameValueObject } from '../domain/user-name.value-object';
+import { UserPasswordValueObject } from '../domain/user-password.value-object';
+import { UserPropsInterface } from '../domain/user-props.interface';
+import { UserEntity } from '../domain/user.entity';
+import { UserDto } from '../dtos/user.dto';
 import { UserMapper } from './user.mapper';
 
 describe('UserMapper', () => {

@@ -12,39 +12,39 @@ import {
   UnprocessableEntityException,
   UseGuards,
 } from '@nestjs/common';
-import { Username } from '../../decorators/username.decorator';
-import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
-import { AppErrors } from '../../shared/core';
-import { JwtToken } from './domain/jwt';
-import { UserEntity } from './domain/user.entity';
-import { JwtRefreshAuthGuard } from './guards/jwt-refresh-auth.guard';
-import { LocalAuthGuard } from './guards/local-auth.guard';
-import { CreateUserDto } from './use-cases/create-user/create-user.dto';
-import { CreateUserErrors } from './use-cases/create-user/create-user.errors';
-import { CreateUserUseCase } from './use-cases/create-user/create-user.use-case';
-import { GetUserByUserNameError } from './use-cases/get-user-by-user-name/get-user-by-user-name.errors';
-import { GetUserByUserNameUseCase } from './use-cases/get-user-by-user-name/get-user-by-user-name.usecase';
-import { LoginResponseDto } from './use-cases/login/login-response.dto';
-import { LoginUseCase } from './use-cases/login/login.usecase';
-import { LogoutErrors } from './use-cases/logout/logout.errors';
-import { LogoutUseCase } from './use-cases/logout/logout.usecase';
-import { RefreshAccessTokenResponseDto } from './use-cases/refresh-access-token/refresh-access-token-response.dto';
-import { RefreshAccessTokenErrors } from './use-cases/refresh-access-token/refresh-access-token.errors';
-import { RefreshAccessTokenUseCase } from './use-cases/refresh-access-token/refresh-access-token.usecase';
-import { RefreshTokenDto } from './use-cases/refresh-access-token/refresh-token.dto';
-import { User } from './user.decorator';
-import { UserDto } from './user.dto';
-import { UserMapper } from './user.mapper';
+import { Username } from '../../../decorators/username.decorator';
+import { JwtAuthGuard } from '../../../guards/jwt-auth.guard';
+import { AppErrors } from '../../../shared/core';
+import { User } from '../decorators/user.decorator';
+import { JwtToken } from '../domain/jwt';
+import { UserEntity } from '../domain/user.entity';
+import { UserDto } from '../dtos/user.dto';
+import { JwtRefreshAuthGuard } from '../guards/jwt-refresh-auth.guard';
+import { LocalAuthGuard } from '../guards/local-auth.guard';
+import { UserMapper } from '../mappers/user.mapper';
+import { CreateUserDto } from '../use-cases/create-user/create-user.dto';
+import { CreateUserErrors } from '../use-cases/create-user/create-user.errors';
+import { CreateUserUsecase } from '../use-cases/create-user/create-user.usecase';
+import { GetUserByUserNameError } from '../use-cases/get-user-by-user-name/get-user-by-user-name.errors';
+import { GetUserByUserNameUsecase } from '../use-cases/get-user-by-user-name/get-user-by-user-name.usecase';
+import { LoginResponseDto } from '../use-cases/login/login-response.dto';
+import { LoginUsecase } from '../use-cases/login/login.usecase';
+import { LogoutErrors } from '../use-cases/logout/logout.errors';
+import { LogoutUsecase } from '../use-cases/logout/logout.usecase';
+import { RefreshAccessTokenResponseDto } from '../use-cases/refresh-access-token/refresh-access-token-response.dto';
+import { RefreshAccessTokenErrors } from '../use-cases/refresh-access-token/refresh-access-token.errors';
+import { RefreshAccessTokenUsecase } from '../use-cases/refresh-access-token/refresh-access-token.usecase';
+import { RefreshTokenDto } from '../use-cases/refresh-access-token/refresh-token.dto';
 
 @Controller('users')
 export class UsersController {
   constructor(
     private readonly logger: Logger,
-    private readonly createUserUseCase: CreateUserUseCase,
-    private readonly loginUseCase: LoginUseCase,
-    private readonly getUserByUserNameUseCase: GetUserByUserNameUseCase,
-    private readonly refreshAccessTokenUseCase: RefreshAccessTokenUseCase,
-    private readonly logoutUseCase: LogoutUseCase,
+    private readonly createUserUsecase: CreateUserUsecase,
+    private readonly loginUsecase: LoginUsecase,
+    private readonly getUserByUserNameUsecase: GetUserByUserNameUsecase,
+    private readonly refreshAccessTokenUsecase: RefreshAccessTokenUsecase,
+    private readonly logoutUsecase: LogoutUsecase,
   ) {
     this.logger.setContext('UsersController');
   }
@@ -52,7 +52,7 @@ export class UsersController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createUser(@Body() createTaskDto: CreateUserDto): Promise<void> {
-    const result = await this.createUserUseCase.execute(createTaskDto);
+    const result = await this.createUserUsecase.execute(createTaskDto);
 
     if (result.isLeft()) {
       const error = result.value;
@@ -72,7 +72,7 @@ export class UsersController {
   @Post('/login')
   @HttpCode(HttpStatus.OK)
   async login(@User() validatedUser: UserEntity): Promise<LoginResponseDto> {
-    const result = await this.loginUseCase.execute(validatedUser);
+    const result = await this.loginUsecase.execute(validatedUser);
 
     if (result.isLeft()) {
       const error = result.value;
@@ -85,7 +85,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Get('/me')
   async getCurrentUser(@Username() username: string): Promise<UserDto> {
-    const result = await this.getUserByUserNameUseCase.execute({ username });
+    const result = await this.getUserByUserNameUsecase.execute({ username });
 
     if (result.isRight()) {
       const userEntity = result.value.getValue();
@@ -112,7 +112,7 @@ export class UsersController {
     @Username() username: string,
     @Body() refreshTokenDto: RefreshTokenDto,
   ): Promise<RefreshAccessTokenResponseDto> {
-    const result = await this.refreshAccessTokenUseCase.execute({ username });
+    const result = await this.refreshAccessTokenUsecase.execute({ username });
 
     if (result.isRight()) {
       const accessToken: JwtToken = result.value.getValue();
@@ -139,7 +139,7 @@ export class UsersController {
   @Post('/logout')
   @HttpCode(HttpStatus.OK)
   async logout(@Username() username: string): Promise<void> {
-    const result = await this.logoutUseCase.execute({ username });
+    const result = await this.logoutUsecase.execute({ username });
     if (result.isLeft()) {
       const error = result.value;
       switch (error.constructor) {

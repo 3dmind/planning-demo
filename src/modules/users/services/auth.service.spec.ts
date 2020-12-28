@@ -4,11 +4,11 @@ import { JWT_MODULE_OPTIONS } from '@nestjs/jwt/dist/jwt.constants';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
 import { mock, mockReset } from 'jest-mock-extended';
-import { UserEntityBuilder } from '../../../test/builder/user-entity.builder';
-import { ApiConfigService } from '../../api-config/api-config.service';
-import { RedisCacheService } from '../../redis-cache/redis-cache.service';
+import { UserEntityBuilder } from '../../../../test/builder/user-entity.builder';
+import { ApiConfigService } from '../../../api-config/api-config.service';
+import { RedisCacheService } from '../../../redis-cache/redis-cache.service';
+import { JwtClaimsInterface } from '../domain/jwt-claims.interface';
 import { AuthService } from './auth.service';
-import { JwtClaimsInterface } from './domain/jwt-claims.interface';
 
 describe('AuthService', () => {
   const mockedApiConfigService = mock<ApiConfigService>();

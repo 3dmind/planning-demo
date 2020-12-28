@@ -1,20 +1,20 @@
 import { Logger } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { mock } from 'jest-mock-extended';
-import { CreateUserUseCase } from './use-cases/create-user/create-user.use-case';
-import { GetUserByUserNameUseCase } from './use-cases/get-user-by-user-name/get-user-by-user-name.usecase';
-import { LoginUseCase } from './use-cases/login/login.usecase';
-import { LogoutUseCase } from './use-cases/logout/logout.usecase';
-import { RefreshAccessTokenUseCase } from './use-cases/refresh-access-token/refresh-access-token.usecase';
+import { CreateUserUsecase } from '../use-cases/create-user/create-user.usecase';
+import { GetUserByUserNameUsecase } from '../use-cases/get-user-by-user-name/get-user-by-user-name.usecase';
+import { LoginUsecase } from '../use-cases/login/login.usecase';
+import { LogoutUsecase } from '../use-cases/logout/logout.usecase';
+import { RefreshAccessTokenUsecase } from '../use-cases/refresh-access-token/refresh-access-token.usecase';
 import { UsersController } from './users.controller';
 
 describe('Users Controller', () => {
   const mockedLogger = mock<Logger>();
-  const mockedCreateUserUseCase = mock<CreateUserUseCase>();
-  const mockedLoginUseCase = mock<LoginUseCase>();
-  const mockedGetUserByUserNameUseCase = mock<GetUserByUserNameUseCase>();
-  const mockedRefreshAccessTokenUseCase = mock<RefreshAccessTokenUseCase>();
-  const mockedLogoutUseCase = mock<LogoutUseCase>();
+  const mockedCreateUserUseCase = mock<CreateUserUsecase>();
+  const mockedLoginUseCase = mock<LoginUsecase>();
+  const mockedGetUserByUserNameUseCase = mock<GetUserByUserNameUsecase>();
+  const mockedRefreshAccessTokenUseCase = mock<RefreshAccessTokenUsecase>();
+  const mockedLogoutUseCase = mock<LogoutUsecase>();
   let controller: UsersController;
 
   beforeEach(async () => {
@@ -26,23 +26,23 @@ describe('Users Controller', () => {
           useValue: mockedLogger,
         },
         {
-          provide: CreateUserUseCase,
+          provide: CreateUserUsecase,
           useValue: mockedCreateUserUseCase,
         },
         {
-          provide: LoginUseCase,
+          provide: LoginUsecase,
           useValue: mockedLoginUseCase,
         },
         {
-          provide: GetUserByUserNameUseCase,
+          provide: GetUserByUserNameUsecase,
           useValue: mockedGetUserByUserNameUseCase,
         },
         {
-          provide: RefreshAccessTokenUseCase,
+          provide: RefreshAccessTokenUsecase,
           useValue: mockedRefreshAccessTokenUseCase,
         },
         {
-          provide: LogoutUseCase,
+          provide: LogoutUsecase,
           useValue: mockedLogoutUseCase,
         },
       ],

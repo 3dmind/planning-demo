@@ -8,13 +8,13 @@ import { UserEntityBuilder } from '../../../../../test/builder/user-entity.build
 import { ApiConfigService } from '../../../../api-config/api-config.service';
 import { RedisCacheService } from '../../../../redis-cache/redis-cache.service';
 import { AppErrors } from '../../../../shared/core';
-import { AuthService } from '../../auth.service';
-import { UserRepository } from '../../user.repository';
+import { UserRepository } from '../../repositories/user.repository';
+import { AuthService } from '../../services/auth.service';
 import { LogoutDto } from './logout.dto';
 import { LogoutErrors } from './logout.errors';
-import { LogoutUseCase } from './logout.usecase';
+import { LogoutUsecase } from './logout.usecase';
 
-describe('LogoutUseCase', () => {
+describe('LogoutUsecase', () => {
   const mockedUserRepository = mock<UserRepository>();
   const mockedApiConfigService = mock<ApiConfigService>();
   const accessTokenSecretFixture = 'defaultaccesstokensecret';
@@ -24,7 +24,7 @@ describe('LogoutUseCase', () => {
 
   let redisCacheService: RedisCacheService;
   let authService: AuthService;
-  let useCase: LogoutUseCase;
+  let useCase: LogoutUsecase;
 
   beforeAll(async () => {
     mockedApiConfigService.getAccessTokenSecret.mockReturnValue(
@@ -50,11 +50,11 @@ describe('LogoutUseCase', () => {
         RedisCacheService,
         JwtService,
         AuthService,
-        LogoutUseCase,
+        LogoutUsecase,
       ],
     }).compile();
 
-    useCase = await module.resolve<LogoutUseCase>(LogoutUseCase);
+    useCase = await module.resolve<LogoutUsecase>(LogoutUsecase);
     authService = await module.resolve<AuthService>(AuthService);
     redisCacheService = await module.resolve<RedisCacheService>(
       RedisCacheService,

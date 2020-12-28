@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
-import { UserEmailValueObject } from './domain/user-email.value-object';
-import { UserNameValueObject } from './domain/user-name.value-object';
-import { UserEntity } from './domain/user.entity';
-import { UserMapper } from './user.mapper';
+import { PrismaService } from '../../../prisma/prisma.service';
+import { UserEmailValueObject } from '../domain/user-email.value-object';
+import { UserNameValueObject } from '../domain/user-name.value-object';
+import { UserEntity } from '../domain/user.entity';
+import { UserMapper } from '../mappers/user.mapper';
 
 @Injectable()
 export class UserRepository {

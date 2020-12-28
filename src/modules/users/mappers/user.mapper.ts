@@ -1,10 +1,10 @@
 import type { BaseUserModel, Prisma } from '@prisma/client';
-import { UniqueEntityId } from '../../shared/domain';
-import { UserEmailValueObject } from './domain/user-email.value-object';
-import { UserNameValueObject } from './domain/user-name.value-object';
-import { UserPasswordValueObject } from './domain/user-password.value-object';
-import { UserEntity } from './domain/user.entity';
-import { UserDto } from './user.dto';
+import { UniqueEntityId } from '../../../shared/domain';
+import { UserEmailValueObject } from '../domain/user-email.value-object';
+import { UserNameValueObject } from '../domain/user-name.value-object';
+import { UserPasswordValueObject } from '../domain/user-password.value-object';
+import { UserEntity } from '../domain/user.entity';
+import { UserDto } from '../dtos/user.dto';
 
 export class UserMapper {
   public static async toPersistence(user: UserEntity): Promise<Prisma.BaseUserModelCreateInput> {

@@ -3,9 +3,9 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ApiConfigService } from '../../../api-config/api-config.service';
-import { AuthService } from '../auth.service';
 import { RefreshToken } from '../domain/jwt';
 import { JwtClaimsInterface } from '../domain/jwt-claims.interface';
+import { AuthService } from '../services/auth.service';
 
 @Injectable()
 export class JwtRefreshTokenStrategy extends PassportStrategy(

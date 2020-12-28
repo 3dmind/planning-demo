@@ -10,7 +10,7 @@ import {
 import { UserNameValueObject } from '../../domain/user-name.value-object';
 import { UserPasswordValueObject } from '../../domain/user-password.value-object';
 import { UserEntity } from '../../domain/user.entity';
-import { UserRepository } from '../../user.repository';
+import { UserRepository } from '../../repositories/user.repository';
 import { ValidateUserDto } from './validate-user.dto';
 import { ValidateUserErrors } from './validate-user.errors';
 
@@ -23,13 +23,13 @@ type Response = Either<
 >;
 
 @Injectable()
-export class ValidateUserUseCase
+export class ValidateUserUsecase
   implements UseCaseInterface<ValidateUserDto, Response> {
   constructor(
     private readonly logger: Logger,
     private readonly userRepository: UserRepository,
   ) {
-    this.logger.setContext('ValidateUserUseCase');
+    this.logger.setContext('ValidateUserUsecase');
   }
 
   async execute(request: ValidateUserDto): Promise<Response> {

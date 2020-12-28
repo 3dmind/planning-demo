@@ -8,15 +8,15 @@ import * as faker from 'faker';
 import { mock, mockReset } from 'jest-mock-extended';
 import { AppErrors, left, Result, right } from '../../../shared/core';
 import { UserEntity } from '../domain/user.entity';
+import { UserRepository } from '../repositories/user.repository';
 import { ValidateUserErrors } from '../use-cases/validate-user/validate-user.errors';
-import { ValidateUserUseCase } from '../use-cases/validate-user/validate-user.usecase';
-import { UserRepository } from '../user.repository';
+import { ValidateUserUsecase } from '../use-cases/validate-user/validate-user.usecase';
 import { LocalStrategy } from './local.strategy';
 
 describe('LocalStrategy', () => {
   const mockedLogger = mock<Logger>();
   const mockedUserRepository = mock<UserRepository>();
-  const mockedValidateUserUseCase = mock<ValidateUserUseCase>();
+  const mockedValidateUserUseCase = mock<ValidateUserUsecase>();
   let strategy: LocalStrategy;
 
   beforeEach(async () => {
@@ -24,7 +24,7 @@ describe('LocalStrategy', () => {
       providers: [
         { provide: Logger, useValue: mockedLogger },
         { provide: UserRepository, useValue: mockedUserRepository },
-        { provide: ValidateUserUseCase, useValue: mockedValidateUserUseCase },
+        { provide: ValidateUserUsecase, useValue: mockedValidateUserUseCase },
         LocalStrategy,
       ],
     }).compile();

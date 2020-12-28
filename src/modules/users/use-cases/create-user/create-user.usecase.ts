@@ -11,7 +11,7 @@ import { UserEmailValueObject } from '../../domain/user-email.value-object';
 import { UserNameValueObject } from '../../domain/user-name.value-object';
 import { UserPasswordValueObject } from '../../domain/user-password.value-object';
 import { UserEntity } from '../../domain/user.entity';
-import { UserRepository } from '../../user.repository';
+import { UserRepository } from '../../repositories/user.repository';
 import { CreateUserDto } from './create-user.dto';
 import { CreateUserErrors } from './create-user.errors';
 
@@ -24,13 +24,13 @@ type Response = Either<
 >;
 
 @Injectable()
-export class CreateUserUseCase
+export class CreateUserUsecase
   implements UseCaseInterface<CreateUserDto, Response> {
   constructor(
     private readonly logger: Logger,
     private readonly userRepository: UserRepository,
   ) {
-    this.logger.setContext('CreateUserUseCase');
+    this.logger.setContext('CreateUserUsecase');
   }
 
   async execute(request: CreateUserDto): Promise<Response> {

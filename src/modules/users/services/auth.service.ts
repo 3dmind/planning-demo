@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { ApiConfigService } from '../../api-config/api-config.service';
-import { RedisCacheService } from '../../redis-cache/redis-cache.service';
-import { AccessToken, RefreshToken } from './domain/jwt';
-import { JwtClaimsInterface } from './domain/jwt-claims.interface';
-import { UserEntity } from './domain/user.entity';
+import { ApiConfigService } from '../../../api-config/api-config.service';
+import { RedisCacheService } from '../../../redis-cache/redis-cache.service';
+import { AccessToken, RefreshToken } from '../domain/jwt';
+import { JwtClaimsInterface } from '../domain/jwt-claims.interface';
+import { UserEntity } from '../domain/user.entity';
 
 type Tokens = {
   accessToken: AccessToken;

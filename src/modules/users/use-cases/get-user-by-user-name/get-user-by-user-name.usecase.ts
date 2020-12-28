@@ -9,7 +9,7 @@ import {
 } from '../../../../shared/core';
 import { UserNameValueObject } from '../../domain/user-name.value-object';
 import { UserEntity } from '../../domain/user.entity';
-import { UserRepository } from '../../user.repository';
+import { UserRepository } from '../../repositories/user.repository';
 import { GetUserByUserNameDto } from './get-user-by-user-name.dto';
 import { GetUserByUserNameError } from './get-user-by-user-name.errors';
 
@@ -21,13 +21,13 @@ type Response = Either<
 >;
 
 @Injectable()
-export class GetUserByUserNameUseCase
+export class GetUserByUserNameUsecase
   implements UseCaseInterface<GetUserByUserNameDto, Response> {
   constructor(
     private readonly logger: Logger,
     private readonly userRepository: UserRepository,
   ) {
-    this.logger.setContext(GetUserByUserNameUseCase.name);
+    this.logger.setContext(GetUserByUserNameUsecase.name);
   }
 
   async execute(request: GetUserByUserNameDto): Promise<Response> {

@@ -7,9 +7,9 @@ import {
   right,
   UseCaseInterface,
 } from '../../../../shared/core';
-import { AuthService } from '../../auth.service';
 import { UserNameValueObject } from '../../domain/user-name.value-object';
-import { UserRepository } from '../../user.repository';
+import { UserRepository } from '../../repositories/user.repository';
+import { AuthService } from '../../services/auth.service';
 import { LogoutDto } from './logout.dto';
 import { LogoutErrors } from './logout.errors';
 
@@ -19,8 +19,8 @@ type Response = Either<
 >;
 
 @Injectable()
-export class LogoutUseCase implements UseCaseInterface<LogoutDto, Response> {
-  private readonly logger = new Logger(LogoutUseCase.name);
+export class LogoutUsecase implements UseCaseInterface<LogoutDto, Response> {
+  private readonly logger = new Logger(LogoutUsecase.name);
 
   constructor(
     private readonly userRepository: UserRepository,

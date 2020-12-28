@@ -7,11 +7,11 @@ import {
   right,
   UseCaseInterface,
 } from '../../../../shared/core';
-import { AuthService } from '../../auth.service';
 import { AccessToken } from '../../domain/jwt';
 import { JwtClaimsInterface } from '../../domain/jwt-claims.interface';
 import { UserNameValueObject } from '../../domain/user-name.value-object';
-import { UserRepository } from '../../user.repository';
+import { UserRepository } from '../../repositories/user.repository';
+import { AuthService } from '../../services/auth.service';
 import { RefreshAccessTokenRequestDto } from './refresh-access-token-request.dto';
 import { RefreshAccessTokenErrors } from './refresh-access-token.errors';
 
@@ -23,14 +23,14 @@ type Response = Either<
 >;
 
 @Injectable()
-export class RefreshAccessTokenUseCase
+export class RefreshAccessTokenUsecase
   implements UseCaseInterface<RefreshAccessTokenRequestDto, Response> {
   constructor(
     private readonly logger: Logger,
     private readonly userRepository: UserRepository,
     private readonly authService: AuthService,
   ) {
-    this.logger.setContext(RefreshAccessTokenUseCase.name);
+    this.logger.setContext(RefreshAccessTokenUsecase.name);
   }
 
   async execute(request: RefreshAccessTokenRequestDto): Promise<Response> {

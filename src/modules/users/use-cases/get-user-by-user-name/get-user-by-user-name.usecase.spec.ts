@@ -7,27 +7,27 @@ import { UserEmailValueObject } from '../../domain/user-email.value-object';
 import { UserNameValueObject } from '../../domain/user-name.value-object';
 import { UserPasswordValueObject } from '../../domain/user-password.value-object';
 import { UserEntity } from '../../domain/user.entity';
-import { UserRepository } from '../../user.repository';
+import { UserRepository } from '../../repositories/user.repository';
 import { GetUserByUserNameDto } from './get-user-by-user-name.dto';
 import { GetUserByUserNameError } from './get-user-by-user-name.errors';
-import { GetUserByUserNameUseCase } from './get-user-by-user-name.usecase';
+import { GetUserByUserNameUsecase } from './get-user-by-user-name.usecase';
 
-describe('GetUserByUserNameUseCase', () => {
+describe('GetUserByUserNameUsecase', () => {
   const mockedLogger = mock<Logger>();
   const mockedUserRepository = mock<UserRepository>();
-  let useCase: GetUserByUserNameUseCase;
+  let useCase: GetUserByUserNameUsecase;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         { provide: Logger, useValue: mockedLogger },
         { provide: UserRepository, useValue: mockedUserRepository },
-        GetUserByUserNameUseCase,
+        GetUserByUserNameUsecase,
       ],
     }).compile();
 
-    useCase = await module.resolve<GetUserByUserNameUseCase>(
-      GetUserByUserNameUseCase,
+    useCase = await module.resolve<GetUserByUserNameUsecase>(
+      GetUserByUserNameUsecase,
     );
   });
 

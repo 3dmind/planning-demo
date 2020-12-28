@@ -7,11 +7,11 @@ import { UserEntityBuilder } from '../../../../../test/builder/user-entity.build
 import { ApiConfigService } from '../../../../api-config/api-config.service';
 import { RedisCacheService } from '../../../../redis-cache/redis-cache.service';
 import { AppErrors } from '../../../../shared/core';
-import { AuthService } from '../../auth.service';
+import { AuthService } from '../../services/auth.service';
 import { LoginResponseDto } from './login-response.dto';
-import { LoginUseCase } from './login.usecase';
+import { LoginUsecase } from './login.usecase';
 
-describe('LoginUseCase', () => {
+describe('LoginUsecase', () => {
   const mockedLogger = mock<Logger>();
   const mockedConfigService = mock<ApiConfigService>();
 
@@ -22,7 +22,7 @@ describe('LoginUseCase', () => {
 
   let redisCacheService: RedisCacheService;
   let authService: AuthService;
-  let useCase: LoginUseCase;
+  let useCase: LoginUsecase;
 
   beforeAll(async () => {
     mockedConfigService.getAccessTokenSecret.mockReturnValue(
@@ -48,7 +48,7 @@ describe('LoginUseCase', () => {
         RedisCacheService,
         JwtService,
         AuthService,
-        LoginUseCase,
+        LoginUsecase,
       ],
     }).compile();
 
@@ -56,7 +56,7 @@ describe('LoginUseCase', () => {
       RedisCacheService,
     );
     authService = await module.resolve<AuthService>(AuthService);
-    useCase = await module.resolve<LoginUseCase>(LoginUseCase);
+    useCase = await module.resolve<LoginUsecase>(LoginUsecase);
   });
 
   afterAll(() => {

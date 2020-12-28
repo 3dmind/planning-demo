@@ -7,21 +7,21 @@ import {
   right,
   UseCaseInterface,
 } from '../../../../shared/core';
-import { AuthService } from '../../auth.service';
 import { AccessToken, RefreshToken } from '../../domain/jwt';
 import { JwtClaimsInterface } from '../../domain/jwt-claims.interface';
 import { UserEntity } from '../../domain/user.entity';
+import { AuthService } from '../../services/auth.service';
 import { LoginResponseDto } from './login-response.dto';
 
 type Response = Either<AppErrors.UnexpectedError, Result<LoginResponseDto>>;
 
 @Injectable()
-export class LoginUseCase implements UseCaseInterface<UserEntity, Response> {
+export class LoginUsecase implements UseCaseInterface<UserEntity, Response> {
   constructor(
     private readonly logger: Logger,
     private readonly authService: AuthService,
   ) {
-    this.logger.setContext('LoginUseCase');
+    this.logger.setContext('LoginUsecase');
   }
 
   async execute(user: UserEntity): Promise<Response> {

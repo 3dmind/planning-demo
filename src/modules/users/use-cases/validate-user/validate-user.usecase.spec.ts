@@ -7,11 +7,11 @@ import { UserEmailValueObject } from '../../domain/user-email.value-object';
 import { UserNameValueObject } from '../../domain/user-name.value-object';
 import { UserPasswordValueObject } from '../../domain/user-password.value-object';
 import { UserEntity } from '../../domain/user.entity';
-import { UserRepository } from '../../user.repository';
+import { UserRepository } from '../../repositories/user.repository';
 import { ValidateUserErrors } from './validate-user.errors';
-import { ValidateUserUseCase } from './validate-user.usecase';
+import { ValidateUserUsecase } from './validate-user.usecase';
 
-describe('ValidateUserUseCase', () => {
+describe('ValidateUserUsecase', () => {
   const mockedLogger = mock<Logger>();
   const mockedUserRepository = mock<UserRepository>();
 
@@ -24,18 +24,18 @@ describe('ValidateUserUseCase', () => {
   }).getValue();
   const email = UserEmailValueObject.create(emailFixture).getValue();
 
-  let useCase: ValidateUserUseCase;
+  let useCase: ValidateUserUsecase;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         { provide: Logger, useValue: mockedLogger },
         { provide: UserRepository, useValue: mockedUserRepository },
-        ValidateUserUseCase,
+        ValidateUserUsecase,
       ],
     }).compile();
 
-    useCase = await module.resolve<ValidateUserUseCase>(ValidateUserUseCase);
+    useCase = await module.resolve<ValidateUserUsecase>(ValidateUserUsecase);
   });
 
   afterAll(() => {

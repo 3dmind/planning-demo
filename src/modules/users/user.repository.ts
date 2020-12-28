@@ -10,7 +10,7 @@ export class UserRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
   async exists(userEmail: UserEmailValueObject): Promise<boolean> {
-    const baseUser = await this.prismaService.baseUserModel.findOne({
+    const baseUser = await this.prismaService.baseUserModel.findUnique({
       where: {
         userEmail: userEmail.value,
       },

@@ -1,4 +1,4 @@
-import { BaseUserModel, BaseUserModelCreateInput } from '@prisma/client';
+import { BaseUserModel, Prisma } from '@prisma/client';
 import * as faker from 'faker';
 import { UniqueEntityId } from '../../shared/domain';
 import { UserEmailValueObject } from './domain/user-email.value-object';
@@ -36,7 +36,7 @@ describe('UserMapper', () => {
 
     const model = await UserMapper.toPersistence(userEntity);
 
-    expect(model).toMatchObject<BaseUserModelCreateInput>({
+    expect(model).toMatchObject<Prisma.BaseUserModelCreateInput>({
       baseUserId: userEntity.userId.id.toString(),
       createdAt: userEntity.props.createdAt,
       isEmailVerified: userEntity.props.isEmailVerified,

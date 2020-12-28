@@ -1,4 +1,4 @@
-import type { TaskModel, TaskModelCreateInput } from '@prisma/client';
+import type { Prisma, TaskModel } from '@prisma/client';
 import * as faker from 'faker';
 import { TaskEntityBuilder } from '../../../test/builder/task-entity.builder';
 import { TaskEntity } from './domain/task.entity';
@@ -147,7 +147,7 @@ describe('TaskMapper', () => {
 
       const rawModel = TaskMapper.toPersistence(task);
 
-      expect(rawModel).toMatchObject<TaskModelCreateInput>({
+      expect(rawModel).toMatchObject<Prisma.TaskModelCreateInput>({
         archived: false,
         archivedAt: null,
         createdAt: expect.any(Date),
@@ -168,7 +168,7 @@ describe('TaskMapper', () => {
 
       const rawModel = TaskMapper.toPersistence(task);
 
-      expect(rawModel).toMatchObject<TaskModelCreateInput>({
+      expect(rawModel).toMatchObject<Prisma.TaskModelCreateInput>({
         archived: false,
         archivedAt: null,
         createdAt: expect.any(Date),
@@ -192,7 +192,7 @@ describe('TaskMapper', () => {
 
       const rawModel = TaskMapper.toPersistence(task);
 
-      expect(rawModel).toMatchObject<TaskModelCreateInput>({
+      expect(rawModel).toMatchObject<Prisma.TaskModelCreateInput>({
         archived: false,
         archivedAt: null,
         createdAt: expect.any(Date),
@@ -217,7 +217,7 @@ describe('TaskMapper', () => {
 
       const rawModel = TaskMapper.toPersistence(task);
 
-      expect(rawModel).toMatchObject<TaskModelCreateInput>({
+      expect(rawModel).toMatchObject<Prisma.TaskModelCreateInput>({
         archived: true,
         archivedAt: expect.any(Date),
         createdAt: expect.any(Date),
@@ -238,7 +238,7 @@ describe('TaskMapper', () => {
 
       const rawModel = TaskMapper.toPersistence(task);
 
-      expect(rawModel).toMatchObject<TaskModelCreateInput>({
+      expect(rawModel).toMatchObject<Prisma.TaskModelCreateInput>({
         archived: false,
         archivedAt: null,
         createdAt: expect.any(Date),
@@ -259,7 +259,7 @@ describe('TaskMapper', () => {
 
       const rawModel = TaskMapper.toPersistence(task);
 
-      expect(rawModel).toMatchObject<TaskModelCreateInput>({
+      expect(rawModel).toMatchObject<Prisma.TaskModelCreateInput>({
         archived: false,
         archivedAt: null,
         createdAt: expect.any(Date),

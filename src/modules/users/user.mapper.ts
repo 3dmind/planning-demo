@@ -1,4 +1,4 @@
-import type { BaseUserModel, BaseUserModelCreateInput } from '@prisma/client';
+import type { BaseUserModel, Prisma } from '@prisma/client';
 import { UniqueEntityId } from '../../shared/domain';
 import { UserEmailValueObject } from './domain/user-email.value-object';
 import { UserNameValueObject } from './domain/user-name.value-object';
@@ -7,7 +7,7 @@ import { UserEntity } from './domain/user.entity';
 import { UserDto } from './user.dto';
 
 export class UserMapper {
-  public static async toPersistence(user: UserEntity): Promise<BaseUserModelCreateInput> {
+  public static async toPersistence(user: UserEntity): Promise<Prisma.BaseUserModelCreateInput> {
     const userSnapshot = user.createSnapshot();
     const password = userSnapshot.password;
     let hashedPassword;
@@ -66,6 +66,6 @@ export class UserMapper {
       email: email.value,
       isEmailVerified: isEmailVerified,
       username: username.value,
-    }
+    };
   }
 }

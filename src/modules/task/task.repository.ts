@@ -9,7 +9,7 @@ export class TaskRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
   async exists(taskId: TaskIdEntity): Promise<boolean> {
-    const taskModel = await this.prismaService.taskModel.findOne({
+    const taskModel = await this.prismaService.taskModel.findUnique({
       where: {
         taskId: taskId.id.toString(),
       },
@@ -47,7 +47,7 @@ export class TaskRepository {
   async getTaskByTaskId(
     taskId: TaskIdEntity,
   ): Promise<{ found: boolean; task?: TaskEntity }> {
-    const taskModel = await this.prismaService.taskModel.findOne({
+    const taskModel = await this.prismaService.taskModel.findUnique({
       where: {
         taskId: taskId.id.toString(),
       },

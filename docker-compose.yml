@@ -15,13 +15,14 @@ services:
     volumes:
       - postgres:/var/lib/postgresql/data
 
-  planning-migrate:
-    container_name: planning_migrate_container
+  planning-db-migrate:
+    container_name: planning_db_migrate_container
     build:
       context: prisma
       dockerfile: Dockerfile
-    image: planning_migrate
+    image: planning_db_migrate
     environment:
+      CHECKPOINT_DISABLE: 1
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@planning-db:${DB_PORT}/${POSTGRES_DB}?schema=${DB_SCHEMA}&sslmode=prefer
     depends_on:
       - planning-db

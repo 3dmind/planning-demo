@@ -19,10 +19,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "dotenv -e .env -- jest --config ./test/jest-e2e.json",
-    "migrate:save": "dotenv -e .env -- prisma migrate save --experimental",
-    "migrate:up": "dotenv -e .env -- prisma migrate up --experimental",
-    "migrate:down": "dotenv -e .env -- prisma migrate down --experimental",
-    "prisma:generate": "dotenv -e .env -- prisma generate"
+    "db:push": "dotenv -e .env -- prisma db push --preview-feature"
   },
   "dependencies": {
     "@nestjs/common": "^7.6.4",
@@ -31,7 +28,7 @@
     "@nestjs/jwt": "^7.2.0",
     "@nestjs/passport": "^7.1.5",
     "@nestjs/platform-express": "^7.6.4",
-    "@prisma/client": "^2.11.0",
+    "@prisma/client": "^2.13.1",
     "bcrypt": "^5.0.0",
     "cache-manager": "^3.4.0",
     "cache-manager-redis-store": "^2.0.0",
@@ -50,7 +47,7 @@
     "@nestjs/cli": "^7.5.4",
     "@nestjs/schematics": "^7.2.5",
     "@nestjs/testing": "^7.6.4",
-    "@prisma/cli": "^2.11.0",
+    "@prisma/cli": "^2.13.1",
     "@types/bcrypt": "^3.0.0",
     "@types/bluebird": "3.5.32",
     "@types/cache-manager": "^2.10.3",

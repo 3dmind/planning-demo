@@ -1,11 +1,11 @@
-import type { TaskModel, TaskModelCreateInput } from '@prisma/client';
+import type { Prisma, TaskModel } from '@prisma/client';
 import { UniqueEntityId } from '../../shared/domain';
 import { DescriptionValueObject } from './domain/description.value-object';
 import { TaskEntity } from './domain/task.entity';
 import { TaskDto } from './task.dto';
 
 export class TaskMapper {
-  public static toPersistence(task: TaskEntity): TaskModelCreateInput {
+  public static toPersistence(task: TaskEntity): Prisma.TaskModelCreateInput {
     const taskSnapshot = task.createSnapshot();
     return {
       archived: taskSnapshot.isArchived,

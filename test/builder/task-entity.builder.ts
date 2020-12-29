@@ -1,6 +1,6 @@
 import * as faker from 'faker';
-import { DescriptionValueObject } from '../../src/modules/task/domain/description.value-object';
-import { TaskEntity } from '../../src/modules/task/domain/task.entity';
+import { DescriptionValueObject } from '../../src/modules/planning/domain/description.value-object';
+import { TaskEntity } from '../../src/modules/planning/domain/task.entity';
 import { UniqueEntityId } from '../../src/shared/domain';
 
 export class TaskEntityBuilder {

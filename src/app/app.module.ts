@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { TaskModule } from '../modules/task/task.module';
+import { PlanningModule } from '../modules/planning/planning.module';
 import { UsersModule } from '../modules/users/users.module';
 
 @Module({
-  imports: [TaskModule, UsersModule],
+  imports: [PlanningModule, UsersModule],
 })
 export class AppModule {}

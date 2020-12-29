@@ -3,13 +3,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
 import * as request from 'supertest';
 import urlcat from 'urlcat';
-import { TaskDto } from '../src/modules/task/task.dto';
-import { TaskModule } from '../src/modules/task/task.module';
-import { EditTaskDto } from '../src/modules/task/use-cases/edit-task/edit-task.dto';
-import { NoteTaskDto } from '../src/modules/task/use-cases/note-task/note-task.dto';
+import { TaskDto } from '../src/modules/planning/dtos/task.dto';
+import { PlanningModule } from '../src/modules/planning/planning.module';
+import { EditTaskDto } from '../src/modules/planning/use-cases/tasks/edit-task/edit-task.dto';
+import { NoteTaskDto } from '../src/modules/planning/use-cases/tasks/note-task/note-task.dto';
 import { PrismaService } from '../src/prisma/prisma.service';
 
-describe('TaskController (e2e)', () => {
+describe('TasksController (e2e)', () => {
   const baseUrl = '/tasks';
   const tickOffPath = '/:id/tickoff';
   const resumePath = '/:id/resume';
@@ -23,7 +23,7 @@ describe('TaskController (e2e)', () => {
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [TaskModule],
+      imports: [PlanningModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();

@@ -2,14 +2,14 @@ import * as faker from 'faker';
 import * as uuid from 'uuid';
 import { TaskEntityBuilder } from '../../../../test/builder/task-entity.builder';
 import { UniqueEntityId } from '../../../shared/domain';
-import { DescriptionValueObject } from './description.value-object';
-import { TaskIdEntity } from './task-id.entity';
-import { TaskPropsInterface } from './task-props.interface';
-import { TaskEntity } from './task.entity';
+import { Description } from './description.valueobject';
+import { TaskId } from './task-id.entity';
+import { TaskProps } from './task-props.interface';
+import { Task } from './task.entity';
 
 jest.mock('uuid');
 
-describe('TaskEntity', () => {
+describe('Task', () => {
   beforeAll(() => {
     uuid.v4.mockReturnValue(faker.random.uuid());
   });
@@ -20,71 +20,59 @@ describe('TaskEntity', () => {
 
   describe('Guard task properties', () => {
     it('should guard "description against "null" and "undefined"', () => {
-      const propsWithNull = { description: null } as TaskPropsInterface;
-      const propsWithUndefinedDescription = {} as TaskPropsInterface;
+      const propsWithNull = { description: null } as TaskProps;
+      const propsWithUndefinedDescription = {} as TaskProps;
 
-      const taskResultNull = TaskEntity.create(propsWithNull);
-      const taskResultUndefined = TaskEntity.create(
-        propsWithUndefinedDescription,
-      );
+      const taskResultNull = Task.create(propsWithNull);
+      const taskResultUndefined = Task.create(propsWithUndefinedDescription);
 
       expect(taskResultNull.isFailure).toBe(true);
       expect(taskResultUndefined.isFailure).toBe(true);
     });
 
     it('should guard "createdAt" against "null" and "undefined"', () => {
-      const description = DescriptionValueObject.create(
-        faker.lorem.words(5),
-      ).getValue();
+      const description = Description.create(faker.lorem.words(5)).getValue();
 
       const propsWithNull = {
         description,
         createdAt: null,
-      } as TaskPropsInterface;
+      } as TaskProps;
 
       const propsWithUndefinedCreatedDate = {
         description,
-      } as TaskPropsInterface;
+      } as TaskProps;
 
-      const taskResultNull = TaskEntity.create(propsWithNull);
-      const taskResultUndefined = TaskEntity.create(
-        propsWithUndefinedCreatedDate,
-      );
+      const taskResultNull = Task.create(propsWithNull);
+      const taskResultUndefined = Task.create(propsWithUndefinedCreatedDate);
 
       expect(taskResultNull.isFailure).toBe(true);
       expect(taskResultUndefined.isFailure).toBe(true);
     });
 
     it('should guard "tickedOff" against "null" and "undefined"', () => {
-      const description = DescriptionValueObject.create(
-        faker.lorem.words(5),
-      ).getValue();
+      const description = Description.create(faker.lorem.words(5)).getValue();
       const createdAt = new Date();
 
       const propsWithNull = {
         description,
         createdAt,
         tickedOff: null,
-      } as TaskPropsInterface;
+      } as TaskProps;
 
       const propsWithUndefinedTickedOff = {
         description,
         createdAt,
-      } as TaskPropsInterface;
+      } as TaskProps;
 
-      const taskResultNull = TaskEntity.create(propsWithNull);
-      const taskResultUndefined = TaskEntity.create(
-        propsWithUndefinedTickedOff,
-      );
+      const taskResultNull = Task.create(propsWithNull);
+      const taskResultUndefined = Task.create(propsWithUndefinedTickedOff);
 
       expect(taskResultNull.isFailure).toBe(true);
       expect(taskResultUndefined.isFailure).toBe(true);
     });
 
     it('should guard "archived" against "null" and "undefined"', () => {
-      const description = DescriptionValueObject.create(
-        faker.lorem.words(5),
-      ).getValue();
+      const description = Description.create(faker.lorem.words(5)).getValue();
       const createdAt = new Date();
       const tickedOff = false;
 
@@ -93,25 +81,23 @@ describe('TaskEntity', () => {
         createdAt,
         tickedOff,
         archived: null,
-      } as TaskPropsInterface;
+      } as TaskProps;
 
       const propsWithUndefinedArchived = {
         description,
         createdAt,
         tickedOff,
-      } as TaskPropsInterface;
+      } as TaskProps;
 
-      const taskResultNull = TaskEntity.create(propsWithNull);
-      const taskResultUndefined = TaskEntity.create(propsWithUndefinedArchived);
+      const taskResultNull = Task.create(propsWithNull);
+      const taskResultUndefined = Task.create(propsWithUndefinedArchived);
 
       expect(taskResultNull.isFailure).toBe(true);
       expect(taskResultUndefined.isFailure).toBe(true);
     });
 
     it('should guard "discarded" against "null" and "undefined"', () => {
-      const description = DescriptionValueObject.create(
-        faker.lorem.words(5),
-      ).getValue();
+      const description = Description.create(faker.lorem.words(5)).getValue();
       const createdAt = new Date();
       const tickedOff = false;
       const archived = false;
@@ -122,19 +108,17 @@ describe('TaskEntity', () => {
         tickedOff,
         archived,
         discarded: null,
-      } as TaskPropsInterface;
+      } as TaskProps;
 
       const propsWithUndefinedDiscarded = {
         description,
         createdAt,
         tickedOff,
         archived,
-      } as TaskPropsInterface;
+      } as TaskProps;
 
-      const taskResultNull = TaskEntity.create(propsWithNull);
-      const taskResultUndefined = TaskEntity.create(
-        propsWithUndefinedDiscarded,
-      );
+      const taskResultNull = Task.create(propsWithNull);
+      const taskResultUndefined = Task.create(propsWithUndefinedDiscarded);
 
       expect(taskResultNull.isFailure).toBe(true);
       expect(taskResultUndefined.isFailure).toBe(true);
@@ -144,9 +128,9 @@ describe('TaskEntity', () => {
   it('should create task', () => {
     const text = faker.lorem.words(5);
     const entityId = new UniqueEntityId();
-    const description = DescriptionValueObject.create(text).getValue();
+    const description = Description.create(text).getValue();
 
-    const taskResult = TaskEntity.create(
+    const taskResult = Task.create(
       {
         archived: false,
         archivedAt: null,
@@ -164,15 +148,15 @@ describe('TaskEntity', () => {
     const task = taskResult.getValue();
 
     expect(taskResult.isSuccess).toBe(true);
-    expect(task.taskId).toBeInstanceOf(TaskIdEntity);
+    expect(task.taskId).toBeInstanceOf(TaskId);
     expect(task.taskId.id.equals(entityId)).toBe(true);
   });
 
   it('should note new task', () => {
     const text = faker.lorem.words(5);
-    const description = DescriptionValueObject.create(text).getValue();
+    const description = Description.create(text).getValue();
 
-    const taskResult = TaskEntity.note(description);
+    const taskResult = Task.note(description);
     const task = taskResult.getValue();
 
     expect(taskResult.isSuccess).toBe(true);
@@ -210,7 +194,7 @@ describe('TaskEntity', () => {
     const text = faker.lorem.words(5);
     const task = new TaskEntityBuilder(text).build();
     const newText = faker.lorem.words(5);
-    const newDescription = DescriptionValueObject.create(newText).getValue();
+    const newDescription = Description.create(newText).getValue();
 
     task.edit(newDescription);
 

@@ -1,10 +1,10 @@
 import { BaseUserModel, Prisma } from '@prisma/client';
 import * as faker from 'faker';
 import { UniqueEntityId } from '../../../shared/domain';
-import { UserEmailValueObject } from '../domain/user-email.value-object';
-import { UserNameValueObject } from '../domain/user-name.value-object';
-import { UserPasswordValueObject } from '../domain/user-password.value-object';
-import { UserPropsInterface } from '../domain/user-props.interface';
+import { UserEmail } from '../domain/user-email.valueobject';
+import { UserName } from '../domain/user-name.valueobject';
+import { UserPassword } from '../domain/user-password.valueobject';
+import { UserProps } from '../domain/user-props.interface';
 import { UserEntity } from '../domain/user.entity';
 import { UserDto } from '../dtos/user.dto';
 import { UserMapper } from './user.mapper';
@@ -16,16 +16,16 @@ describe('UserMapper', () => {
   const passwordFixture = faker.internet.password(6);
   const emailFixture = faker.internet.email().toLowerCase();
   const entityId = new UniqueEntityId(idFixture);
-  const username = UserNameValueObject.create(userNameFixture).getValue();
-  const password = UserPasswordValueObject.create({
+  const username = UserName.create(userNameFixture).getValue();
+  const password = UserPassword.create({
     value: passwordFixture,
     hashed: true,
   }).getValue();
-  const email = UserEmailValueObject.create(emailFixture).getValue();
+  const email = UserEmail.create(emailFixture).getValue();
 
   it('should map Entity to Model', async () => {
     expect.assertions(1);
-    const props: UserPropsInterface = {
+    const props: UserProps = {
       createdAt: dateFixture,
       email,
       isEmailVerified: false,
@@ -73,7 +73,7 @@ describe('UserMapper', () => {
   });
 
   it('should map Entity to DTO', () => {
-    const props: UserPropsInterface = {
+    const props: UserProps = {
       createdAt: dateFixture,
       email,
       isEmailVerified: false,

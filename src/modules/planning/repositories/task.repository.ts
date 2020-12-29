@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { TaskIdEntity } from '../domain/task-id.entity';
-import { TaskEntity } from '../domain/task.entity';
+import { TaskId } from '../domain/task-id.entity';
+import { Task } from '../domain/task.entity';
 import { TaskMapper } from '../mappers/task.mapper';
 
 @Injectable()
 export class TaskRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async exists(taskId: TaskIdEntity): Promise<boolean> {
+  async exists(taskId: TaskId): Promise<boolean> {
     const taskModel = await this.prismaService.taskModel.findUnique({
       where: {
         taskId: taskId.id.toString(),
@@ -17,7 +17,7 @@ export class TaskRepository {
     return !!taskModel === true;
   }
 
-  async save(task: TaskEntity): Promise<void> {
+  async save(task: Task): Promise<void> {
     const exists = await this.exists(task.taskId);
     const rawTaskModel = TaskMapper.toPersistence(task);
 
@@ -39,14 +39,14 @@ export class TaskRepository {
     }
   }
 
-  async getTasks(): Promise<TaskEntity[]> {
+  async getTasks(): Promise<Task[]> {
     const taskModels = await this.prismaService.taskModel.findMany();
     return taskModels.map((model) => TaskMapper.toDomain(model));
   }
 
   async getTaskByTaskId(
-    taskId: TaskIdEntity,
-  ): Promise<{ found: boolean; task?: TaskEntity }> {
+    taskId: TaskId,
+  ): Promise<{ found: boolean; task?: Task }> {
     const taskModel = await this.prismaService.taskModel.findUnique({
       where: {
         taskId: taskId.id.toString(),
@@ -62,7 +62,7 @@ export class TaskRepository {
     }
   }
 
-  async getActiveTasks(): Promise<TaskEntity[]> {
+  async getActiveTasks(): Promise<Task[]> {
     const taskModels = await this.prismaService.taskModel.findMany({
       where: {
         archived: false,
@@ -72,7 +72,7 @@ export class TaskRepository {
     return taskModels.map((model) => TaskMapper.toDomain(model));
   }
 
-  async getArchivedTasks(): Promise<TaskEntity[]> {
+  async getArchivedTasks(): Promise<Task[]> {
     const taskModels = await this.prismaService.taskModel.findMany({
       where: {
         archived: true,

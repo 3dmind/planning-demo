@@ -5,10 +5,10 @@ import {
   left,
   Result,
   right,
-  UseCaseInterface,
+  UseCase,
 } from '../../../../shared/core';
-import { UserNameValueObject } from '../../domain/user-name.value-object';
-import { UserPasswordValueObject } from '../../domain/user-password.value-object';
+import { UserName } from '../../domain/user-name.valueobject';
+import { UserPassword } from '../../domain/user-password.valueobject';
 import { UserEntity } from '../../domain/user.entity';
 import { UserRepository } from '../../repositories/user.repository';
 import { ValidateUserDto } from './validate-user.dto';
@@ -23,8 +23,7 @@ type Response = Either<
 >;
 
 @Injectable()
-export class ValidateUserUsecase
-  implements UseCaseInterface<ValidateUserDto, Response> {
+export class ValidateUserUsecase implements UseCase<ValidateUserDto, Response> {
   constructor(
     private readonly logger: Logger,
     private readonly userRepository: UserRepository,
@@ -33,8 +32,8 @@ export class ValidateUserUsecase
   }
 
   async execute(request: ValidateUserDto): Promise<Response> {
-    const userNameResult = UserNameValueObject.create(request.username);
-    const userPasswordResult = UserPasswordValueObject.create({
+    const userNameResult = UserName.create(request.username);
+    const userPasswordResult = UserPassword.create({
       value: request.password,
     });
     const result = Result.combine([userNameResult, userPasswordResult]);

@@ -1,31 +1,31 @@
 import { Guard, Result } from '../../../shared/core';
 import { Entity, UniqueEntityId } from '../../../shared/domain';
 import { AccessToken, RefreshToken } from './jwt';
-import { UserEmailValueObject } from './user-email.value-object';
-import { UserIdEntity } from './user-id.entity';
-import { UserPasswordValueObject } from './user-password.value-object';
-import { UserPropsInterface } from './user-props.interface';
+import { UserEmail } from './user-email.valueobject';
+import { UserId } from './user-id.entity';
+import { UserPassword } from './user-password.valueobject';
+import { UserProps } from './user-props.interface';
 import { UserSnapshot } from './user-snapshot';
 
-export class UserEntity extends Entity<UserPropsInterface> {
-  private constructor(props: UserPropsInterface, id: UniqueEntityId) {
+export class UserEntity extends Entity<UserProps> {
+  private constructor(props: UserProps, id: UniqueEntityId) {
     super(props, id);
   }
 
-  get userId(): UserIdEntity {
-    return UserIdEntity.create(this._id).getValue();
+  get userId(): UserId {
+    return UserId.create(this._id).getValue();
   }
 
-  get email(): UserEmailValueObject {
+  get email(): UserEmail {
     return this.props.email;
   }
 
-  get password(): UserPasswordValueObject {
+  get password(): UserPassword {
     return this.props.password;
   }
 
   public static create(
-    props: UserPropsInterface,
+    props: UserProps,
     id?: UniqueEntityId,
   ): Result<UserEntity> {
     const nullGuardResult = Guard.againstNullOrUndefinedBulk([

@@ -1,19 +1,8 @@
-interface GuardResultInterface {
-  succeeded: boolean;
-  message?: string;
-}
-
-interface GuardArgumentInterface {
-  argument: any;
-  argumentName: string;
-}
-
-type GuardArgumentCollection = GuardArgumentInterface[];
+import { GuardArgument } from './guard-argument.interface';
+import { GuardResult } from './guard-result.interface';
 
 export class Guard {
-  public static combine(
-    guardResults: GuardResultInterface[],
-  ): GuardResultInterface {
+  public static combine(guardResults: GuardResult[]): GuardResult {
     for (const result of guardResults) {
       if (result.succeeded === false) {
         return result;
@@ -26,7 +15,7 @@ export class Guard {
   public static greaterThan(
     minValue: number,
     actualValue: number,
-  ): GuardResultInterface {
+  ): GuardResult {
     return actualValue > minValue
       ? { succeeded: true }
       : {
@@ -35,10 +24,7 @@ export class Guard {
         };
   }
 
-  public static againstAtLeast(
-    numChars: number,
-    text: string,
-  ): GuardResultInterface {
+  public static againstAtLeast(numChars: number, text: string): GuardResult {
     return text.length >= numChars
       ? { succeeded: true }
       : {
@@ -47,10 +33,7 @@ export class Guard {
         };
   }
 
-  public static againstAtMost(
-    numChars: number,
-    text: string,
-  ): GuardResultInterface {
+  public static againstAtMost(numChars: number, text: string): GuardResult {
     return text.length <= numChars
       ? { succeeded: true }
       : {
@@ -59,7 +42,7 @@ export class Guard {
         };
   }
 
-  public static againstEmpty(text: string): GuardResultInterface {
+  public static againstEmpty(text: string): GuardResult {
     return text.trim().length !== 0
       ? { succeeded: true }
       : {
@@ -71,7 +54,7 @@ export class Guard {
   public static againstNullOrUndefined(
     argument: any,
     argumentName: string,
-  ): GuardResultInterface {
+  ): GuardResult {
     if (argument === null || argument === undefined) {
       return {
         succeeded: false,
@@ -82,9 +65,7 @@ export class Guard {
     }
   }
 
-  public static againstNullOrUndefinedBulk(
-    args: GuardArgumentCollection,
-  ): GuardResultInterface {
+  public static againstNullOrUndefinedBulk(args: GuardArgument[]): GuardResult {
     for (const arg of args) {
       const result = this.againstNullOrUndefined(
         arg.argument,
@@ -102,7 +83,7 @@ export class Guard {
     value: any,
     validValues: any[],
     argumentName: string,
-  ): GuardResultInterface {
+  ): GuardResult {
     let isValid = false;
     for (const validValue of validValues) {
       if (value === validValue) {
@@ -127,7 +108,7 @@ export class Guard {
     min: number,
     max: number,
     argumentName: string,
-  ): GuardResultInterface {
+  ): GuardResult {
     const isInRange = num >= min && num <= max;
     if (!isInRange) {
       return {
@@ -144,8 +125,8 @@ export class Guard {
     min: number,
     max: number,
     argumentName: string,
-  ): GuardResultInterface {
-    let failingResult: GuardResultInterface = null;
+  ): GuardResult {
+    let failingResult: GuardResult = null;
     for (const num of numbers) {
       const numIsInRangeResult = this.inRange(num, min, max, argumentName);
       if (!numIsInRangeResult.succeeded) {

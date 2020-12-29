@@ -5,12 +5,12 @@ import {
   left,
   Result,
   right,
-  UseCaseInterface,
+  UseCase,
 } from '../../../../../shared/core';
 import { UniqueEntityId } from '../../../../../shared/domain';
-import { DescriptionValueObject } from '../../../domain/description.value-object';
-import { TaskIdEntity } from '../../../domain/task-id.entity';
-import { TaskEntity } from '../../../domain/task.entity';
+import { Description } from '../../../domain/description.valueobject';
+import { TaskId } from '../../../domain/task-id.entity';
+import { Task } from '../../../domain/task.entity';
 import { TaskRepository } from '../../../repositories/task.repository';
 import { EditTaskErrors } from './edit-task.errors';
 
@@ -21,11 +21,11 @@ type Request = {
 
 type Response = Either<
   AppErrors.UnexpectedError | EditTaskErrors.TaskNotFoundError | Result<any>,
-  Result<TaskEntity>
+  Result<Task>
 >;
 
 @Injectable()
-export class EditTaskUsecase implements UseCaseInterface<Request, Response> {
+export class EditTaskUsecase implements UseCase<Request, Response> {
   constructor(
     private readonly logger: Logger,
     private readonly taskRepository: TaskRepository,
@@ -34,10 +34,8 @@ export class EditTaskUsecase implements UseCaseInterface<Request, Response> {
   }
 
   async execute(request: Request): Promise<Response> {
-    const taskIdResult = TaskIdEntity.create(
-      new UniqueEntityId(request.taskId),
-    );
-    const descriptionResult = DescriptionValueObject.create(request.text);
+    const taskIdResult = TaskId.create(new UniqueEntityId(request.taskId));
+    const descriptionResult = Description.create(request.text);
     const requestResult = Result.combine([taskIdResult, descriptionResult]);
 
     if (requestResult.isFailure) {
@@ -59,7 +57,7 @@ export class EditTaskUsecase implements UseCaseInterface<Request, Response> {
 
       task.edit(descriptionResult.getValue());
       await this.taskRepository.save(task);
-      return right(Result.ok<TaskEntity>(task));
+      return right(Result.ok<Task>(task));
     } catch (error) {
       this.logger.error(error.message, error);
       return left(AppErrors.UnexpectedError.create(error)) as Response;

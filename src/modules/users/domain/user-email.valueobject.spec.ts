@@ -1,12 +1,12 @@
 import * as faker from 'faker';
-import { UserEmailValueObject } from './user-email.value-object';
+import { UserEmail } from './user-email.valueobject';
 
-describe('UserEmailValueObject', () => {
+describe('UserEmail', () => {
   it(`should be guarded against 'null' or 'undefined'`, () => {
     expect.assertions(1);
     const email = null;
 
-    const userEmailResult = UserEmailValueObject.create(email);
+    const userEmailResult = UserEmail.create(email);
 
     expect(userEmailResult.isFailure).toBe(true);
   });
@@ -15,7 +15,7 @@ describe('UserEmailValueObject', () => {
     expect.assertions(2);
     const email = 'lorem ipsum';
 
-    const userEmailResult = UserEmailValueObject.create(email);
+    const userEmailResult = UserEmail.create(email);
 
     expect(userEmailResult.isFailure).toBe(true);
     expect(userEmailResult.errorValue()).toEqual('Email address is not valid.');
@@ -25,7 +25,7 @@ describe('UserEmailValueObject', () => {
     expect.assertions(3);
     const email = faker.internet.email('tom', 'test', 'gmail.com');
 
-    const userEmailResult = UserEmailValueObject.create(email);
+    const userEmailResult = UserEmail.create(email);
     const userEmail = userEmailResult.getValue();
 
     expect(userEmailResult.isSuccess).toBe(true);

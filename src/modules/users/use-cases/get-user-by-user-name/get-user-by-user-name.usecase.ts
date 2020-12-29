@@ -5,9 +5,9 @@ import {
   left,
   Result,
   right,
-  UseCaseInterface,
+  UseCase,
 } from '../../../../shared/core';
-import { UserNameValueObject } from '../../domain/user-name.value-object';
+import { UserName } from '../../domain/user-name.valueobject';
 import { UserEntity } from '../../domain/user.entity';
 import { UserRepository } from '../../repositories/user.repository';
 import { GetUserByUserNameDto } from './get-user-by-user-name.dto';
@@ -22,7 +22,7 @@ type Response = Either<
 
 @Injectable()
 export class GetUserByUserNameUsecase
-  implements UseCaseInterface<GetUserByUserNameDto, Response> {
+  implements UseCase<GetUserByUserNameDto, Response> {
   constructor(
     private readonly logger: Logger,
     private readonly userRepository: UserRepository,
@@ -31,7 +31,7 @@ export class GetUserByUserNameUsecase
   }
 
   async execute(request: GetUserByUserNameDto): Promise<Response> {
-    const userNameResult = UserNameValueObject.create(request.username);
+    const userNameResult = UserName.create(request.username);
 
     if (userNameResult.isFailure) {
       return left(Result.fail(userNameResult.error.toString()));

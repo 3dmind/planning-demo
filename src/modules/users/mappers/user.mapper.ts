@@ -1,8 +1,8 @@
 import type { BaseUserModel, Prisma } from '@prisma/client';
 import { UniqueEntityId } from '../../../shared/domain';
-import { UserEmailValueObject } from '../domain/user-email.value-object';
-import { UserNameValueObject } from '../domain/user-name.value-object';
-import { UserPasswordValueObject } from '../domain/user-password.value-object';
+import { UserEmail } from '../domain/user-email.valueobject';
+import { UserName } from '../domain/user-name.valueobject';
+import { UserPassword } from '../domain/user-password.valueobject';
 import { UserEntity } from '../domain/user.entity';
 import { UserDto } from '../dtos/user.dto';
 
@@ -38,12 +38,12 @@ export class UserMapper {
       userPassword,
     } = baseUserModel;
     const entityId = new UniqueEntityId(baseUserId);
-    const userNameResult = UserNameValueObject.create(username);
-    const userPasswordResult = UserPasswordValueObject.create({
+    const userNameResult = UserName.create(username);
+    const userPasswordResult = UserPassword.create({
       value: userPassword,
       hashed: true,
     });
-    const userEmailResult = UserEmailValueObject.create(userEmail);
+    const userEmailResult = UserEmail.create(userEmail);
     const userEntityResult = UserEntity.create({
       createdAt,
       email: userEmailResult.getValue(),

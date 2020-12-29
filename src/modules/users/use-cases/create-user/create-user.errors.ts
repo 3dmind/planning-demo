@@ -1,7 +1,7 @@
-import { Result, UseCaseErrorAbstract } from '../../../../shared/core';
+import { Result, UseCaseError } from '../../../../shared/core';
 
 export namespace CreateUserErrors {
-  export class EmailAlreadyExistsError extends Result<UseCaseErrorAbstract> {
+  export class EmailAlreadyExistsError extends Result<UseCaseError> {
     private constructor(email: string) {
       super(false, {
         message: `The email ${email} associated for this account already exists.`,
@@ -13,7 +13,7 @@ export namespace CreateUserErrors {
     }
   }
 
-  export class UsernameTakenError extends Result<UseCaseErrorAbstract> {
+  export class UsernameTakenError extends Result<UseCaseError> {
     private constructor(username: string) {
       super(false, {
         message: `The username ${username} was already taken.`,

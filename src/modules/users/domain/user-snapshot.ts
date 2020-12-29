@@ -1,21 +1,21 @@
 import { AccessToken, RefreshToken } from './jwt';
-import { UserEmailValueObject } from './user-email.value-object';
-import { UserIdEntity } from './user-id.entity';
-import { UserNameValueObject } from './user-name.value-object';
-import { UserPasswordValueObject } from './user-password.value-object';
-import { UserPropsInterface } from './user-props.interface';
+import { UserEmail } from './user-email.valueobject';
+import { UserId } from './user-id.entity';
+import { UserName } from './user-name.valueobject';
+import { UserPassword } from './user-password.valueobject';
+import { UserProps } from './user-props.interface';
 
 export class UserSnapshot {
   readonly accessToken: AccessToken;
   readonly createdAt: Date;
-  readonly email: UserEmailValueObject;
+  readonly email: UserEmail;
   readonly isEmailVerified: boolean;
-  readonly password: UserPasswordValueObject;
+  readonly password: UserPassword;
   readonly refreshToken: RefreshToken;
-  readonly userId: UserIdEntity;
-  readonly username: UserNameValueObject;
+  readonly userId: UserId;
+  readonly username: UserName;
 
-  constructor(props: Readonly<UserPropsInterface>, userId: UserIdEntity) {
+  constructor(props: Readonly<UserProps>, userId: UserId) {
     this.accessToken = props.accessToken;
     this.createdAt = props.createdAt;
     this.email = props.email;

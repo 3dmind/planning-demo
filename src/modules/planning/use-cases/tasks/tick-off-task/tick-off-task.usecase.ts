@@ -5,11 +5,11 @@ import {
   left,
   Result,
   right,
-  UseCaseInterface,
+  UseCase,
 } from '../../../../../shared/core';
 import { UniqueEntityId } from '../../../../../shared/domain';
-import { TaskIdEntity } from '../../../domain/task-id.entity';
-import { TaskEntity } from '../../../domain/task.entity';
+import { TaskId } from '../../../domain/task-id.entity';
+import { Task } from '../../../domain/task.entity';
 import { TaskRepository } from '../../../repositories/task.repository';
 import { TickOffTaskDto } from './tick-off-task.dto';
 import { TickOffTasksErrors } from './tick-off-task.errors';
@@ -18,12 +18,11 @@ type Response = Either<
   | AppErrors.UnexpectedError
   | TickOffTasksErrors.TaskNotFoundError
   | Result<any>,
-  Result<TaskEntity>
+  Result<Task>
 >;
 
 @Injectable()
-export class TickOffTaskUsecase
-  implements UseCaseInterface<TickOffTaskDto, Response> {
+export class TickOffTaskUsecase implements UseCase<TickOffTaskDto, Response> {
   constructor(
     private readonly logger: Logger,
     private readonly taskRepository: TaskRepository,
@@ -32,9 +31,7 @@ export class TickOffTaskUsecase
   }
 
   async execute(request: TickOffTaskDto): Promise<Response> {
-    const taskIdResult = TaskIdEntity.create(
-      new UniqueEntityId(request.taskId),
-    );
+    const taskIdResult = TaskId.create(new UniqueEntityId(request.taskId));
 
     if (taskIdResult.isFailure) {
       this.logger.error(taskIdResult.errorValue());
@@ -54,7 +51,7 @@ export class TickOffTaskUsecase
         } else {
           task.tickOff();
           await this.taskRepository.save(task);
-          return right(Result.ok<TaskEntity>(task));
+          return right(Result.ok<Task>(task));
         }
       } catch (error) {
         this.logger.error(error.message, error);

@@ -1,11 +1,11 @@
 import * as faker from 'faker';
-import { UserPasswordValueObject } from './user-password.value-object';
+import { UserPassword } from './user-password.valueobject';
 
-describe('UserPasswordValueObject', () => {
+describe('UserPassword', () => {
   it(`should be guarded against 'null' or 'undefined'`, () => {
     expect.assertions(1);
 
-    const userPasswordResult = UserPasswordValueObject.create({
+    const userPasswordResult = UserPassword.create({
       value: null,
       hashed: false,
     });
@@ -15,11 +15,9 @@ describe('UserPasswordValueObject', () => {
 
   it('should be guarded against to short passwords', () => {
     expect.assertions(1);
-    const password = faker.internet.password(
-      UserPasswordValueObject.minLength - 1,
-    );
+    const password = faker.internet.password(UserPassword.minLength - 1);
 
-    const userPasswordResult = UserPasswordValueObject.create({
+    const userPasswordResult = UserPassword.create({
       value: password,
       hashed: false,
     });
@@ -29,11 +27,9 @@ describe('UserPasswordValueObject', () => {
 
   it('should be created', () => {
     expect.assertions(3);
-    const passwordFixture = faker.internet.password(
-      UserPasswordValueObject.minLength,
-    );
+    const passwordFixture = faker.internet.password(UserPassword.minLength);
 
-    const userPasswordResult = UserPasswordValueObject.create({
+    const userPasswordResult = UserPassword.create({
       value: passwordFixture,
       hashed: false,
     });

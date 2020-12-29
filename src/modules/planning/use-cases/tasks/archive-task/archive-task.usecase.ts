@@ -5,23 +5,22 @@ import {
   left,
   Result,
   right,
-  UseCaseInterface,
+  UseCase,
 } from '../../../../../shared/core';
 import { UniqueEntityId } from '../../../../../shared/domain';
-import { TaskIdEntity } from '../../../domain/task-id.entity';
-import { TaskEntity } from '../../../domain/task.entity';
+import { TaskId } from '../../../domain/task-id.entity';
+import { Task } from '../../../domain/task.entity';
 import { TaskRepository } from '../../../repositories/task.repository';
 import { ArchiveTaskDto } from './archive-task.dto';
 import { ArchiveTaskErrors } from './archive-task.errors';
 
 type Response = Either<
   AppErrors.UnexpectedError | ArchiveTaskErrors.TaskNotFoundError | Result<any>,
-  Result<TaskEntity>
+  Result<Task>
 >;
 
 @Injectable()
-export class ArchiveTaskUsecase
-  implements UseCaseInterface<ArchiveTaskDto, Response> {
+export class ArchiveTaskUsecase implements UseCase<ArchiveTaskDto, Response> {
   constructor(
     private readonly logger: Logger,
     private readonly taskRepository: TaskRepository,
@@ -30,9 +29,7 @@ export class ArchiveTaskUsecase
   }
 
   async execute(request: ArchiveTaskDto): Promise<Response> {
-    const taskIdResult = TaskIdEntity.create(
-      new UniqueEntityId(request.taskId),
-    );
+    const taskIdResult = TaskId.create(new UniqueEntityId(request.taskId));
 
     if (taskIdResult.isFailure) {
       this.logger.error(taskIdResult.errorValue());
@@ -53,7 +50,7 @@ export class ArchiveTaskUsecase
         } else {
           task.archive();
           await this.taskRepository.save(task);
-          return right(Result.ok<TaskEntity>(task));
+          return right(Result.ok<Task>(task));
         }
       } catch (error) {
         this.logger.error(error.message, error);

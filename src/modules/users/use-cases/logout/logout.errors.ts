@@ -1,7 +1,7 @@
-import { Result, UseCaseErrorAbstract } from '../../../../shared/core';
+import { Result, UseCaseError } from '../../../../shared/core';
 
 export namespace LogoutErrors {
-  export class UserNotFoundError extends Result<UseCaseErrorAbstract> {
+  export class UserNotFoundError extends Result<UseCaseError> {
     private constructor(username: string) {
       super(false, {
         message: `User with the username '${username}' does not exist.`,

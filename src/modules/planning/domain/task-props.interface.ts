@@ -1,10 +1,10 @@
-import { DescriptionValueObject } from './description.value-object';
+import { Description } from './description.valueobject';
 
-export interface TaskPropsInterface {
+export interface TaskProps {
   archived: boolean;
   archivedAt: Date;
   createdAt: Date;
-  description: DescriptionValueObject;
+  description: Description;
   discarded: boolean;
   discardedAt: Date;
   editedAt: Date;

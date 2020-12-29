@@ -1,23 +1,20 @@
 import { Guard, Result } from '../../../shared/core';
 import { Entity, UniqueEntityId } from '../../../shared/domain';
-import { DescriptionValueObject } from './description.value-object';
-import { TaskIdEntity } from './task-id.entity';
-import { TaskPropsInterface } from './task-props.interface';
+import { Description } from './description.valueobject';
+import { TaskId } from './task-id.entity';
+import { TaskProps } from './task-props.interface';
 import { TaskSnapshot } from './task-snapshot';
 
-export class TaskEntity extends Entity<TaskPropsInterface> {
-  private constructor(props: TaskPropsInterface, id?: UniqueEntityId) {
+export class Task extends Entity<TaskProps> {
+  private constructor(props: TaskProps, id?: UniqueEntityId) {
     super(props, id);
   }
 
-  get taskId(): TaskIdEntity {
-    return TaskIdEntity.create(this._id).getValue();
+  get taskId(): TaskId {
+    return TaskId.create(this._id).getValue();
   }
 
-  public static create(
-    props: TaskPropsInterface,
-    id?: UniqueEntityId,
-  ): Result<TaskEntity> {
+  public static create(props: TaskProps, id?: UniqueEntityId): Result<Task> {
     const nullGuard = Guard.againstNullOrUndefinedBulk([
       {
         argument: props.description,
@@ -42,14 +39,14 @@ export class TaskEntity extends Entity<TaskPropsInterface> {
     ]);
 
     if (!nullGuard.succeeded) {
-      return Result.fail<TaskEntity>(nullGuard.message);
+      return Result.fail<Task>(nullGuard.message);
     }
 
-    return Result.ok<TaskEntity>(new TaskEntity(props, id));
+    return Result.ok<Task>(new Task(props, id));
   }
 
-  public static note(description: DescriptionValueObject): Result<TaskEntity> {
-    return TaskEntity.create({
+  public static note(description: Description): Result<Task> {
+    return Task.create({
       archived: false,
       archivedAt: null,
       createdAt: new Date(),
@@ -90,7 +87,7 @@ export class TaskEntity extends Entity<TaskPropsInterface> {
     return this.props.archived;
   }
 
-  edit(newDescription: DescriptionValueObject): void {
+  edit(newDescription: Description): void {
     this.props.description = newDescription;
     this.props.editedAt = new Date();
   }

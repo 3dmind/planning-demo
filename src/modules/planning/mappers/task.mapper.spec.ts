@@ -1,7 +1,7 @@
 import type { Prisma, TaskModel } from '@prisma/client';
 import * as faker from 'faker';
 import { TaskEntityBuilder } from '../../../../test/builder/task-entity.builder';
-import { TaskEntity } from '../domain/task.entity';
+import { Task } from '../domain/task.entity';
 import { TaskDto } from '../dtos/task.dto';
 import { TaskMapper } from './task.mapper';
 
@@ -298,7 +298,7 @@ describe('TaskMapper', () => {
       const taskEntity = TaskMapper.toDomain(mockedTaskModel);
 
       expect(taskEntity).toBeDefined();
-      expect(taskEntity).toBeInstanceOf(TaskEntity);
+      expect(taskEntity).toBeInstanceOf(Task);
     });
   });
 });

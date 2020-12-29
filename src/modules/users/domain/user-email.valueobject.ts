@@ -6,7 +6,7 @@ interface UserEmailProps {
   value: string;
 }
 
-export class UserEmailValueObject extends ValueObject<UserEmailProps> {
+export class UserEmail extends ValueObject<UserEmailProps> {
   private constructor(props: UserEmailProps) {
     super(props);
   }
@@ -15,18 +15,18 @@ export class UserEmailValueObject extends ValueObject<UserEmailProps> {
     return this.props.value;
   }
 
-  public static create(email: string): Result<UserEmailValueObject> {
+  public static create(email: string): Result<UserEmail> {
     const nullGuardResult = Guard.againstNullOrUndefined(email, 'email');
     if (!nullGuardResult.succeeded) {
-      return Result.fail<UserEmailValueObject>(nullGuardResult.message);
+      return Result.fail<UserEmail>(nullGuardResult.message);
     }
 
     if (!this.isValidEmail(email)) {
-      return Result.fail<UserEmailValueObject>('Email address is not valid.');
+      return Result.fail<UserEmail>('Email address is not valid.');
     }
 
-    return Result.ok<UserEmailValueObject>(
-      new UserEmailValueObject({
+    return Result.ok<UserEmail>(
+      new UserEmail({
         value: this.format(email),
       }),
     );

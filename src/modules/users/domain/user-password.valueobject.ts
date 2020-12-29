@@ -9,7 +9,7 @@ interface UserPasswordProps {
 
 const SALT_ROUNDS = 10;
 
-export class UserPasswordValueObject extends ValueObject<UserPasswordProps> {
+export class UserPassword extends ValueObject<UserPasswordProps> {
   public static minLength = 6;
 
   private constructor(props: UserPasswordProps) {
@@ -20,26 +20,24 @@ export class UserPasswordValueObject extends ValueObject<UserPasswordProps> {
     return this.props.value;
   }
 
-  public static create(
-    props: UserPasswordProps,
-  ): Result<UserPasswordValueObject> {
+  public static create(props: UserPasswordProps): Result<UserPassword> {
     const nullGuardResult = Guard.againstNullOrUndefined(
       props.value,
       'password',
     );
     if (!nullGuardResult.succeeded) {
-      return Result.fail<UserPasswordValueObject>(nullGuardResult.message);
+      return Result.fail<UserPassword>(nullGuardResult.message);
     }
 
     if (!props.hashed) {
       const minGuardResult = Guard.againstAtLeast(this.minLength, props.value);
       if (!minGuardResult.succeeded) {
-        return Result.fail<UserPasswordValueObject>(minGuardResult.message);
+        return Result.fail<UserPassword>(minGuardResult.message);
       }
     }
 
-    return Result.ok<UserPasswordValueObject>(
-      new UserPasswordValueObject({
+    return Result.ok<UserPassword>(
+      new UserPassword({
         value: props.value,
         hashed: !!props.hashed === true,
       }),

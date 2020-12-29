@@ -5,11 +5,11 @@ import {
   left,
   Result,
   right,
-  UseCaseInterface,
+  UseCase,
 } from '../../../../shared/core';
 import { AccessToken } from '../../domain/jwt';
-import { JwtClaimsInterface } from '../../domain/jwt-claims.interface';
-import { UserNameValueObject } from '../../domain/user-name.value-object';
+import { JwtClaims } from '../../domain/jwt-claims.interface';
+import { UserName } from '../../domain/user-name.valueobject';
 import { UserRepository } from '../../repositories/user.repository';
 import { AuthService } from '../../services/auth.service';
 import { RefreshAccessTokenRequestDto } from './refresh-access-token-request.dto';
@@ -24,7 +24,7 @@ type Response = Either<
 
 @Injectable()
 export class RefreshAccessTokenUsecase
-  implements UseCaseInterface<RefreshAccessTokenRequestDto, Response> {
+  implements UseCase<RefreshAccessTokenRequestDto, Response> {
   constructor(
     private readonly logger: Logger,
     private readonly userRepository: UserRepository,
@@ -34,7 +34,7 @@ export class RefreshAccessTokenUsecase
   }
 
   async execute(request: RefreshAccessTokenRequestDto): Promise<Response> {
-    const userNameResult = UserNameValueObject.create(request.username);
+    const userNameResult = UserName.create(request.username);
 
     if (userNameResult.isFailure) {
       return left(Result.fail(userNameResult.error.toString()));
@@ -53,7 +53,7 @@ export class RefreshAccessTokenUsecase
       }
 
       const savedTokens = await this.authService.getTokens(username.value);
-      const payload: JwtClaimsInterface = {
+      const payload: JwtClaims = {
         username: username.value,
       };
       const newAccessToken: AccessToken = this.authService.createAccessToken(

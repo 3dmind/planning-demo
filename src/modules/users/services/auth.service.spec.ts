@@ -7,7 +7,7 @@ import { mock, mockReset } from 'jest-mock-extended';
 import { UserEntityBuilder } from '../../../../test/builder/user-entity.builder';
 import { ApiConfigService } from '../../../api-config/api-config.service';
 import { RedisCacheService } from '../../../redis-cache/redis-cache.service';
-import { JwtClaimsInterface } from '../domain/jwt-claims.interface';
+import { JwtClaims } from '../domain/jwt-claims.interface';
 import { AuthService } from './auth.service';
 
 describe('AuthService', () => {
@@ -59,13 +59,13 @@ describe('AuthService', () => {
   it('should create access token', () => {
     expect.assertions(1);
     const usernameFixture = faker.internet.userName();
-    const payloadFixture: JwtClaimsInterface = {
+    const payloadFixture: JwtClaims = {
       username: usernameFixture,
     };
 
     const accessToken = service.createAccessToken(payloadFixture);
 
-    expect(jwtService.decode(accessToken)).toMatchObject<JwtClaimsInterface>({
+    expect(jwtService.decode(accessToken)).toMatchObject<JwtClaims>({
       username: usernameFixture,
     });
   });
@@ -73,13 +73,13 @@ describe('AuthService', () => {
   it('should create refresh token', () => {
     expect.assertions(1);
     const usernameFixture = faker.internet.userName();
-    const payloadFixture: JwtClaimsInterface = {
+    const payloadFixture: JwtClaims = {
       username: usernameFixture,
     };
 
     const refreshToken = service.createRefreshToken(payloadFixture);
 
-    expect(jwtService.decode(refreshToken)).toMatchObject<JwtClaimsInterface>({
+    expect(jwtService.decode(refreshToken)).toMatchObject<JwtClaims>({
       username: usernameFixture,
     });
   });

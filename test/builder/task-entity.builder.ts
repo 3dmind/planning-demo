@@ -1,12 +1,12 @@
 import * as faker from 'faker';
-import { DescriptionValueObject } from '../../src/modules/planning/domain/description.value-object';
-import { TaskEntity } from '../../src/modules/planning/domain/task.entity';
+import { Description } from '../../src/modules/planning/domain/description.valueobject';
+import { Task } from '../../src/modules/planning/domain/task.entity';
 import { UniqueEntityId } from '../../src/shared/domain';
 
 export class TaskEntityBuilder {
   private archived: boolean;
   private archivedAt: Date;
-  private description: DescriptionValueObject;
+  private description: Description;
   private discarded: boolean;
   private discardedAt: Date;
   private editedAt: Date;
@@ -24,7 +24,7 @@ export class TaskEntityBuilder {
     this.archived = false;
     this.archivedAt = null;
     this.createdAt = createdAt;
-    this.description = DescriptionValueObject.create(text).getValue();
+    this.description = Description.create(text).getValue();
     this.discarded = false;
     this.discardedAt = null;
     this.editedAt = null;
@@ -53,7 +53,7 @@ export class TaskEntityBuilder {
   }
 
   makeEdited(newText: string = faker.lorem.words(5)): TaskEntityBuilder {
-    this.description = DescriptionValueObject.create(newText).getValue();
+    this.description = Description.create(newText).getValue();
     this.editedAt = new Date();
     return this;
   }
@@ -64,8 +64,8 @@ export class TaskEntityBuilder {
     return this;
   }
 
-  build(): TaskEntity {
-    return TaskEntity.create(
+  build(): Task {
+    return Task.create(
       {
         archived: this.archived,
         archivedAt: this.archivedAt,

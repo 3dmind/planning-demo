@@ -1,3 +1,3 @@
-export interface JwtClaimsInterface {
+export interface JwtClaims {
   username: string;
 }

@@ -4,7 +4,7 @@ exports[`TaskSnapshot should take a snapshot of a task's internal state 1`] = `
 TaskSnapshot {
   "archivedAt": null,
   "createdAt": 1977-01-01T00:00:00.000Z,
-  "description": DescriptionValueObject {
+  "description": Description {
     "props": Object {
       "value": "Lorem ipsum",
     },
@@ -15,7 +15,7 @@ TaskSnapshot {
   "isDiscarded": false,
   "isTickedOff": false,
   "resumedAt": null,
-  "taskId": TaskIdEntity {
+  "taskId": TaskId {
     "_id": UniqueEntityId {
       "value": "8597ccd9-4237-44a6-b434-8836693c4b51",
     },

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { UserEmailValueObject } from '../domain/user-email.value-object';
-import { UserNameValueObject } from '../domain/user-name.value-object';
+import { UserEmail } from '../domain/user-email.valueobject';
+import { UserName } from '../domain/user-name.valueobject';
 import { UserEntity } from '../domain/user.entity';
 import { UserMapper } from '../mappers/user.mapper';
 
@@ -9,7 +9,7 @@ import { UserMapper } from '../mappers/user.mapper';
 export class UserRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async exists(userEmail: UserEmailValueObject): Promise<boolean> {
+  async exists(userEmail: UserEmail): Promise<boolean> {
     const baseUser = await this.prismaService.baseUserModel.findUnique({
       where: {
         userEmail: userEmail.value,
@@ -30,7 +30,7 @@ export class UserRepository {
   }
 
   async getUserByUsername(
-    userName: UserNameValueObject,
+    userName: UserName,
   ): Promise<{ found: boolean; userEntity?: UserEntity }> {
     const baseUserModel = await this.prismaService.baseUserModel.findFirst({
       where: {

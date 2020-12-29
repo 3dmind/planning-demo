@@ -1,17 +1,15 @@
 import { Guard, Result } from '../../../shared/core';
 import { ValueObject } from '../../../shared/domain';
 
-interface DescriptionPropsInterface {
+interface DescriptionProps {
   value: string;
 }
 
-export class DescriptionValueObject extends ValueObject<
-  DescriptionPropsInterface
-> {
+export class Description extends ValueObject<DescriptionProps> {
   public static minLength = 2;
   public static maxLength = 250;
 
-  private constructor(props: DescriptionPropsInterface) {
+  private constructor(props: DescriptionProps) {
     super(props);
   }
 
@@ -19,26 +17,24 @@ export class DescriptionValueObject extends ValueObject<
     return this.props.value;
   }
 
-  public static create(text: string): Result<DescriptionValueObject> {
+  public static create(text: string): Result<Description> {
     const nullGuardResult = Guard.againstNullOrUndefined(text, 'text');
 
     if (!nullGuardResult.succeeded) {
-      return Result.fail<DescriptionValueObject>(nullGuardResult.message);
+      return Result.fail<Description>(nullGuardResult.message);
     }
 
     const minGuardResult = Guard.againstAtLeast(this.minLength, text);
     const maxGuardResult = Guard.againstAtMost(this.maxLength, text);
 
     if (!minGuardResult.succeeded) {
-      return Result.fail<DescriptionValueObject>(minGuardResult.message);
+      return Result.fail<Description>(minGuardResult.message);
     }
 
     if (!maxGuardResult.succeeded) {
-      return Result.fail<DescriptionValueObject>(maxGuardResult.message);
+      return Result.fail<Description>(maxGuardResult.message);
     }
 
-    return Result.ok<DescriptionValueObject>(
-      new DescriptionValueObject({ value: text }),
-    );
+    return Result.ok<Description>(new Description({ value: text }));
   }
 }

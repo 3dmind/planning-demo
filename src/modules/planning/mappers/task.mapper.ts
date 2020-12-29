@@ -1,11 +1,11 @@
 import type { Prisma, TaskModel } from '@prisma/client';
 import { UniqueEntityId } from '../../../shared/domain';
-import { DescriptionValueObject } from '../domain/description.value-object';
-import { TaskEntity } from '../domain/task.entity';
+import { Description } from '../domain/description.valueobject';
+import { Task } from '../domain/task.entity';
 import { TaskDto } from '../dtos/task.dto';
 
 export class TaskMapper {
-  public static toPersistence(task: TaskEntity): Prisma.TaskModelCreateInput {
+  public static toPersistence(task: Task): Prisma.TaskModelCreateInput {
     const taskSnapshot = task.createSnapshot();
     return {
       archived: taskSnapshot.isArchived,
@@ -22,12 +22,12 @@ export class TaskMapper {
     };
   }
 
-  public static toDomain(taskModel: TaskModel): TaskEntity {
+  public static toDomain(taskModel: TaskModel): Task {
     const id = new UniqueEntityId(taskModel.taskId);
-    const descriptionResult = DescriptionValueObject.create(
+    const descriptionResult = Description.create(
       taskModel.description,
     );
-    const taskResult = TaskEntity.create(
+    const taskResult = Task.create(
       {
         archived: taskModel.archived,
         archivedAt: taskModel.archivedAt,
@@ -45,7 +45,7 @@ export class TaskMapper {
     return taskResult.getValue();
   }
 
-  public static toDto(task: TaskEntity): TaskDto {
+  public static toDto(task: Task): TaskDto {
     const taskSnapshot = task.createSnapshot();
     return {
       archivedAt: taskSnapshot.archivedAt?.toISOString() ?? null,

@@ -5,9 +5,9 @@ import {
   left,
   Result,
   right,
-  UseCaseInterface,
+  UseCase,
 } from '../../../../shared/core';
-import { UserNameValueObject } from '../../domain/user-name.value-object';
+import { UserName } from '../../domain/user-name.valueobject';
 import { UserRepository } from '../../repositories/user.repository';
 import { AuthService } from '../../services/auth.service';
 import { LogoutDto } from './logout.dto';
@@ -19,7 +19,7 @@ type Response = Either<
 >;
 
 @Injectable()
-export class LogoutUsecase implements UseCaseInterface<LogoutDto, Response> {
+export class LogoutUsecase implements UseCase<LogoutDto, Response> {
   private readonly logger = new Logger(LogoutUsecase.name);
 
   constructor(
@@ -28,7 +28,7 @@ export class LogoutUsecase implements UseCaseInterface<LogoutDto, Response> {
   ) {}
 
   public async execute(request: LogoutDto): Promise<Response> {
-    const userNameResult = UserNameValueObject.create(request.username);
+    const userNameResult = UserName.create(request.username);
 
     if (userNameResult.isFailure) {
       return left(Result.fail(userNameResult.error.toString()));

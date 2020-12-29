@@ -1,7 +1,7 @@
-import { Result, UseCaseErrorAbstract } from '../../../../shared/core';
+import { Result, UseCaseError } from '../../../../shared/core';
 
 export namespace ValidateUserErrors {
-  export class UserNameDoesntExistError extends Result<UseCaseErrorAbstract> {
+  export class UserNameDoesntExistError extends Result<UseCaseError> {
     private constructor() {
       super(false, {
         message: 'Username or password incorrect.',
@@ -13,7 +13,7 @@ export namespace ValidateUserErrors {
     }
   }
 
-  export class PasswordDoesntMatchError extends Result<UseCaseErrorAbstract> {
+  export class PasswordDoesntMatchError extends Result<UseCaseError> {
     private constructor() {
       super(false, {
         message: 'Password doesnt match.',

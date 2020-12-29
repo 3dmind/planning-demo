@@ -5,11 +5,11 @@ import {
   left,
   Result,
   right,
-  UseCaseInterface,
+  UseCase,
 } from '../../../../shared/core';
-import { UserEmailValueObject } from '../../domain/user-email.value-object';
-import { UserNameValueObject } from '../../domain/user-name.value-object';
-import { UserPasswordValueObject } from '../../domain/user-password.value-object';
+import { UserEmail } from '../../domain/user-email.valueobject';
+import { UserName } from '../../domain/user-name.valueobject';
+import { UserPassword } from '../../domain/user-password.valueobject';
 import { UserEntity } from '../../domain/user.entity';
 import { UserRepository } from '../../repositories/user.repository';
 import { CreateUserDto } from './create-user.dto';
@@ -24,8 +24,7 @@ type Response = Either<
 >;
 
 @Injectable()
-export class CreateUserUsecase
-  implements UseCaseInterface<CreateUserDto, Response> {
+export class CreateUserUsecase implements UseCase<CreateUserDto, Response> {
   constructor(
     private readonly logger: Logger,
     private readonly userRepository: UserRepository,
@@ -34,11 +33,11 @@ export class CreateUserUsecase
   }
 
   async execute(request: CreateUserDto): Promise<Response> {
-    const userNameResult = UserNameValueObject.create(request.username);
-    const userPasswordResult = UserPasswordValueObject.create({
+    const userNameResult = UserName.create(request.username);
+    const userPasswordResult = UserPassword.create({
       value: request.password,
     });
-    const userEmailResult = UserEmailValueObject.create(request.email);
+    const userEmailResult = UserEmail.create(request.email);
     const result = Result.combine([
       userNameResult,
       userPasswordResult,

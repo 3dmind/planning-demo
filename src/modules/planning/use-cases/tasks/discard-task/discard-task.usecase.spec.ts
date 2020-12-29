@@ -4,8 +4,8 @@ import * as faker from 'faker';
 import { mock, mockReset } from 'jest-mock-extended';
 import { TaskEntityBuilder } from '../../../../../../test/builder/task-entity.builder';
 import { AppErrors, Result } from '../../../../../shared/core';
-import { TaskIdEntity } from '../../../domain/task-id.entity';
-import { TaskEntity } from '../../../domain/task.entity';
+import { TaskId } from '../../../domain/task-id.entity';
+import { Task } from '../../../domain/task.entity';
 import { TaskRepository } from '../../../repositories/task.repository';
 import { DiscardTaskErrors } from './discard-task.errors';
 import { DiscardTaskUsecase } from './discard-task.usecase';
@@ -34,8 +34,8 @@ describe('DiscardTaskUsecase', () => {
 
   it('should fail if task-id cannot be created', async () => {
     const spy = jest
-      .spyOn(TaskIdEntity, 'create')
-      .mockReturnValue(Result.fail<TaskIdEntity>('error'));
+      .spyOn(TaskId, 'create')
+      .mockReturnValue(Result.fail<TaskId>('error'));
     const result = await useCase.execute({ taskId: null });
 
     expect(result.isLeft()).toBe(true);
@@ -82,7 +82,7 @@ describe('DiscardTaskUsecase', () => {
 
     expect(result.isRight()).toBe(true);
 
-    const discardedTask: TaskEntity = result.value.getValue();
+    const discardedTask: Task = result.value.getValue();
     expect(discardedTask.isDiscarded()).toBe(true);
   });
 });

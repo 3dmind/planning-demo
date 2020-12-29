@@ -1,21 +1,21 @@
-import { DescriptionValueObject } from './description.value-object';
-import { TaskIdEntity } from './task-id.entity';
-import { TaskPropsInterface } from './task-props.interface';
+import { Description } from './description.valueobject';
+import { TaskId } from './task-id.entity';
+import { TaskProps } from './task-props.interface';
 
 export class TaskSnapshot {
   readonly archivedAt: Date;
   readonly createdAt: Date;
-  readonly description: DescriptionValueObject;
+  readonly description: Description;
   readonly discardedAt: Date;
   readonly editedAt: Date;
   readonly isArchived: boolean;
   readonly isDiscarded: boolean;
   readonly isTickedOff: boolean;
   readonly resumedAt: Date;
-  readonly taskId: TaskIdEntity;
+  readonly taskId: TaskId;
   readonly tickedOffAt: Date;
 
-  constructor(props: Readonly<TaskPropsInterface>, taskId: TaskIdEntity) {
+  constructor(props: Readonly<TaskProps>, taskId: TaskId) {
     const {
       archived,
       archivedAt,

@@ -1,10 +1,10 @@
 import * as faker from 'faker';
 import { UniqueEntityId } from '../../../shared/domain';
-import { UserEmailValueObject } from './user-email.value-object';
-import { UserIdEntity } from './user-id.entity';
-import { UserNameValueObject } from './user-name.value-object';
-import { UserPasswordValueObject } from './user-password.value-object';
-import { UserPropsInterface } from './user-props.interface';
+import { UserEmail } from './user-email.valueobject';
+import { UserId } from './user-id.entity';
+import { UserName } from './user-name.valueobject';
+import { UserPassword } from './user-password.valueobject';
+import { UserProps } from './user-props.interface';
 import { UserEntity } from './user.entity';
 
 describe('UserEntity', () => {
@@ -13,16 +13,16 @@ describe('UserEntity', () => {
   const passwordFixture = faker.internet.password(6);
   const emailFixture = faker.internet.email();
   const entityId = new UniqueEntityId(idFixture);
-  const username = UserNameValueObject.create(userNameFixture).getValue();
-  const password = UserPasswordValueObject.create({
+  const username = UserName.create(userNameFixture).getValue();
+  const password = UserPassword.create({
     value: passwordFixture,
   }).getValue();
-  const email = UserEmailValueObject.create(emailFixture).getValue();
+  const email = UserEmail.create(emailFixture).getValue();
 
   describe('Guard user properties', () => {
     it('should guard username', () => {
       expect.assertions(1);
-      const props = { username: null } as UserPropsInterface;
+      const props = { username: null } as UserProps;
 
       const userEntityResult = UserEntity.create(props, entityId);
 
@@ -34,7 +34,7 @@ describe('UserEntity', () => {
       const props = {
         username,
         password: null,
-      } as UserPropsInterface;
+      } as UserProps;
 
       const userEntityResult = UserEntity.create(props, entityId);
 
@@ -47,7 +47,7 @@ describe('UserEntity', () => {
         username,
         password,
         email: null,
-      } as UserPropsInterface;
+      } as UserProps;
 
       const userEntityResult = UserEntity.create(props, entityId);
 
@@ -57,7 +57,7 @@ describe('UserEntity', () => {
 
   it('should create', () => {
     expect.assertions(7);
-    const props: UserPropsInterface = {
+    const props: UserProps = {
       username,
       password,
       email,
@@ -69,7 +69,7 @@ describe('UserEntity', () => {
     const userEntity = userEntityResult.getValue();
 
     expect(userEntityResult.isSuccess).toBe(true);
-    expect(userEntity.userId).toBeInstanceOf(UserIdEntity);
+    expect(userEntity.userId).toBeInstanceOf(UserId);
     expect(userEntity.userId.id.equals(entityId)).toBe(true);
     expect(userEntity.props.isEmailVerified).toBe(true);
     expect(userEntity.props.createdAt).toEqual(props.createdAt);

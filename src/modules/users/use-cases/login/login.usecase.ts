@@ -5,10 +5,10 @@ import {
   left,
   Result,
   right,
-  UseCaseInterface,
+  UseCase,
 } from '../../../../shared/core';
 import { AccessToken, RefreshToken } from '../../domain/jwt';
-import { JwtClaimsInterface } from '../../domain/jwt-claims.interface';
+import { JwtClaims } from '../../domain/jwt-claims.interface';
 import { UserEntity } from '../../domain/user.entity';
 import { AuthService } from '../../services/auth.service';
 import { LoginResponseDto } from './login-response.dto';
@@ -16,7 +16,7 @@ import { LoginResponseDto } from './login-response.dto';
 type Response = Either<AppErrors.UnexpectedError, Result<LoginResponseDto>>;
 
 @Injectable()
-export class LoginUsecase implements UseCaseInterface<UserEntity, Response> {
+export class LoginUsecase implements UseCase<UserEntity, Response> {
   constructor(
     private readonly logger: Logger,
     private readonly authService: AuthService,
@@ -27,7 +27,7 @@ export class LoginUsecase implements UseCaseInterface<UserEntity, Response> {
   async execute(user: UserEntity): Promise<Response> {
     try {
       const userSnapshot = user.createSnapshot();
-      const payload: JwtClaimsInterface = {
+      const payload: JwtClaims = {
         username: userSnapshot.username.value,
       };
       const accessToken: AccessToken = this.authService.createAccessToken(

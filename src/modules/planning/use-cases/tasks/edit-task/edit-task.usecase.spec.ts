@@ -4,8 +4,8 @@ import * as faker from 'faker';
 import { mock, mockReset } from 'jest-mock-extended';
 import { TaskEntityBuilder } from '../../../../../../test/builder/task-entity.builder';
 import { AppErrors, Result } from '../../../../../shared/core';
-import { TaskIdEntity } from '../../../domain/task-id.entity';
-import { TaskEntity } from '../../../domain/task.entity';
+import { TaskId } from '../../../domain/task-id.entity';
+import { Task } from '../../../domain/task.entity';
 import { TaskRepository } from '../../../repositories/task.repository';
 import { EditTaskErrors } from './edit-task.errors';
 import { EditTaskUsecase } from './edit-task.usecase';
@@ -34,8 +34,8 @@ describe('EditTaskUsecase', () => {
 
   it('should fail if task-id cannot be created', async () => {
     const spy = jest
-      .spyOn(TaskIdEntity, 'create')
-      .mockReturnValue(Result.fail<TaskIdEntity>('error'));
+      .spyOn(TaskId, 'create')
+      .mockReturnValue(Result.fail<TaskId>('error'));
 
     const result = await useCase.execute({
       taskId: null,
@@ -105,7 +105,7 @@ describe('EditTaskUsecase', () => {
 
     expect(result.isRight()).toBe(true);
 
-    const editedTask: TaskEntity = result.value.getValue();
+    const editedTask: Task = result.value.getValue();
     expect(editedTask.props.description.value).toBe(newText);
   });
 });

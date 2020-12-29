@@ -1,14 +1,14 @@
 import { AccessToken, RefreshToken } from './jwt';
-import { UserEmailValueObject } from './user-email.value-object';
-import { UserNameValueObject } from './user-name.value-object';
-import { UserPasswordValueObject } from './user-password.value-object';
+import { UserEmail } from './user-email.valueobject';
+import { UserName } from './user-name.valueobject';
+import { UserPassword } from './user-password.valueobject';
 
-export interface UserPropsInterface {
+export interface UserProps {
   accessToken?: AccessToken;
   createdAt?: Date;
-  email: UserEmailValueObject;
+  email: UserEmail;
   isEmailVerified?: boolean;
-  password: UserPasswordValueObject;
+  password: UserPassword;
   refreshToken?: RefreshToken;
-  username: UserNameValueObject;
+  username: UserName;
 }

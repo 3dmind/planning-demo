@@ -3,9 +3,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
 import { mock, mockReset } from 'jest-mock-extended';
 import { AppErrors, Result } from '../../../../shared/core';
-import { UserEmailValueObject } from '../../domain/user-email.value-object';
-import { UserNameValueObject } from '../../domain/user-name.value-object';
-import { UserPasswordValueObject } from '../../domain/user-password.value-object';
+import { UserEmail } from '../../domain/user-email.valueobject';
+import { UserName } from '../../domain/user-name.valueobject';
+import { UserPassword } from '../../domain/user-password.valueobject';
 import { UserEntity } from '../../domain/user.entity';
 import { UserRepository } from '../../repositories/user.repository';
 import { CreateUserDto } from './create-user.dto';
@@ -37,8 +37,8 @@ describe('CreateUserUsecase', () => {
   it('should fail if username cannot be created', async () => {
     expect.assertions(2);
     const spy = jest
-      .spyOn(UserNameValueObject, 'create')
-      .mockReturnValue(Result.fail<UserNameValueObject>('error'));
+      .spyOn(UserName, 'create')
+      .mockReturnValue(Result.fail<UserName>('error'));
     const request = {} as CreateUserDto;
     const result = await useCase.execute(request);
 
@@ -51,11 +51,11 @@ describe('CreateUserUsecase', () => {
   it('should fail if user password cannot be created', async () => {
     expect.assertions(2);
     const mockedUserNameValueObject = jest
-      .spyOn(UserNameValueObject, 'create')
-      .mockReturnValue(Result.ok<UserNameValueObject>());
+      .spyOn(UserName, 'create')
+      .mockReturnValue(Result.ok<UserName>());
     const mockedUserPasswordValueObject = jest
-      .spyOn(UserPasswordValueObject, 'create')
-      .mockReturnValue(Result.fail<UserPasswordValueObject>('error'));
+      .spyOn(UserPassword, 'create')
+      .mockReturnValue(Result.fail<UserPassword>('error'));
 
     const request = {} as CreateUserDto;
     const result = await useCase.execute(request);
@@ -70,14 +70,14 @@ describe('CreateUserUsecase', () => {
   it('should fail if user email cannot be created', async () => {
     expect.assertions(2);
     const mockedUserNameValueObject = jest
-      .spyOn(UserNameValueObject, 'create')
-      .mockReturnValue(Result.ok<UserNameValueObject>());
+      .spyOn(UserName, 'create')
+      .mockReturnValue(Result.ok<UserName>());
     const mockedUserPasswordValueObject = jest
-      .spyOn(UserPasswordValueObject, 'create')
-      .mockReturnValue(Result.ok<UserPasswordValueObject>());
+      .spyOn(UserPassword, 'create')
+      .mockReturnValue(Result.ok<UserPassword>());
     const mockedUserEmailValueObject = jest
-      .spyOn(UserEmailValueObject, 'create')
-      .mockReturnValue(Result.fail<UserEmailValueObject>('error'));
+      .spyOn(UserEmail, 'create')
+      .mockReturnValue(Result.fail<UserEmail>('error'));
 
     const request = {} as CreateUserDto;
     const result = await useCase.execute(request);

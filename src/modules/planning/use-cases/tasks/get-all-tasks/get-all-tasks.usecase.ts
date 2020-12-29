@@ -5,15 +5,15 @@ import {
   left,
   Result,
   right,
-  UseCaseInterface,
+  UseCase,
 } from '../../../../../shared/core';
-import { TaskEntity } from '../../../domain/task.entity';
+import { Task } from '../../../domain/task.entity';
 import { TaskRepository } from '../../../repositories/task.repository';
 
-type Response = Either<AppErrors.UnexpectedError, Result<TaskEntity[]>>;
+type Response = Either<AppErrors.UnexpectedError, Result<Task[]>>;
 
 @Injectable()
-export class GetAllTasksUsecase implements UseCaseInterface<void, Response> {
+export class GetAllTasksUsecase implements UseCase<void, Response> {
   constructor(
     private readonly logger: Logger,
     private readonly taskRepository: TaskRepository,
@@ -24,7 +24,7 @@ export class GetAllTasksUsecase implements UseCaseInterface<void, Response> {
   async execute(): Promise<Response> {
     try {
       const tasks = await this.taskRepository.getTasks();
-      return right(Result.ok<TaskEntity[]>(tasks));
+      return right(Result.ok<Task[]>(tasks));
     } catch (error) {
       this.logger.error(error.message, error);
       return left(AppErrors.UnexpectedError.create(error));

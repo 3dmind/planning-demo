@@ -1,7 +1,7 @@
 import { Result } from '../../../shared/core';
 import { Entity, UniqueEntityId } from '../../../shared/domain';
 
-export class TaskIdEntity extends Entity<any> {
+export class TaskId extends Entity<any> {
   private constructor(id?: UniqueEntityId) {
     super(null, id);
   }
@@ -10,7 +10,7 @@ export class TaskIdEntity extends Entity<any> {
     return this._id;
   }
 
-  public static create(id?: UniqueEntityId): Result<TaskIdEntity> {
-    return Result.ok<TaskIdEntity>(new TaskIdEntity(id));
+  public static create(id?: UniqueEntityId): Result<TaskId> {
+    return Result.ok<TaskId>(new TaskId(id));
   }
 }

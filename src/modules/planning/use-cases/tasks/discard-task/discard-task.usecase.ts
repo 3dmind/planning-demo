@@ -5,23 +5,22 @@ import {
   left,
   Result,
   right,
-  UseCaseInterface,
+  UseCase,
 } from '../../../../../shared/core';
 import { UniqueEntityId } from '../../../../../shared/domain';
-import { TaskIdEntity } from '../../../domain/task-id.entity';
-import { TaskEntity } from '../../../domain/task.entity';
+import { TaskId } from '../../../domain/task-id.entity';
+import { Task } from '../../../domain/task.entity';
 import { TaskRepository } from '../../../repositories/task.repository';
 import { DiscardTaskDto } from './discard-task.dto';
 import { DiscardTaskErrors } from './discard-task.errors';
 
 type Response = Either<
   AppErrors.UnexpectedError | DiscardTaskErrors.TaskNotFoundError | Result<any>,
-  Result<TaskEntity>
+  Result<Task>
 >;
 
 @Injectable()
-export class DiscardTaskUsecase
-  implements UseCaseInterface<DiscardTaskDto, Response> {
+export class DiscardTaskUsecase implements UseCase<DiscardTaskDto, Response> {
   constructor(
     private readonly logger: Logger,
     private readonly taskRepository: TaskRepository,
@@ -30,9 +29,7 @@ export class DiscardTaskUsecase
   }
 
   async execute(request: DiscardTaskDto): Promise<Response> {
-    const taskIdResult = TaskIdEntity.create(
-      new UniqueEntityId(request.taskId),
-    );
+    const taskIdResult = TaskId.create(new UniqueEntityId(request.taskId));
 
     if (taskIdResult.isFailure) {
       this.logger.error(taskIdResult.errorValue());
@@ -53,7 +50,7 @@ export class DiscardTaskUsecase
 
       task.discard();
       await this.taskRepository.save(task);
-      return right(Result.ok<TaskEntity>(task));
+      return right(Result.ok<Task>(task));
     } catch (error) {
       this.logger.error(error.message, error);
       return left(AppErrors.UnexpectedError.create(error)) as Response;

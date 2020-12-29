@@ -1,8 +1,8 @@
 import * as faker from 'faker';
 import { AccessToken, RefreshToken } from '../../src/modules/users/domain/jwt';
-import { UserEmailValueObject } from '../../src/modules/users/domain/user-email.value-object';
-import { UserNameValueObject } from '../../src/modules/users/domain/user-name.value-object';
-import { UserPasswordValueObject } from '../../src/modules/users/domain/user-password.value-object';
+import { UserEmail } from '../../src/modules/users/domain/user-email.valueobject';
+import { UserName } from '../../src/modules/users/domain/user-name.valueobject';
+import { UserPassword } from '../../src/modules/users/domain/user-password.valueobject';
 import { UserEntity } from '../../src/modules/users/domain/user.entity';
 import { UniqueEntityId } from '../../src/shared/domain';
 
@@ -10,11 +10,11 @@ export class UserEntityBuilder {
   private accessToken: AccessToken;
   private readonly createdAt: Date;
   private readonly id: UniqueEntityId;
-  private email: UserEmailValueObject;
+  private email: UserEmail;
   private isEmailVerified: boolean;
-  private password: UserPasswordValueObject;
+  private password: UserPassword;
   private refreshToken: RefreshToken;
-  private username: UserNameValueObject;
+  private username: UserName;
 
   constructor(
     {
@@ -34,14 +34,14 @@ export class UserEntityBuilder {
   ) {
     this.accessToken = '';
     this.createdAt = createdAt;
-    this.email = UserEmailValueObject.create(email).getValue();
+    this.email = UserEmail.create(email).getValue();
     this.id = new UniqueEntityId(id);
     this.isEmailVerified = isEmailVerified;
-    this.password = UserPasswordValueObject.create({
+    this.password = UserPassword.create({
       value: password,
     }).getValue();
     this.refreshToken = '';
-    this.username = UserNameValueObject.create(username).getValue();
+    this.username = UserName.create(username).getValue();
   }
 
   makeEmailVerified(): UserEntityBuilder {

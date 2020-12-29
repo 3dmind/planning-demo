@@ -1,9 +1,9 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { Request } from 'express';
-import { JwtClaimsInterface } from '../modules/users/domain/jwt-claims.interface';
+import { JwtClaims } from '../modules/users/domain/jwt-claims.interface';
 
 interface RequestWithDecodedToken extends Request {
-  user: JwtClaimsInterface;
+  user: JwtClaims;
 }
 
 export const Username = createParamDecorator(

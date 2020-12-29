@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ApiConfigService } from '../../../api-config/api-config.service';
 import { RedisCacheService } from '../../../redis-cache/redis-cache.service';
 import { AccessToken, RefreshToken } from '../domain/jwt';
-import { JwtClaimsInterface } from '../domain/jwt-claims.interface';
+import { JwtClaims } from '../domain/jwt-claims.interface';
 import { UserEntity } from '../domain/user.entity';
 
 type Tokens = {
@@ -31,14 +31,14 @@ export class AuthService {
     this.refreshTokenTtl = this.apiConfigService.getRefreshTokenTtl();
   }
 
-  public createAccessToken(payload: JwtClaimsInterface): AccessToken {
+  public createAccessToken(payload: JwtClaims): AccessToken {
     return this.jwtService.sign(payload, {
       secret: this.accessTokenSecret,
       expiresIn: this.accessTokenTtl,
     });
   }
 
-  public createRefreshToken(payload: JwtClaimsInterface): RefreshToken {
+  public createRefreshToken(payload: JwtClaims): RefreshToken {
     return this.jwtService.sign(payload, {
       secret: this.refreshTokenSecret,
       expiresIn: this.refreshTokenTtl,

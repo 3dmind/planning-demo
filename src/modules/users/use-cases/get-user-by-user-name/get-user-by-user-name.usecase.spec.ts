@@ -3,9 +3,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
 import { mock } from 'jest-mock-extended';
 import { AppErrors } from '../../../../shared/core';
-import { UserEmailValueObject } from '../../domain/user-email.value-object';
-import { UserNameValueObject } from '../../domain/user-name.value-object';
-import { UserPasswordValueObject } from '../../domain/user-password.value-object';
+import { UserEmail } from '../../domain/user-email.valueobject';
+import { UserName } from '../../domain/user-name.valueobject';
+import { UserPassword } from '../../domain/user-password.valueobject';
 import { UserEntity } from '../../domain/user.entity';
 import { UserRepository } from '../../repositories/user.repository';
 import { GetUserByUserNameDto } from './get-user-by-user-name.dto';
@@ -84,11 +84,11 @@ describe('GetUserByUserNameUsecase', () => {
     const usernameFixture = faker.internet.userName();
     const passwordFixture = faker.internet.password(6);
     const emailFixture = faker.internet.email();
-    const username = UserNameValueObject.create(usernameFixture).getValue();
-    const password = UserPasswordValueObject.create({
+    const username = UserName.create(usernameFixture).getValue();
+    const password = UserPassword.create({
       value: passwordFixture,
     }).getValue();
-    const email = UserEmailValueObject.create(emailFixture).getValue();
+    const email = UserEmail.create(emailFixture).getValue();
     const userEntity = UserEntity.create({
       email,
       password,

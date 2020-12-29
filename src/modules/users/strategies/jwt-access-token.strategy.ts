@@ -4,7 +4,7 @@ import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ApiConfigService } from '../../../api-config/api-config.service';
 import { AccessToken } from '../domain/jwt';
-import { JwtClaimsInterface } from '../domain/jwt-claims.interface';
+import { JwtClaims } from '../domain/jwt-claims.interface';
 import { AuthService } from '../services/auth.service';
 
 @Injectable()
@@ -28,8 +28,8 @@ export class JwtAccessTokenStrategy extends PassportStrategy(
 
   public async validate(
     request: Request,
-    decodedToken: JwtClaimsInterface,
-  ): Promise<JwtClaimsInterface> {
+    decodedToken: JwtClaims,
+  ): Promise<JwtClaims> {
     const accessToken: AccessToken = JwtAccessTokenStrategy.extractor(request);
     const { username } = decodedToken;
     const isValidToken = await this.authService.validateAccessToken(

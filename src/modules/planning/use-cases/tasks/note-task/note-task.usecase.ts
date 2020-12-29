@@ -5,21 +5,17 @@ import {
   left,
   Result,
   right,
-  UseCaseInterface,
+  UseCase,
 } from '../../../../../shared/core';
-import { DescriptionValueObject } from '../../../domain/description.value-object';
-import { TaskEntity } from '../../../domain/task.entity';
+import { Description } from '../../../domain/description.valueobject';
+import { Task } from '../../../domain/task.entity';
 import { TaskRepository } from '../../../repositories/task.repository';
 import { NoteTaskDto } from './note-task.dto';
 
-type Response = Either<
-  AppErrors.UnexpectedError | Result<any>,
-  Result<TaskEntity>
->;
+type Response = Either<AppErrors.UnexpectedError | Result<any>, Result<Task>>;
 
 @Injectable()
-export class NoteTaskUsecase
-  implements UseCaseInterface<NoteTaskDto, Response> {
+export class NoteTaskUsecase implements UseCase<NoteTaskDto, Response> {
   constructor(
     private readonly logger: Logger,
     private readonly taskRepository: TaskRepository,
@@ -31,7 +27,7 @@ export class NoteTaskUsecase
     const { text } = request;
 
     try {
-      const descriptionOrError = DescriptionValueObject.create(text);
+      const descriptionOrError = Description.create(text);
 
       if (descriptionOrError.isFailure) {
         this.logger.error(descriptionOrError.errorValue());
@@ -39,7 +35,7 @@ export class NoteTaskUsecase
       }
 
       const description = descriptionOrError.getValue();
-      const taskOrError = TaskEntity.note(description);
+      const taskOrError = Task.note(description);
 
       if (taskOrError.isFailure) {
         this.logger.error(taskOrError.errorValue());
@@ -48,8 +44,8 @@ export class NoteTaskUsecase
 
       const task = taskOrError.getValue();
       await this.taskRepository.save(task);
-      this.logger.log('TaskEntity successfully created.');
-      return right(Result.ok<TaskEntity>(task));
+      this.logger.log('Task successfully created.');
+      return right(Result.ok<Task>(task));
     } catch (error) {
       this.logger.error(error.toString());
       return left(AppErrors.UnexpectedError.create(error));

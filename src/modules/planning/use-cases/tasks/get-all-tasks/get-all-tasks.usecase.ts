@@ -14,20 +14,19 @@ type Response = Either<AppErrors.UnexpectedError, Result<Task[]>>;
 
 @Injectable()
 export class GetAllTasksUsecase implements UseCase<void, Response> {
-  constructor(
-    private readonly logger: Logger,
-    private readonly taskRepository: TaskRepository,
-  ) {
-    this.logger.setContext('GetAllTasksUsecase');
-  }
+  private readonly logger = new Logger(GetAllTasksUsecase.name);
+
+  constructor(private readonly taskRepository: TaskRepository) {}
 
   async execute(): Promise<Response> {
+    this.logger.log('Getting all tasks...');
     try {
       const tasks = await this.taskRepository.getTasks();
+      this.logger.log(`Found ${tasks.length} tasks`);
       return right(Result.ok<Task[]>(tasks));
     } catch (error) {
       this.logger.error(error.message, error);
-      return left(AppErrors.UnexpectedError.create(error));
+      return left(new AppErrors.UnexpectedError(error));
     }
   }
 }

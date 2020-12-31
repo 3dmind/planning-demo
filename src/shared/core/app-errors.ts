@@ -9,9 +9,5 @@ export namespace AppErrors {
         error,
       } as UseCaseError);
     }
-
-    public static create(error: Error): UnexpectedError {
-      return new UnexpectedError(error);
-    }
   }
 }

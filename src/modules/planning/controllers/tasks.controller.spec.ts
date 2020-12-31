@@ -1,4 +1,3 @@
-import { Logger } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { mock, mockReset } from 'jest-mock-extended';
 import { ArchiveTaskUsecase } from '../use-cases/tasks/archive-task/archive-task.usecase';
@@ -13,7 +12,6 @@ import { TickOffTaskUsecase } from '../use-cases/tasks/tick-off-task/tick-off-ta
 import { TasksController } from './tasks.controller';
 
 describe('TasksController', () => {
-  const mockedLogger = mock<Logger>();
   const mockedGetAllTasksUseCase = mock<GetAllTasksUsecase>();
   const mockedNoteTaskUseCase = mock<NoteTaskUsecase>();
   const mockedTickOffTaskUseCase = mock<TickOffTaskUsecase>();
@@ -25,11 +23,10 @@ describe('TasksController', () => {
   const mockedGetAllArchivedTasksUseCase = mock<GetAllArchivedTasksUsecase>();
   let controller: TasksController;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [TasksController],
       providers: [
-        { provide: Logger, useValue: mockedLogger },
         { provide: GetAllTasksUsecase, useValue: mockedGetAllTasksUseCase },
         { provide: NoteTaskUsecase, useValue: mockedNoteTaskUseCase },
         { provide: TickOffTaskUsecase, useValue: mockedTickOffTaskUseCase },
@@ -52,7 +49,6 @@ describe('TasksController', () => {
   });
 
   afterAll(() => {
-    mockReset(mockedLogger);
     mockReset(mockedGetAllTasksUseCase);
     mockReset(mockedNoteTaskUseCase);
     mockReset(mockedTickOffTaskUseCase);

@@ -23,17 +23,16 @@ type Response = Either<
 @Injectable()
 export class GetUserByUserNameUsecase
   implements UseCase<GetUserByUserNameDto, Response> {
-  constructor(
-    private readonly logger: Logger,
-    private readonly userRepository: UserRepository,
-  ) {
-    this.logger.setContext(GetUserByUserNameUsecase.name);
-  }
+  private readonly logger = new Logger(GetUserByUserNameUsecase.name);
+
+  constructor(private readonly userRepository: UserRepository) {}
 
   async execute(request: GetUserByUserNameDto): Promise<Response> {
+    this.logger.log('Getting user by the username...');
     const userNameResult = UserName.create(request.username);
 
     if (userNameResult.isFailure) {
+      this.logger.debug(userNameResult.error.toString());
       return left(Result.fail(userNameResult.error.toString()));
     }
 
@@ -45,14 +44,18 @@ export class GetUserByUserNameUsecase
       );
 
       if (!found) {
-        return left(
-          GetUserByUserNameError.UserNotFoundError.create(username.value),
+        const userNotFoundError = new GetUserByUserNameError.UserNotFoundError(
+          username.value,
         );
+        this.logger.debug(userNotFoundError.errorValue().message);
+        return left(userNotFoundError);
       }
 
+      this.logger.log('User successfully found');
       return right(Result.ok<UserEntity>(userEntity));
     } catch (error) {
-      return left(AppErrors.UnexpectedError.create(error));
+      this.logger.error(error.message, error);
+      return left(new AppErrors.UnexpectedError(error));
     }
   }
 }

@@ -1,4 +1,3 @@
-import { Logger } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { mock, mockReset } from 'jest-mock-extended';
 import { TaskEntityBuilder } from '../../../../../../test/builder/task-entity.builder';
@@ -7,18 +6,17 @@ import { TaskRepository } from '../../../repositories/task.repository';
 import { GetAllActiveTasksUsecase } from './get-all-active-tasks.usecase';
 
 describe('GetAllActiveTasksUsecase', () => {
-  const mockedLogger = mock<Logger>();
   const mockedTaskRepository = mock<TaskRepository>();
   let getAllActiveTasksUseCase: GetAllActiveTasksUsecase;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        { provide: Logger, useValue: mockedLogger },
         { provide: TaskRepository, useValue: mockedTaskRepository },
         GetAllActiveTasksUsecase,
       ],
     }).compile();
+    module.useLogger(false);
 
     getAllActiveTasksUseCase = await module.resolve<GetAllActiveTasksUsecase>(
       GetAllActiveTasksUsecase,
@@ -26,7 +24,6 @@ describe('GetAllActiveTasksUsecase', () => {
   });
 
   afterAll(() => {
-    mockReset(mockedLogger);
     mockReset(mockedTaskRepository);
   });
 

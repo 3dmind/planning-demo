@@ -17,14 +17,12 @@ type Response = Either<AppErrors.UnexpectedError, Result<LoginResponseDto>>;
 
 @Injectable()
 export class LoginUsecase implements UseCase<UserEntity, Response> {
-  constructor(
-    private readonly logger: Logger,
-    private readonly authService: AuthService,
-  ) {
-    this.logger.setContext('LoginUsecase');
-  }
+  private readonly logger = new Logger(LoginUsecase.name);
+
+  constructor(private readonly authService: AuthService) {}
 
   async execute(user: UserEntity): Promise<Response> {
+    this.logger.log('User is going to log in...');
     try {
       const userSnapshot = user.createSnapshot();
       const payload: JwtClaims = {
@@ -40,6 +38,7 @@ export class LoginUsecase implements UseCase<UserEntity, Response> {
       user.setTokens(accessToken, refreshToken);
       await this.authService.saveAuthenticatedUser(user);
 
+      this.logger.log('User successfully logged in');
       return right(
         Result.ok<LoginResponseDto>({
           access_token: accessToken,
@@ -48,7 +47,7 @@ export class LoginUsecase implements UseCase<UserEntity, Response> {
       );
     } catch (error) {
       this.logger.error(error.message, error);
-      return left(AppErrors.UnexpectedError.create(error));
+      return left(new AppErrors.UnexpectedError(error));
     }
   }
 }

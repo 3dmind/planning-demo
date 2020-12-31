@@ -1,10 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, LogLevel } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiConfig } from './api-config.interface';
 
 @Injectable()
 export class ApiConfigService {
   constructor(private readonly configService: ConfigService<ApiConfig>) {}
+
+  isDevelopment(): boolean {
+    return true;
+  }
+
+  getLogLevel(): LogLevel[] {
+    if (this.isDevelopment()) {
+      return ['debug', 'error', 'log', 'verbose', 'warn'];
+    }
+  }
 
   getRedisHost(): string {
     return this.configService.get('REDIS_HOST');

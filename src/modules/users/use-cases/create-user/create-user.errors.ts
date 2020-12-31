@@ -2,26 +2,18 @@ import { Result, UseCaseError } from '../../../../shared/core';
 
 export namespace CreateUserErrors {
   export class EmailAlreadyExistsError extends Result<UseCaseError> {
-    private constructor(email: string) {
+    constructor(email: string) {
       super(false, {
         message: `The email ${email} associated for this account already exists.`,
       });
     }
-
-    public static create(email: string): EmailAlreadyExistsError {
-      return new EmailAlreadyExistsError(email);
-    }
   }
 
   export class UsernameTakenError extends Result<UseCaseError> {
-    private constructor(username: string) {
+    constructor(username: string) {
       super(false, {
         message: `The username ${username} was already taken.`,
       });
-    }
-
-    public static create(username: string): UsernameTakenError {
-      return new UsernameTakenError(username);
     }
   }
 }

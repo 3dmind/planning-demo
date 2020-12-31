@@ -25,14 +25,12 @@ type Response = Either<
 
 @Injectable()
 export class CreateUserUsecase implements UseCase<CreateUserDto, Response> {
-  constructor(
-    private readonly logger: Logger,
-    private readonly userRepository: UserRepository,
-  ) {
-    this.logger.setContext('CreateUserUsecase');
-  }
+  private readonly logger = new Logger(CreateUserUsecase.name);
+
+  constructor(private readonly userRepository: UserRepository) {}
 
   async execute(request: CreateUserDto): Promise<Response> {
+    this.logger.log('Creating user...');
     const userNameResult = UserName.create(request.username);
     const userPasswordResult = UserPassword.create({
       value: request.password,
@@ -45,8 +43,8 @@ export class CreateUserUsecase implements UseCase<CreateUserDto, Response> {
     ]);
 
     if (result.isFailure) {
-      this.logger.error(result.error);
-      return left(Result.fail(result.error)) as Response;
+      this.logger.debug(result.error);
+      return left(Result.fail(result.error));
     }
 
     const username = userNameResult.getValue();
@@ -56,17 +54,21 @@ export class CreateUserUsecase implements UseCase<CreateUserDto, Response> {
     try {
       const userAlreadyExists = await this.userRepository.exists(email);
       if (userAlreadyExists) {
-        return left(
-          CreateUserErrors.EmailAlreadyExistsError.create(email.value),
-        ) as Response;
+        const emailAlreadyExistsError = new CreateUserErrors.EmailAlreadyExistsError(
+          email.value,
+        );
+        this.logger.debug(emailAlreadyExistsError.errorValue().message);
+        return left(emailAlreadyExistsError);
       }
 
       const { found } = await this.userRepository.getUserByUsername(username);
 
       if (found) {
-        return left(
-          CreateUserErrors.UsernameTakenError.create(username.value),
-        ) as Response;
+        const usernameTakenError = new CreateUserErrors.UsernameTakenError(
+          username.value,
+        );
+        this.logger.debug(usernameTakenError.errorValue().message);
+        return left(usernameTakenError);
       }
 
       const userEntityResult = UserEntity.create({
@@ -75,14 +77,16 @@ export class CreateUserUsecase implements UseCase<CreateUserDto, Response> {
         email,
       });
       if (userEntityResult.isFailure) {
-        return left(Result.fail(userEntityResult.error.toString())) as Response;
+        this.logger.debug(userEntityResult.error.toString());
+        return left(Result.fail(userEntityResult.error.toString()));
       }
 
       await this.userRepository.save(userEntityResult.getValue());
+      this.logger.log('User successfully created');
       return right(Result.ok());
     } catch (error) {
       this.logger.error(error.message, error);
-      return left(AppErrors.UnexpectedError.create(error)) as Response;
+      return left(new AppErrors.UnexpectedError(error));
     }
   }
 }

@@ -1,34 +1,33 @@
-import { Logger } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
-import { mock } from 'jest-mock-extended';
+import { mock, mockReset } from 'jest-mock-extended';
+import { UserEntityBuilder } from '../../../../../test/builder/user-entity.builder';
 import { AppErrors } from '../../../../shared/core';
-import { UserEmail } from '../../domain/user-email.valueobject';
-import { UserName } from '../../domain/user-name.valueobject';
-import { UserPassword } from '../../domain/user-password.valueobject';
-import { UserEntity } from '../../domain/user.entity';
 import { UserRepository } from '../../repositories/user.repository';
 import { GetUserByUserNameDto } from './get-user-by-user-name.dto';
 import { GetUserByUserNameError } from './get-user-by-user-name.errors';
 import { GetUserByUserNameUsecase } from './get-user-by-user-name.usecase';
 
 describe('GetUserByUserNameUsecase', () => {
-  const mockedLogger = mock<Logger>();
   const mockedUserRepository = mock<UserRepository>();
   let useCase: GetUserByUserNameUsecase;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        { provide: Logger, useValue: mockedLogger },
         { provide: UserRepository, useValue: mockedUserRepository },
         GetUserByUserNameUsecase,
       ],
     }).compile();
+    module.useLogger(false);
 
     useCase = await module.resolve<GetUserByUserNameUsecase>(
       GetUserByUserNameUsecase,
     );
+  });
+
+  afterAll(() => {
+    mockReset(mockedUserRepository);
   });
 
   it('should fail if username cannot be created', async () => {
@@ -82,19 +81,9 @@ describe('GetUserByUserNameUsecase', () => {
   it('should succeed', async () => {
     expect.assertions(2);
     const usernameFixture = faker.internet.userName();
-    const passwordFixture = faker.internet.password(6);
-    const emailFixture = faker.internet.email();
-    const username = UserName.create(usernameFixture).getValue();
-    const password = UserPassword.create({
-      value: passwordFixture,
-    }).getValue();
-    const email = UserEmail.create(emailFixture).getValue();
-    const userEntity = UserEntity.create({
-      email,
-      password,
-      username,
-    }).getValue();
-
+    const userEntity = new UserEntityBuilder({
+      username: usernameFixture,
+    }).build();
     mockedUserRepository.getUserByUsername.mockResolvedValueOnce({
       found: true,
       userEntity,

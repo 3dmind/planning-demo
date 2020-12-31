@@ -1,9 +1,8 @@
 import { CacheModule } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { JWT_MODULE_OPTIONS } from '@nestjs/jwt/dist/jwt.constants';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
-import { mock } from 'jest-mock-extended';
+import { mock, mockReset } from 'jest-mock-extended';
 import { UserEntityBuilder } from '../../../../../test/builder/user-entity.builder';
 import { ApiConfigService } from '../../../../api-config/api-config.service';
 import { RedisCacheService } from '../../../../redis-cache/redis-cache.service';
@@ -44,7 +43,7 @@ describe('LogoutUsecase', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CacheModule.register({ store: 'memory' })],
       providers: [
-        { provide: JWT_MODULE_OPTIONS, useValue: {} },
+        { provide: 'JWT_MODULE_OPTIONS', useValue: {} },
         { provide: ApiConfigService, useValue: mockedApiConfigService },
         { provide: UserRepository, useValue: mockedUserRepository },
         RedisCacheService,
@@ -53,12 +52,18 @@ describe('LogoutUsecase', () => {
         LogoutUsecase,
       ],
     }).compile();
+    module.useLogger(false);
 
     useCase = await module.resolve<LogoutUsecase>(LogoutUsecase);
     authService = await module.resolve<AuthService>(AuthService);
     redisCacheService = await module.resolve<RedisCacheService>(
       RedisCacheService,
     );
+  });
+
+  afterAll(() => {
+    mockReset(mockedApiConfigService);
+    mockReset(mockedUserRepository);
   });
 
   it('should be defined', () => {

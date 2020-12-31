@@ -1,4 +1,3 @@
-import { Logger } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
 import { mock, mockReset } from 'jest-mock-extended';
@@ -11,24 +10,22 @@ import { EditTaskErrors } from './edit-task.errors';
 import { EditTaskUsecase } from './edit-task.usecase';
 
 describe('EditTaskUsecase', () => {
-  const mockedLogger = mock<Logger>();
   const mockedTaskRepository = mock<TaskRepository>();
   let useCase: EditTaskUsecase;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        { provide: Logger, useValue: mockedLogger },
         { provide: TaskRepository, useValue: mockedTaskRepository },
         EditTaskUsecase,
       ],
     }).compile();
+    module.useLogger(false);
 
     useCase = await module.resolve<EditTaskUsecase>(EditTaskUsecase);
   });
 
   afterAll(() => {
-    mockReset(mockedLogger);
     mockReset(mockedTaskRepository);
   });
 
@@ -72,7 +69,7 @@ describe('EditTaskUsecase', () => {
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(EditTaskErrors.TaskNotFoundError);
     expect(result.value.errorValue().message).toEqual(
-      `Could not find a task by id {${taskId}}.`,
+      `Could not find a task by the id {${taskId}}.`,
     );
   });
 
@@ -102,10 +99,9 @@ describe('EditTaskUsecase', () => {
       taskId: task.taskId.id.toString(),
       text: newText,
     });
+    const editedTask: Task = result.value.getValue();
 
     expect(result.isRight()).toBe(true);
-
-    const editedTask: Task = result.value.getValue();
     expect(editedTask.props.description.value).toBe(newText);
   });
 });

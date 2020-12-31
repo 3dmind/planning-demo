@@ -21,18 +21,16 @@ type Response = Either<
 
 @Injectable()
 export class ArchiveTaskUsecase implements UseCase<ArchiveTaskDto, Response> {
-  constructor(
-    private readonly logger: Logger,
-    private readonly taskRepository: TaskRepository,
-  ) {
-    this.logger.setContext('ArchiveTaskUsecase');
-  }
+  private readonly logger = new Logger(ArchiveTaskUsecase.name);
+
+  constructor(private readonly taskRepository: TaskRepository) {}
 
   async execute(request: ArchiveTaskDto): Promise<Response> {
+    this.logger.log('Archiving task...');
     const taskIdResult = TaskId.create(new UniqueEntityId(request.taskId));
 
     if (taskIdResult.isFailure) {
-      this.logger.error(taskIdResult.errorValue());
+      this.logger.debug(taskIdResult.errorValue());
       return left(taskIdResult);
     } else {
       try {
@@ -42,19 +40,20 @@ export class ArchiveTaskUsecase implements UseCase<ArchiveTaskDto, Response> {
         );
 
         if (!found) {
-          const taskNotFoundError = ArchiveTaskErrors.TaskNotFoundError.create(
+          const taskNotFoundError = new ArchiveTaskErrors.TaskNotFoundError(
             request.taskId,
           );
-          this.logger.error(taskNotFoundError.errorValue().message);
-          return left(taskNotFoundError) as Response;
+          this.logger.debug(taskNotFoundError.errorValue().message);
+          return left(taskNotFoundError);
         } else {
           task.archive();
           await this.taskRepository.save(task);
+          this.logger.log('Task successfully archived');
           return right(Result.ok<Task>(task));
         }
       } catch (error) {
         this.logger.error(error.message, error);
-        return left(AppErrors.UnexpectedError.create(error)) as Response;
+        return left(new AppErrors.UnexpectedError(error));
       }
     }
   }

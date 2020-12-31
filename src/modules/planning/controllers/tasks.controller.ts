@@ -6,10 +6,10 @@ import {
   HttpCode,
   HttpStatus,
   InternalServerErrorException,
-  Logger,
   NotFoundException,
   Param,
   Post,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { AppErrors } from '../../../shared/core';
 import { TaskDto } from '../dtos/task.dto';
@@ -34,7 +34,6 @@ import { TickOffTaskUsecase } from '../use-cases/tasks/tick-off-task/tick-off-ta
 @Controller('tasks')
 export class TasksController {
   constructor(
-    private readonly logger: Logger,
     private readonly getAllTasksUseCase: GetAllTasksUsecase,
     private readonly noteTaskUseCase: NoteTaskUsecase,
     private readonly tickOffTaskUseCase: TickOffTaskUsecase,
@@ -44,9 +43,7 @@ export class TasksController {
     private readonly discardTaskUseCase: DiscardTaskUsecase,
     private readonly getAllActiveTasksUseCase: GetAllActiveTasksUsecase,
     private readonly getAllArchivedTasksUseCase: GetAllArchivedTasksUsecase,
-  ) {
-    this.logger.setContext('TasksController');
-  }
+  ) {}
 
   @Get()
   async getTasks(): Promise<TaskDto[]> {
@@ -178,7 +175,7 @@ export class TasksController {
         case EditTaskErrors.TaskNotFoundError:
           throw new NotFoundException(error.errorValue().message);
         default:
-          throw new BadRequestException(error.errorValue());
+          throw new UnprocessableEntityException(error.errorValue());
       }
     }
   }

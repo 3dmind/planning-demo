@@ -1,86 +1,75 @@
-import { Logger } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
 import { mock, mockReset } from 'jest-mock-extended';
+import { UserEntityBuilder } from '../../../../../test/builder/user-entity.builder';
 import { AppErrors } from '../../../../shared/core';
-import { UserEmail } from '../../domain/user-email.valueobject';
-import { UserName } from '../../domain/user-name.valueobject';
 import { UserPassword } from '../../domain/user-password.valueobject';
-import { UserEntity } from '../../domain/user.entity';
 import { UserRepository } from '../../repositories/user.repository';
+import { ValidateUserDto } from './validate-user.dto';
 import { ValidateUserErrors } from './validate-user.errors';
 import { ValidateUserUsecase } from './validate-user.usecase';
 
 describe('ValidateUserUsecase', () => {
-  const mockedLogger = mock<Logger>();
   const mockedUserRepository = mock<UserRepository>();
-
-  const usernameFixture = faker.internet.userName();
-  const passwordFixture = faker.internet.password(6);
-  const emailFixture = faker.internet.email();
-  const username = UserName.create(usernameFixture).getValue();
-  const password = UserPassword.create({
-    value: passwordFixture,
-  }).getValue();
-  const email = UserEmail.create(emailFixture).getValue();
-
   let useCase: ValidateUserUsecase;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        { provide: Logger, useValue: mockedLogger },
         { provide: UserRepository, useValue: mockedUserRepository },
         ValidateUserUsecase,
       ],
     }).compile();
+    module.useLogger(false);
 
     useCase = await module.resolve<ValidateUserUsecase>(ValidateUserUsecase);
   });
 
   afterAll(() => {
-    mockReset(mockedLogger);
     mockReset(mockedUserRepository);
   });
 
   it('should fail if username cannot be created', async () => {
     expect.assertions(1);
-    const username = '';
-    const password = faker.internet.password(6);
+    const usernameFixture = '';
+    const passwordFixture = faker.internet.password(UserPassword.minLength);
+    const request: ValidateUserDto = {
+      username: usernameFixture,
+      password: passwordFixture,
+    };
 
-    const result = await useCase.execute({
-      username,
-      password,
-    });
+    const result = await useCase.execute(request);
 
     expect(result.isLeft()).toBe(true);
   });
 
   it('should fail if user password cannot be created', async () => {
     expect.assertions(1);
-    const username = faker.internet.userName();
-    const password = '';
+    const usernameFixture = faker.internet.userName();
+    const passwordFixture = '';
+    const request: ValidateUserDto = {
+      username: usernameFixture,
+      password: passwordFixture,
+    };
 
-    const result = await useCase.execute({
-      username,
-      password,
-    });
+    const result = await useCase.execute(request);
 
     expect(result.isLeft()).toBe(true);
   });
 
   it("should fail if user doesn't exist", async () => {
     expect.assertions(3);
-    const username = faker.internet.userName();
-    const password = faker.internet.password(6);
+    const usernameFixture = faker.internet.userName();
+    const passwordFixture = faker.internet.password(UserPassword.minLength);
+    const request: ValidateUserDto = {
+      username: usernameFixture,
+      password: passwordFixture,
+    };
     mockedUserRepository.getUserByUsername.mockResolvedValueOnce({
       found: false,
     });
 
-    const result = await useCase.execute({
-      username,
-      password,
-    });
+    const result = await useCase.execute(request);
 
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(
@@ -93,70 +82,85 @@ describe('ValidateUserUsecase', () => {
 
   it("should fail if password doesn't match", async () => {
     expect.assertions(3);
-    const userEntity = UserEntity.create({
-      username,
-      password,
-      email,
-    }).getValue();
-    const spy = jest
-      .spyOn(userEntity.password, 'comparePassword')
-      .mockResolvedValue(false);
+    const usernameFixture = faker.internet.userName();
+    const passwordFixture = faker.internet.password(UserPassword.minLength);
+    const hashedPassword = await UserPassword.create({
+      value: passwordFixture,
+      hashed: false,
+    })
+      .getValue()
+      .getHashedValue();
+    const missMatchingPasswordFixture = faker.internet.password(
+      UserPassword.minLength,
+    );
+    const userEntity = new UserEntityBuilder({
+      username: usernameFixture,
+      password: hashedPassword,
+      passwordIsHashed: true,
+    }).build();
+    const request: ValidateUserDto = {
+      username: usernameFixture,
+      password: missMatchingPasswordFixture,
+    };
     mockedUserRepository.getUserByUsername.mockResolvedValue({
       found: true,
       userEntity,
     });
 
-    const result = await useCase.execute({
-      username: usernameFixture,
-      password: passwordFixture,
-    });
+    const result = await useCase.execute(request);
 
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(
       ValidateUserErrors.PasswordDoesntMatchError,
     );
     expect(result.value.errorValue().message).toEqual('Password doesnt match.');
-
-    spy.mockRestore();
   });
 
   it('should fail on any other error', async () => {
     expect.assertions(2);
+    const usernameFixture = faker.internet.userName();
+    const passwordFixture = faker.internet.password(UserPassword.minLength);
+    const request: ValidateUserDto = {
+      username: usernameFixture,
+      password: passwordFixture,
+    };
     mockedUserRepository.getUserByUsername.mockImplementationOnce(() => {
       throw new Error('BOOM!');
     });
 
-    const result = await useCase.execute({
-      username: usernameFixture,
-      password: passwordFixture,
-    });
+    const result = await useCase.execute(request);
 
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(AppErrors.UnexpectedError);
   });
 
   it('should succeed', async () => {
-    const userEntity = UserEntity.create({
-      username,
-      password,
-      email,
-    }).getValue();
-    const spy = jest
-      .spyOn(userEntity.password, 'comparePassword')
-      .mockResolvedValue(true);
+    expect.assertions(2);
+    const usernameFixture = faker.internet.userName();
+    const passwordFixture = faker.internet.password(UserPassword.minLength);
+    const hashedPassword = await UserPassword.create({
+      value: passwordFixture,
+      hashed: false,
+    })
+      .getValue()
+      .getHashedValue();
+    const userEntity = new UserEntityBuilder({
+      username: usernameFixture,
+      password: hashedPassword,
+      passwordIsHashed: true,
+    }).build();
+    const request: ValidateUserDto = {
+      username: usernameFixture,
+      password: passwordFixture,
+    };
     mockedUserRepository.getUserByUsername.mockResolvedValue({
       found: true,
       userEntity,
     });
 
-    const result = await useCase.execute({
-      username: usernameFixture,
-      password: passwordFixture,
-    });
+    const result = await useCase.execute(request);
 
     expect(result.isRight()).toBe(true);
     expect(result.value.getValue()).toBe(userEntity);
-
-    spy.mockRestore();
   });
 });

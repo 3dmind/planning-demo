@@ -26,21 +26,19 @@ type Response = Either<
 
 @Injectable()
 export class EditTaskUsecase implements UseCase<Request, Response> {
-  constructor(
-    private readonly logger: Logger,
-    private readonly taskRepository: TaskRepository,
-  ) {
-    this.logger.setContext('EditTaskUsecase');
-  }
+  private readonly logger = new Logger(EditTaskUsecase.name);
+
+  constructor(private readonly taskRepository: TaskRepository) {}
 
   async execute(request: Request): Promise<Response> {
+    this.logger.log('Editing task...');
     const taskIdResult = TaskId.create(new UniqueEntityId(request.taskId));
     const descriptionResult = Description.create(request.text);
     const requestResult = Result.combine([taskIdResult, descriptionResult]);
 
     if (requestResult.isFailure) {
-      this.logger.error(requestResult.error);
-      return left(Result.fail<void>(requestResult.error)) as Response;
+      this.logger.debug(requestResult.error);
+      return left(Result.fail<void>(requestResult.error));
     }
 
     try {
@@ -48,19 +46,20 @@ export class EditTaskUsecase implements UseCase<Request, Response> {
       const { found, task } = await this.taskRepository.getTaskByTaskId(taskId);
 
       if (!found) {
-        const taskNotFoundError = EditTaskErrors.TaskNotFoundError.create(
+        const taskNotFoundError = new EditTaskErrors.TaskNotFoundError(
           request.taskId,
         );
-        this.logger.error(taskNotFoundError.errorValue().message);
-        return left(taskNotFoundError) as Response;
+        this.logger.debug(taskNotFoundError.errorValue().message);
+        return left(taskNotFoundError);
       }
 
       task.edit(descriptionResult.getValue());
       await this.taskRepository.save(task);
+      this.logger.log('Task successfully edited');
       return right(Result.ok<Task>(task));
     } catch (error) {
       this.logger.error(error.message, error);
-      return left(AppErrors.UnexpectedError.create(error)) as Response;
+      return left(new AppErrors.UnexpectedError(error));
     }
   }
 }

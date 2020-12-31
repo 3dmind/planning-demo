@@ -1,4 +1,3 @@
-import { Logger } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
 import { mock, mockReset } from 'jest-mock-extended';
@@ -7,28 +6,27 @@ import { AppErrors, Result } from '../../../../../shared/core';
 import { TaskId } from '../../../domain/task-id.entity';
 import { Task } from '../../../domain/task.entity';
 import { TaskRepository } from '../../../repositories/task.repository';
+import { DiscardTaskDto } from './discard-task.dto';
 import { DiscardTaskErrors } from './discard-task.errors';
 import { DiscardTaskUsecase } from './discard-task.usecase';
 
 describe('DiscardTaskUsecase', () => {
-  const mockedLogger = mock<Logger>();
   const mockedTaskRepository = mock<TaskRepository>();
   let useCase: DiscardTaskUsecase;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        { provide: Logger, useValue: mockedLogger },
         { provide: TaskRepository, useValue: mockedTaskRepository },
         DiscardTaskUsecase,
       ],
     }).compile();
+    module.useLogger(false);
 
     useCase = await module.resolve<DiscardTaskUsecase>(DiscardTaskUsecase);
   });
 
   afterAll(() => {
-    mockReset(mockedLogger);
     mockReset(mockedTaskRepository);
   });
 
@@ -36,7 +34,9 @@ describe('DiscardTaskUsecase', () => {
     const spy = jest
       .spyOn(TaskId, 'create')
       .mockReturnValue(Result.fail<TaskId>('error'));
-    const result = await useCase.execute({ taskId: null });
+    const request: DiscardTaskDto = { taskId: null };
+
+    const result = await useCase.execute(request);
 
     expect(result.isLeft()).toBe(true);
     expect(result.value.errorValue()).toEqual('error');
@@ -55,17 +55,18 @@ describe('DiscardTaskUsecase', () => {
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(DiscardTaskErrors.TaskNotFoundError);
     expect(result.value.errorValue().message).toEqual(
-      `Could not find a task by id {${taskId}}.`,
+      `Could not find a task by the id {${taskId}}.`,
     );
   });
 
   it('should fail on any other error', async () => {
     const taskId = faker.random.uuid();
+    const request: DiscardTaskDto = { taskId };
     mockedTaskRepository.getTaskByTaskId.mockImplementationOnce(() => {
       throw new Error();
     });
 
-    const result = await useCase.execute({ taskId });
+    const result = await useCase.execute(request);
 
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(AppErrors.UnexpectedError);
@@ -73,16 +74,16 @@ describe('DiscardTaskUsecase', () => {
 
   it('should succeed', async () => {
     const task = new TaskEntityBuilder().build();
+    const request: DiscardTaskDto = { taskId: task.taskId.id.toString() };
     mockedTaskRepository.getTaskByTaskId.mockResolvedValueOnce({
       found: true,
       task,
     });
 
-    const result = await useCase.execute({ taskId: task.taskId.id.toString() });
+    const result = await useCase.execute(request);
+    const discardedTask: Task = result.value.getValue();
 
     expect(result.isRight()).toBe(true);
-
-    const discardedTask: Task = result.value.getValue();
     expect(discardedTask.isDiscarded()).toBe(true);
   });
 });

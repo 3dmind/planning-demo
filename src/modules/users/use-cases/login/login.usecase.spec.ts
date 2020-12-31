@@ -1,6 +1,5 @@
-import { CacheModule, Logger } from '@nestjs/common';
+import { CacheModule } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { JWT_MODULE_OPTIONS } from '@nestjs/jwt/dist/jwt.constants';
 import { Test, TestingModule } from '@nestjs/testing';
 import { mock, mockReset } from 'jest-mock-extended';
 import { UserEntityBuilder } from '../../../../../test/builder/user-entity.builder';
@@ -12,7 +11,6 @@ import { LoginResponseDto } from './login-response.dto';
 import { LoginUsecase } from './login.usecase';
 
 describe('LoginUsecase', () => {
-  const mockedLogger = mock<Logger>();
   const mockedConfigService = mock<ApiConfigService>();
 
   const accessTokenSecretFixture = 'defaultaccesstokensecret';
@@ -42,8 +40,7 @@ describe('LoginUsecase', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CacheModule.register({ store: 'memory' })],
       providers: [
-        { provide: JWT_MODULE_OPTIONS, useValue: {} },
-        { provide: Logger, useValue: mockedLogger },
+        { provide: 'JWT_MODULE_OPTIONS', useValue: {} },
         { provide: ApiConfigService, useValue: mockedConfigService },
         RedisCacheService,
         JwtService,
@@ -51,6 +48,7 @@ describe('LoginUsecase', () => {
         LoginUsecase,
       ],
     }).compile();
+    module.useLogger(false);
 
     redisCacheService = await module.resolve<RedisCacheService>(
       RedisCacheService,
@@ -60,7 +58,6 @@ describe('LoginUsecase', () => {
   });
 
   afterAll(() => {
-    mockReset(mockedLogger);
     mockReset(mockedConfigService);
   });
 

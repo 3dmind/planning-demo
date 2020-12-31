@@ -1,4 +1,4 @@
-import { CacheModule, Logger } from '@nestjs/common';
+import { CacheModule } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { JWT_MODULE_OPTIONS } from '@nestjs/jwt/dist/jwt.constants';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -15,7 +15,6 @@ import { RefreshAccessTokenErrors } from './refresh-access-token.errors';
 import { RefreshAccessTokenUsecase } from './refresh-access-token.usecase';
 
 describe('RefreshAccessTokenUsecase', () => {
-  const mockedLogger = mock<Logger>();
   const mockedConfigService = mock<ApiConfigService>();
   const mockedUserRepository = mock<UserRepository>();
 
@@ -47,7 +46,6 @@ describe('RefreshAccessTokenUsecase', () => {
 
       providers: [
         { provide: JWT_MODULE_OPTIONS, useValue: {} },
-        { provide: Logger, useValue: mockedLogger },
         { provide: ApiConfigService, useValue: mockedConfigService },
         { provide: UserRepository, useValue: mockedUserRepository },
         RedisCacheService,
@@ -56,6 +54,7 @@ describe('RefreshAccessTokenUsecase', () => {
         RefreshAccessTokenUsecase,
       ],
     }).compile();
+    module.useLogger(false);
 
     authService = await module.resolve<AuthService>(AuthService);
     useCase = await module.resolve<RefreshAccessTokenUsecase>(
@@ -64,8 +63,8 @@ describe('RefreshAccessTokenUsecase', () => {
   });
 
   afterAll(() => {
-    mockReset(mockedLogger);
     mockReset(mockedConfigService);
+    mockReset(mockedUserRepository);
   });
 
   it('should be defined', () => {

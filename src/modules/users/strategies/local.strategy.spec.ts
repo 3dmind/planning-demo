@@ -40,7 +40,7 @@ describe('LocalStrategy', () => {
 
   it("should deny access if username doesn't exist", async () => {
     expect.assertions(2);
-    const userNameDoesntExistError = ValidateUserErrors.UserNameDoesntExistError.create();
+    const userNameDoesntExistError = new ValidateUserErrors.UserNameDoesntExistError();
     mockedValidateUserUseCase.execute.mockResolvedValueOnce(
       left(userNameDoesntExistError),
     );
@@ -55,7 +55,7 @@ describe('LocalStrategy', () => {
 
   it("should deny access if password doesn't match", async () => {
     expect.assertions(2);
-    const passwordDoesntMatchError = ValidateUserErrors.PasswordDoesntMatchError.create();
+    const passwordDoesntMatchError = new ValidateUserErrors.PasswordDoesntMatchError();
     mockedValidateUserUseCase.execute.mockResolvedValueOnce(
       left(passwordDoesntMatchError),
     );
@@ -70,9 +70,7 @@ describe('LocalStrategy', () => {
 
   it('should deny access on any unexpected error', async () => {
     expect.assertions(2);
-    const unexpectedError = AppErrors.UnexpectedError.create(
-      new Error('BOOM!'),
-    );
+    const unexpectedError = new AppErrors.UnexpectedError(new Error());
     mockedValidateUserUseCase.execute.mockResolvedValueOnce(
       left(unexpectedError),
     );

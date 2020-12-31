@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
 import { ApiConfigService } from './api-config.service';
 
-describe('ApiConfigService', () => {
+describe.only('ApiConfigService', () => {
   const OLD_ENV = Object.assign({}, process.env);
   let service: ApiConfigService;
 
@@ -23,6 +23,26 @@ describe('ApiConfigService', () => {
 
   afterAll(() => {
     process.env = OLD_ENV;
+  });
+
+  it('should determine development mode', () => {
+    expect.assertions(1);
+
+    const isDevelopment = service.isDevelopment();
+
+    expect(isDevelopment).toBe(true);
+  });
+
+  it('should provide log levels', () => {
+    expect.assertions(5);
+
+    const logLevel = service.getLogLevel();
+
+    expect(logLevel).toContainEqual('debug');
+    expect(logLevel).toContainEqual('error');
+    expect(logLevel).toContainEqual('log');
+    expect(logLevel).toContainEqual('verbose');
+    expect(logLevel).toContainEqual('warn');
   });
 
   it('should provide the redis host', () => {

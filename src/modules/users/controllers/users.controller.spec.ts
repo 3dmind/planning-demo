@@ -1,6 +1,5 @@
-import { Logger } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { mock } from 'jest-mock-extended';
+import { mock, mockReset } from 'jest-mock-extended';
 import { CreateUserUsecase } from '../use-cases/create-user/create-user.usecase';
 import { GetUserByUserNameUsecase } from '../use-cases/get-user-by-user-name/get-user-by-user-name.usecase';
 import { LoginUsecase } from '../use-cases/login/login.usecase';
@@ -9,22 +8,17 @@ import { RefreshAccessTokenUsecase } from '../use-cases/refresh-access-token/ref
 import { UsersController } from './users.controller';
 
 describe('Users Controller', () => {
-  const mockedLogger = mock<Logger>();
   const mockedCreateUserUseCase = mock<CreateUserUsecase>();
-  const mockedLoginUseCase = mock<LoginUsecase>();
   const mockedGetUserByUserNameUseCase = mock<GetUserByUserNameUsecase>();
-  const mockedRefreshAccessTokenUseCase = mock<RefreshAccessTokenUsecase>();
+  const mockedLoginUseCase = mock<LoginUsecase>();
   const mockedLogoutUseCase = mock<LogoutUsecase>();
+  const mockedRefreshAccessTokenUseCase = mock<RefreshAccessTokenUsecase>();
   let controller: UsersController;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UsersController],
       providers: [
-        {
-          provide: Logger,
-          useValue: mockedLogger,
-        },
         {
           provide: CreateUserUsecase,
           useValue: mockedCreateUserUseCase,
@@ -49,6 +43,14 @@ describe('Users Controller', () => {
     }).compile();
 
     controller = module.get<UsersController>(UsersController);
+  });
+
+  afterAll(() => {
+    mockReset(mockedCreateUserUseCase);
+    mockReset(mockedGetUserByUserNameUseCase);
+    mockReset(mockedLoginUseCase);
+    mockReset(mockedLogoutUseCase);
+    mockReset(mockedRefreshAccessTokenUseCase);
   });
 
   it('should be defined', () => {

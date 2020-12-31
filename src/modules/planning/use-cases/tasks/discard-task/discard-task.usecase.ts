@@ -21,19 +21,17 @@ type Response = Either<
 
 @Injectable()
 export class DiscardTaskUsecase implements UseCase<DiscardTaskDto, Response> {
-  constructor(
-    private readonly logger: Logger,
-    private readonly taskRepository: TaskRepository,
-  ) {
-    this.logger.setContext('DiscardTaskUsecase');
-  }
+  private readonly logger = new Logger(DiscardTaskUsecase.name);
+
+  constructor(private readonly taskRepository: TaskRepository) {}
 
   async execute(request: DiscardTaskDto): Promise<Response> {
+    this.logger.log('Discarding task...');
     const taskIdResult = TaskId.create(new UniqueEntityId(request.taskId));
 
     if (taskIdResult.isFailure) {
-      this.logger.error(taskIdResult.errorValue());
-      return left(taskIdResult) as Response;
+      this.logger.debug(taskIdResult.errorValue());
+      return left(taskIdResult);
     }
 
     try {
@@ -41,19 +39,20 @@ export class DiscardTaskUsecase implements UseCase<DiscardTaskDto, Response> {
       const { found, task } = await this.taskRepository.getTaskByTaskId(taskId);
 
       if (!found) {
-        const taskNotFoundError = DiscardTaskErrors.TaskNotFoundError.create(
+        const taskNotFoundError = new DiscardTaskErrors.TaskNotFoundError(
           request.taskId,
         );
-        this.logger.error(taskNotFoundError.errorValue().message);
-        return left(taskNotFoundError) as Response;
+        this.logger.debug(taskNotFoundError.errorValue().message);
+        return left(taskNotFoundError);
       }
 
       task.discard();
       await this.taskRepository.save(task);
+      this.logger.log('Task successfully discarded');
       return right(Result.ok<Task>(task));
     } catch (error) {
       this.logger.error(error.message, error);
-      return left(AppErrors.UnexpectedError.create(error)) as Response;
+      return left(new AppErrors.UnexpectedError(error));
     }
   }
 }

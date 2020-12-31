@@ -6,7 +6,6 @@ import {
   HttpCode,
   HttpStatus,
   InternalServerErrorException,
-  Logger,
   NotFoundException,
   Post,
   UnprocessableEntityException,
@@ -16,7 +15,7 @@ import { Username } from '../../../decorators/username.decorator';
 import { JwtAuthGuard } from '../../../guards/jwt-auth.guard';
 import { AppErrors } from '../../../shared/core';
 import { User } from '../decorators/user.decorator';
-import { JwtToken } from '../domain/jwt';
+import { AccessToken } from '../domain/jwt';
 import { UserEntity } from '../domain/user.entity';
 import { UserDto } from '../dtos/user.dto';
 import { JwtRefreshAuthGuard } from '../guards/jwt-refresh-auth.guard';
@@ -39,15 +38,12 @@ import { RefreshTokenDto } from '../use-cases/refresh-access-token/refresh-token
 @Controller('users')
 export class UsersController {
   constructor(
-    private readonly logger: Logger,
     private readonly createUserUsecase: CreateUserUsecase,
     private readonly loginUsecase: LoginUsecase,
     private readonly getUserByUserNameUsecase: GetUserByUserNameUsecase,
     private readonly refreshAccessTokenUsecase: RefreshAccessTokenUsecase,
     private readonly logoutUsecase: LogoutUsecase,
-  ) {
-    this.logger.setContext('UsersController');
-  }
+  ) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -115,7 +111,7 @@ export class UsersController {
     const result = await this.refreshAccessTokenUsecase.execute({ username });
 
     if (result.isRight()) {
-      const accessToken: JwtToken = result.value.getValue();
+      const accessToken: AccessToken = result.value.getValue();
       return {
         access_token: accessToken,
         refresh_token: refreshTokenDto.refresh_token,

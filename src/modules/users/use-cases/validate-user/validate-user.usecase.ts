@@ -24,14 +24,11 @@ type Response = Either<
 
 @Injectable()
 export class ValidateUserUsecase implements UseCase<ValidateUserDto, Response> {
-  constructor(
-    private readonly logger: Logger,
-    private readonly userRepository: UserRepository,
-  ) {
-    this.logger.setContext('ValidateUserUsecase');
-  }
+  private readonly logger = new Logger(ValidateUserUsecase.name);
+  constructor(private readonly userRepository: UserRepository) {}
 
   async execute(request: ValidateUserDto): Promise<Response> {
+    this.logger.log('Validating user...');
     const userNameResult = UserName.create(request.username);
     const userPasswordResult = UserPassword.create({
       value: request.password,
@@ -51,20 +48,25 @@ export class ValidateUserUsecase implements UseCase<ValidateUserDto, Response> {
         username,
       );
       if (!found) {
-        return left(ValidateUserErrors.UserNameDoesntExistError.create());
+        const userNameDoesntExistError = new ValidateUserErrors.UserNameDoesntExistError();
+        this.logger.debug(userNameDoesntExistError.errorValue().message);
+        return left(userNameDoesntExistError);
       }
 
       const isPasswordValid = await userEntity.password.comparePassword(
         password.value,
       );
       if (!isPasswordValid) {
-        return left(ValidateUserErrors.PasswordDoesntMatchError.create());
+        const passwordDoesntMatchError = new ValidateUserErrors.PasswordDoesntMatchError();
+        this.logger.debug(passwordDoesntMatchError.errorValue().message);
+        return left(passwordDoesntMatchError);
       }
 
+      this.logger.log('User successfully validated');
       return right(Result.ok<UserEntity>(userEntity));
     } catch (error) {
       this.logger.error(error.message, error);
-      return left(AppErrors.UnexpectedError.create(error));
+      return left(new AppErrors.UnexpectedError(error));
     }
   }
 }

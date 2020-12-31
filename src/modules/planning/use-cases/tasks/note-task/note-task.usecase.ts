@@ -16,39 +16,37 @@ type Response = Either<AppErrors.UnexpectedError | Result<any>, Result<Task>>;
 
 @Injectable()
 export class NoteTaskUsecase implements UseCase<NoteTaskDto, Response> {
-  constructor(
-    private readonly logger: Logger,
-    private readonly taskRepository: TaskRepository,
-  ) {
-    this.logger.setContext('NoteTaskUsecase');
-  }
+  private readonly logger = new Logger(NoteTaskUsecase.name);
+
+  constructor(private readonly taskRepository: TaskRepository) {}
 
   async execute(request?: NoteTaskDto): Promise<Response> {
+    this.logger.log('Noting new task...');
     const { text } = request;
 
     try {
-      const descriptionOrError = Description.create(text);
+      const descriptionResult = Description.create(text);
 
-      if (descriptionOrError.isFailure) {
-        this.logger.error(descriptionOrError.errorValue());
-        return left(descriptionOrError);
+      if (descriptionResult.isFailure) {
+        this.logger.debug(descriptionResult.errorValue());
+        return left(descriptionResult);
       }
 
-      const description = descriptionOrError.getValue();
-      const taskOrError = Task.note(description);
+      const description = descriptionResult.getValue();
+      const taskResult = Task.note(description);
 
-      if (taskOrError.isFailure) {
-        this.logger.error(taskOrError.errorValue());
-        return left(taskOrError);
+      if (taskResult.isFailure) {
+        this.logger.debug(taskResult.errorValue());
+        return left(taskResult);
       }
 
-      const task = taskOrError.getValue();
+      const task = taskResult.getValue();
       await this.taskRepository.save(task);
-      this.logger.log('Task successfully created.');
+      this.logger.log('Task successfully noted');
       return right(Result.ok<Task>(task));
     } catch (error) {
-      this.logger.error(error.toString());
-      return left(AppErrors.UnexpectedError.create(error));
+      this.logger.error(error.message);
+      return left(new AppErrors.UnexpectedError(error));
     }
   }
 }

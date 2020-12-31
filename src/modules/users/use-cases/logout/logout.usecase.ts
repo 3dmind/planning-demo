@@ -28,9 +28,11 @@ export class LogoutUsecase implements UseCase<LogoutDto, Response> {
   ) {}
 
   public async execute(request: LogoutDto): Promise<Response> {
+    this.logger.log('User is going to log out...');
     const userNameResult = UserName.create(request.username);
 
     if (userNameResult.isFailure) {
+      this.logger.debug(userNameResult.error.toString());
       return left(Result.fail(userNameResult.error.toString()));
     }
 
@@ -41,14 +43,19 @@ export class LogoutUsecase implements UseCase<LogoutDto, Response> {
       );
 
       if (!found) {
-        return left(LogoutErrors.UserNotFoundError.create(username.value));
+        const userNotFoundError = new LogoutErrors.UserNotFoundError(
+          username.value,
+        );
+        this.logger.debug(userNotFoundError.errorValue().message);
+        return left(userNotFoundError);
       }
 
       await this.authService.deAuthenticateUser(userEntity);
+      this.logger.log('User successfully logged out');
       return right(Result.ok<void>());
     } catch (error) {
       this.logger.error(error.message);
-      return left(AppErrors.UnexpectedError.create(error));
+      return left(new AppErrors.UnexpectedError(error));
     }
   }
 }

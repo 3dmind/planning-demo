@@ -14,20 +14,19 @@ type Response = Either<AppErrors.UnexpectedError, Result<Task[]>>;
 
 @Injectable()
 export class GetAllActiveTasksUsecase implements UseCase<void, Response> {
-  constructor(
-    private readonly logger: Logger,
-    private readonly taskRepository: TaskRepository,
-  ) {
-    this.logger.setContext('GetAllActiveTasksUsecase');
-  }
+  private readonly logger = new Logger(GetAllActiveTasksUsecase.name);
+
+  constructor(private readonly taskRepository: TaskRepository) {}
 
   async execute(): Promise<Response> {
+    this.logger.log('Getting active tasks...');
     try {
       const tasks = await this.taskRepository.getActiveTasks();
+      this.logger.log(`Found ${tasks.length} active tasks`);
       return right(Result.ok<Task[]>(tasks));
     } catch (error) {
       this.logger.error(error.message, error);
-      return left(AppErrors.UnexpectedError.create(error));
+      return left(new AppErrors.UnexpectedError(error));
     }
   }
 }

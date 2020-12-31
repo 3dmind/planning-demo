@@ -25,18 +25,19 @@ type Response = Either<
 @Injectable()
 export class RefreshAccessTokenUsecase
   implements UseCase<RefreshAccessTokenRequestDto, Response> {
+  private readonly logger = new Logger(RefreshAccessTokenUsecase.name);
+
   constructor(
-    private readonly logger: Logger,
     private readonly userRepository: UserRepository,
     private readonly authService: AuthService,
-  ) {
-    this.logger.setContext(RefreshAccessTokenUsecase.name);
-  }
+  ) {}
 
   async execute(request: RefreshAccessTokenRequestDto): Promise<Response> {
+    this.logger.log('User is going to refresh access token...');
     const userNameResult = UserName.create(request.username);
 
     if (userNameResult.isFailure) {
+      this.logger.debug(userNameResult.error.toString());
       return left(Result.fail(userNameResult.error.toString()));
     }
 
@@ -47,9 +48,11 @@ export class RefreshAccessTokenUsecase
       );
 
       if (!found) {
-        return left(
-          RefreshAccessTokenErrors.UserNotFoundError.create(username.value),
+        const userNotFoundError = new RefreshAccessTokenErrors.UserNotFoundError(
+          username.value,
         );
+        this.logger.debug(userNotFoundError.errorValue().message);
+        return left(userNotFoundError);
       }
 
       const savedTokens = await this.authService.getTokens(username.value);
@@ -62,11 +65,11 @@ export class RefreshAccessTokenUsecase
 
       userEntity.setTokens(newAccessToken, savedTokens.refreshToken);
       await this.authService.saveAuthenticatedUser(userEntity);
-
+      this.logger.log('Access token successfully refreshed');
       return right(Result.ok<AccessToken>(newAccessToken));
     } catch (error) {
       this.logger.error(error.message, error);
-      return left(AppErrors.UnexpectedError.create(error));
+      return left(new AppErrors.UnexpectedError(error));
     }
   }
 }

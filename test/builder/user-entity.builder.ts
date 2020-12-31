@@ -20,13 +20,15 @@ export class UserEntityBuilder {
     {
       createdAt = new Date(),
       email = faker.internet.email(),
-      password = faker.internet.password(6),
+      password = faker.internet.password(UserPassword.minLength),
+      passwordIsHashed = false,
       username = faker.internet.userName(),
       isEmailVerified = false,
     }: {
       createdAt?: Date;
       email?: string;
       password?: string;
+      passwordIsHashed?: boolean;
       username?: string;
       isEmailVerified?: boolean;
     } = {},
@@ -39,6 +41,7 @@ export class UserEntityBuilder {
     this.isEmailVerified = isEmailVerified;
     this.password = UserPassword.create({
       value: password,
+      hashed: passwordIsHashed,
     }).getValue();
     this.refreshToken = '';
     this.username = UserName.create(username).getValue();

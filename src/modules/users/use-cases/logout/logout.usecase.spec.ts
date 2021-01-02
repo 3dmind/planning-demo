@@ -115,15 +115,13 @@ describe('LogoutUsecase', () => {
   it('should succeed', async () => {
     expect.assertions(3);
     const username = faker.internet.userName();
-    const userEntity = new UserEntityBuilder({ username })
-      .makeLoggedIn()
-      .build();
+    const user = new UserEntityBuilder({ username }).makeLoggedIn().build();
     const dto: LogoutDto = { username };
     mockedUserRepository.getUserByUsername.mockResolvedValueOnce({
       found: true,
-      userEntity,
+      user,
     });
-    await authService.saveAuthenticatedUser(userEntity);
+    await authService.saveAuthenticatedUser(user);
 
     let value = await redisCacheService.get(username);
     expect(value).toBeDefined();

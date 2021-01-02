@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
+import { UniqueEntityId } from '../../../shared/domain';
 import { UserEmail } from '../domain/user-email.valueobject';
 import { UserName } from '../domain/user-name.valueobject';
-import { UserEntity } from '../domain/user.entity';
+import { User } from '../domain/user.entity';
 import { UserMapper } from '../mappers/user.mapper';
 
 @Injectable()
@@ -18,11 +19,11 @@ export class UserRepository {
     return !!baseUser === true;
   }
 
-  async save(userEntity: UserEntity): Promise<void> {
-    const exists = await this.exists(userEntity.email);
+  async save(user: User): Promise<void> {
+    const exists = await this.exists(user.email);
 
     if (!exists) {
-      const baseUserModel = await UserMapper.toPersistence(userEntity);
+      const baseUserModel = await UserMapper.toPersistence(user);
       await this.prismaService.baseUserModel.create({
         data: baseUserModel,
       });
@@ -31,7 +32,7 @@ export class UserRepository {
 
   async getUserByUsername(
     userName: UserName,
-  ): Promise<{ found: boolean; userEntity?: UserEntity }> {
+  ): Promise<{ found: boolean; user?: User }> {
     const baseUserModel = await this.prismaService.baseUserModel.findFirst({
       where: {
         username: userName.value,
@@ -42,7 +43,29 @@ export class UserRepository {
     if (found) {
       return {
         found,
-        userEntity: UserMapper.toDomain(baseUserModel),
+        user: UserMapper.toDomain(baseUserModel),
+      };
+    } else {
+      return {
+        found,
+      };
+    }
+  }
+
+  async getUserByUserId(
+    id: UniqueEntityId,
+  ): Promise<{ found: boolean; user?: User }> {
+    const baseUserModel = await this.prismaService.baseUserModel.findUnique({
+      where: {
+        baseUserId: id.toString(),
+      },
+    });
+    const found = !!baseUserModel === true;
+
+    if (found) {
+      return {
+        found,
+        user: UserMapper.toDomain(baseUserModel),
       };
     } else {
       return {

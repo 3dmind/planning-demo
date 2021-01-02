@@ -7,7 +7,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
 import { mock, mockReset } from 'jest-mock-extended';
 import { AppErrors, left, Result, right } from '../../../shared/core';
-import { UserEntity } from '../domain/user.entity';
+import { User } from '../domain/user.entity';
 import { UserRepository } from '../repositories/user.repository';
 import { ValidateUserErrors } from '../use-cases/validate-user/validate-user.errors';
 import { ValidateUserUsecase } from '../use-cases/validate-user/validate-user.usecase';
@@ -96,13 +96,13 @@ describe('LocalStrategy', () => {
     expect.assertions(1);
     const username = faker.internet.userName();
     const password = faker.internet.password(6);
-    const mockedUser = {} as UserEntity;
+    const mockedUser = {} as User;
     mockedValidateUserUseCase.execute.mockResolvedValueOnce(
-      right(Result.ok<UserEntity>(mockedUser)),
+      right(Result.ok<User>(mockedUser)),
     );
 
-    const userEntity = await strategy.validate(username, password);
+    const user = await strategy.validate(username, password);
 
-    expect(userEntity).toBe(mockedUser);
+    expect(user).toBe(mockedUser);
   });
 });

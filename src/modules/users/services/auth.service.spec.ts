@@ -122,8 +122,8 @@ describe('AuthService', () => {
   it('should access saved tokens', async () => {
     expect.assertions(1);
     const username = faker.internet.userName();
-    const userEntity = new UserEntityBuilder({ username }).build();
-    await service.saveAuthenticatedUser(userEntity);
+    const user = new UserEntityBuilder({ username }).build();
+    await service.saveAuthenticatedUser(user);
 
     const tokens = await service.getTokens(username);
 
@@ -135,13 +135,13 @@ describe('AuthService', () => {
     const username = faker.internet.userName();
     const validAccessToken = faker.random.alphaNumeric(10);
     const invalidAccessToken = faker.random.alphaNumeric(10);
-    const userEntity = new UserEntityBuilder({
+    const user = new UserEntityBuilder({
       username,
     })
       .makeLoggedIn({ accessToken: validAccessToken })
       .build();
     let result: boolean;
-    await service.saveAuthenticatedUser(userEntity);
+    await service.saveAuthenticatedUser(user);
 
     result = await service.validateAccessToken(username, validAccessToken);
 
@@ -157,13 +157,13 @@ describe('AuthService', () => {
     const username = faker.internet.userName();
     const validRefreshToken = faker.random.alphaNumeric(10);
     const invalidRefreshToken = faker.random.alphaNumeric(10);
-    const userEntity = new UserEntityBuilder({
+    const user = new UserEntityBuilder({
       username,
     })
       .makeLoggedIn({ refreshToken: validRefreshToken })
       .build();
     let result: boolean;
-    await service.saveAuthenticatedUser(userEntity);
+    await service.saveAuthenticatedUser(user);
 
     result = await service.validateRefreshToken(username, validRefreshToken);
 

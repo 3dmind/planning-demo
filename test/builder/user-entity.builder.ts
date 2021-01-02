@@ -3,7 +3,7 @@ import { AccessToken, RefreshToken } from '../../src/modules/users/domain/jwt';
 import { UserEmail } from '../../src/modules/users/domain/user-email.valueobject';
 import { UserName } from '../../src/modules/users/domain/user-name.valueobject';
 import { UserPassword } from '../../src/modules/users/domain/user-password.valueobject';
-import { UserEntity } from '../../src/modules/users/domain/user.entity';
+import { User } from '../../src/modules/users/domain/user.entity';
 import { UniqueEntityId } from '../../src/shared/domain';
 
 export class UserEntityBuilder {
@@ -64,8 +64,8 @@ export class UserEntityBuilder {
     return this;
   }
 
-  public build(): UserEntity {
-    return UserEntity.create(
+  public build(): User {
+    return User.create(
       {
         accessToken: this.accessToken,
         createdAt: this.createdAt,

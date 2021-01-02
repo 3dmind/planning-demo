@@ -1,32 +1,39 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
 import { mock, mockReset } from 'jest-mock-extended';
+import { DomainEventPublisherService } from '../../../../domain-event-publisher/domain-event-publisher.service';
 import { AppErrors, Result } from '../../../../shared/core';
 import { UserPassword } from '../../domain/user-password.valueobject';
-import { UserEntity } from '../../domain/user.entity';
+import { User } from '../../domain/user.entity';
 import { UserRepository } from '../../repositories/user.repository';
-import { CreateUserDto } from './create-user.dto';
-import { CreateUserErrors } from './create-user.errors';
-import { CreateUserUsecase } from './create-user.usecase';
+import { RegisterUserDto } from './register-user.dto';
+import { RegisterUserErrors } from './register-user.errors';
+import { RegisterUserUsecase } from './register-user.usecase';
 
-describe('CreateUserUsecase', () => {
+describe('RegisterUserUsecase', () => {
   const mockedUserRepository = mock<UserRepository>();
-  let useCase: CreateUserUsecase;
+  const mockedDomainEventPublisherService = mock<DomainEventPublisherService>();
+  let useCase: RegisterUserUsecase;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         { provide: UserRepository, useValue: mockedUserRepository },
-        CreateUserUsecase,
+        {
+          provide: DomainEventPublisherService,
+          useValue: mockedDomainEventPublisherService,
+        },
+        RegisterUserUsecase,
       ],
     }).compile();
     module.useLogger(false);
 
-    useCase = await module.resolve<CreateUserUsecase>(CreateUserUsecase);
+    useCase = await module.resolve<RegisterUserUsecase>(RegisterUserUsecase);
   });
 
   afterAll(() => {
     mockReset(mockedUserRepository);
+    mockReset(mockedDomainEventPublisherService);
   });
 
   it('should fail if username cannot be created', async () => {
@@ -36,7 +43,7 @@ describe('CreateUserUsecase', () => {
     const request = {
       email: emailFixture,
       password: passwordFixture,
-    } as CreateUserDto;
+    } as RegisterUserDto;
 
     const result = await useCase.execute(request);
 
@@ -50,7 +57,7 @@ describe('CreateUserUsecase', () => {
     const request = {
       email: emailFixture,
       username: userNameFixture,
-    } as CreateUserDto;
+    } as RegisterUserDto;
 
     const result = await useCase.execute(request);
 
@@ -64,7 +71,7 @@ describe('CreateUserUsecase', () => {
     const request = {
       username: userNameFixture,
       password: passwordFixture,
-    } as CreateUserDto;
+    } as RegisterUserDto;
 
     const result = await useCase.execute(request);
 
@@ -86,7 +93,7 @@ describe('CreateUserUsecase', () => {
 
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(
-      CreateUserErrors.EmailAlreadyExistsError,
+      RegisterUserErrors.EmailAlreadyExistsError,
     );
     expect(result.value.errorValue().message).toEqual(
       `The email ${emailFixture} associated for this account already exists.`,
@@ -110,7 +117,7 @@ describe('CreateUserUsecase', () => {
     });
 
     expect(result.isLeft()).toBe(true);
-    expect(result.value).toBeInstanceOf(CreateUserErrors.UsernameTakenError);
+    expect(result.value).toBeInstanceOf(RegisterUserErrors.UsernameTakenError);
     expect(result.value.errorValue().message).toEqual(
       `The username ${userNameFixture} was already taken.`,
     );
@@ -122,8 +129,8 @@ describe('CreateUserUsecase', () => {
     const passwordFixture = faker.internet.password(UserPassword.minLength);
     const userNameFixture = faker.internet.userName();
     const spy = jest
-      .spyOn(UserEntity, 'create')
-      .mockReturnValue(Result.fail<UserEntity>('error'));
+      .spyOn(User, 'create')
+      .mockReturnValue(Result.fail<User>('error'));
     mockedUserRepository.exists.mockResolvedValueOnce(false);
     mockedUserRepository.getUserByUsername.mockResolvedValueOnce({
       found: false,

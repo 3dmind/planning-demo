@@ -1,5 +1,6 @@
 import { Guard, Result } from '../../../shared/core';
-import { Entity, UniqueEntityId } from '../../../shared/domain';
+import { AggregateRoot, UniqueEntityId } from '../../../shared/domain';
+import { UserRegistered } from './events/user-registered.domainevent';
 import { AccessToken, RefreshToken } from './jwt';
 import { UserEmail } from './user-email.valueobject';
 import { UserId } from './user-id.entity';
@@ -7,7 +8,7 @@ import { UserPassword } from './user-password.valueobject';
 import { UserProps } from './user-props.interface';
 import { UserSnapshot } from './user-snapshot';
 
-export class UserEntity extends Entity<UserProps> {
+export class User extends AggregateRoot<UserProps> {
   private constructor(props: UserProps, id: UniqueEntityId) {
     super(props, id);
   }
@@ -24,29 +25,36 @@ export class UserEntity extends Entity<UserProps> {
     return this.props.password;
   }
 
-  public static create(
-    props: UserProps,
-    id?: UniqueEntityId,
-  ): Result<UserEntity> {
+  public static create(props: UserProps, id?: UniqueEntityId): Result<User> {
     const nullGuardResult = Guard.againstNullOrUndefinedBulk([
-      { argument: props.username, argumentName: 'username' },
-      { argument: props.password, argumentName: 'password' },
+      { argument: props.createdAt, argumentName: 'createdAt' },
       { argument: props.email, argumentName: 'email' },
+      { argument: props.isEmailVerified, argumentName: 'isEmailVerified' },
+      { argument: props.password, argumentName: 'password' },
+      { argument: props.username, argumentName: 'username' },
     ]);
 
     if (!nullGuardResult.succeeded) {
-      return Result.fail<UserEntity>(nullGuardResult.message);
+      return Result.fail<User>(nullGuardResult.message);
     }
 
-    const userEntity = new UserEntity(
-      {
-        ...props,
-        isEmailVerified: props.isEmailVerified ?? false,
-        createdAt: props.createdAt ?? new Date(),
-      },
-      id,
-    );
-    return Result.ok(userEntity);
+    const user = new User(props, id);
+    return Result.ok(user);
+  }
+
+  public static register(props: UserProps): Result<User> {
+    const userResult = User.create({
+      createdAt: new Date(),
+      email: props.email,
+      isEmailVerified: false,
+      password: props.password,
+      username: props.username,
+    });
+
+    const user = userResult.getValue();
+    user.addDomainEvent(new UserRegistered(user));
+
+    return userResult;
   }
 
   public createSnapshot(): UserSnapshot {

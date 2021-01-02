@@ -9,7 +9,7 @@ import {
 } from '../../../../shared/core';
 import { UserName } from '../../domain/user-name.valueobject';
 import { UserPassword } from '../../domain/user-password.valueobject';
-import { UserEntity } from '../../domain/user.entity';
+import { User } from '../../domain/user.entity';
 import { UserRepository } from '../../repositories/user.repository';
 import { ValidateUserDto } from './validate-user.dto';
 import { ValidateUserErrors } from './validate-user.errors';
@@ -19,7 +19,7 @@ type Response = Either<
   | ValidateUserErrors.PasswordDoesntMatchError
   | AppErrors.UnexpectedError
   | Result<any>,
-  Result<UserEntity>
+  Result<User>
 >;
 
 @Injectable()
@@ -44,7 +44,7 @@ export class ValidateUserUsecase implements UseCase<ValidateUserDto, Response> {
       const username = userNameResult.getValue();
       const password = userPasswordResult.getValue();
 
-      const { found, userEntity } = await this.userRepository.getUserByUsername(
+      const { found, user } = await this.userRepository.getUserByUsername(
         username,
       );
       if (!found) {
@@ -53,7 +53,7 @@ export class ValidateUserUsecase implements UseCase<ValidateUserDto, Response> {
         return left(userNameDoesntExistError);
       }
 
-      const isPasswordValid = await userEntity.password.comparePassword(
+      const isPasswordValid = await user.password.comparePassword(
         password.value,
       );
       if (!isPasswordValid) {
@@ -63,7 +63,7 @@ export class ValidateUserUsecase implements UseCase<ValidateUserDto, Response> {
       }
 
       this.logger.log('User successfully validated');
-      return right(Result.ok<UserEntity>(userEntity));
+      return right(Result.ok<User>(user));
     } catch (error) {
       this.logger.error(error.message, error);
       return left(new AppErrors.UnexpectedError(error));

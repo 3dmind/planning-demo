@@ -5,7 +5,7 @@ import { UserEmail } from '../domain/user-email.valueobject';
 import { UserName } from '../domain/user-name.valueobject';
 import { UserPassword } from '../domain/user-password.valueobject';
 import { UserProps } from '../domain/user-props.interface';
-import { UserEntity } from '../domain/user.entity';
+import { User } from '../domain/user.entity';
 import { UserDto } from '../dtos/user.dto';
 import { UserMapper } from './user.mapper';
 
@@ -32,17 +32,17 @@ describe('UserMapper', () => {
       password,
       username,
     };
-    const userEntity = UserEntity.create(props, entityId).getValue();
+    const user = User.create(props, entityId).getValue();
 
-    const model = await UserMapper.toPersistence(userEntity);
+    const model = await UserMapper.toPersistence(user);
 
     expect(model).toMatchObject<Prisma.BaseUserModelCreateInput>({
-      baseUserId: userEntity.userId.id.toString(),
-      createdAt: userEntity.props.createdAt,
-      isEmailVerified: userEntity.props.isEmailVerified,
-      userEmail: userEntity.props.email.value,
-      username: userEntity.props.username.value,
-      userPassword: userEntity.props.password.value,
+      baseUserId: user.userId.id.toString(),
+      createdAt: user.props.createdAt,
+      isEmailVerified: user.props.isEmailVerified,
+      userEmail: user.props.email.value,
+      username: user.props.username.value,
+      userPassword: user.props.password.value,
     });
   });
 
@@ -58,18 +58,18 @@ describe('UserMapper', () => {
       userPassword: passwordFixture,
     };
 
-    const userEntity = UserMapper.toDomain(mockedBaseUserModel);
+    const user = UserMapper.toDomain(mockedBaseUserModel);
 
-    expect(userEntity).toBeDefined();
-    expect(userEntity).toBeInstanceOf(UserEntity);
-    expect(userEntity.userId.id.toValue()).toEqual(idFixture);
-    expect(userEntity.props.createdAt).toEqual(dateFixture);
-    expect(userEntity.props.isEmailVerified).toEqual(
+    expect(user).toBeDefined();
+    expect(user).toBeInstanceOf(User);
+    expect(user.userId.id.toValue()).toEqual(idFixture);
+    expect(user.props.createdAt).toEqual(dateFixture);
+    expect(user.props.isEmailVerified).toEqual(
       mockedBaseUserModel.isEmailVerified,
     );
-    expect(userEntity.props.email.value).toEqual(emailFixture);
-    expect(userEntity.props.username.value).toEqual(userNameFixture);
-    expect(userEntity.props.password.value).toEqual(passwordFixture);
+    expect(user.props.email.value).toEqual(emailFixture);
+    expect(user.props.username.value).toEqual(userNameFixture);
+    expect(user.props.password.value).toEqual(passwordFixture);
   });
 
   it('should map Entity to DTO', () => {
@@ -80,9 +80,9 @@ describe('UserMapper', () => {
       password,
       username,
     };
-    const userEntity = UserEntity.create(props, entityId).getValue();
+    const user = User.create(props, entityId).getValue();
 
-    const userDto = UserMapper.toDto(userEntity);
+    const userDto = UserMapper.toDto(user);
 
     expect(userDto).toMatchObject<UserDto>({
       createdAt: dateFixture.toISOString(),

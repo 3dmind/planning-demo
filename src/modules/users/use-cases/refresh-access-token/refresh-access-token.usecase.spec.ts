@@ -123,15 +123,15 @@ describe('RefreshAccessTokenUsecase', () => {
   it('should succeed', async () => {
     expect.assertions(1);
     const usernameFixture = faker.internet.userName();
-    const userEntity = new UserEntityBuilder({
+    const user = new UserEntityBuilder({
       username: usernameFixture,
     })
       .makeLoggedIn()
       .build();
-    await authService.saveAuthenticatedUser(userEntity);
+    await authService.saveAuthenticatedUser(user);
     mockedUserRepository.getUserByUsername.mockResolvedValueOnce({
       found: true,
-      userEntity,
+      user,
     });
 
     const request: RefreshAccessTokenRequestDto = {

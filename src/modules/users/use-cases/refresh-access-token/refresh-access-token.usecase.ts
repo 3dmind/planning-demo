@@ -43,7 +43,7 @@ export class RefreshAccessTokenUsecase
 
     try {
       const username = userNameResult.getValue();
-      const { found, userEntity } = await this.userRepository.getUserByUsername(
+      const { found, user } = await this.userRepository.getUserByUsername(
         username,
       );
 
@@ -63,8 +63,8 @@ export class RefreshAccessTokenUsecase
         payload,
       );
 
-      userEntity.setTokens(newAccessToken, savedTokens.refreshToken);
-      await this.authService.saveAuthenticatedUser(userEntity);
+      user.setTokens(newAccessToken, savedTokens.refreshToken);
+      await this.authService.saveAuthenticatedUser(user);
       this.logger.log('Access token successfully refreshed');
       return right(Result.ok<AccessToken>(newAccessToken));
     } catch (error) {

@@ -3,11 +3,11 @@ import { UniqueEntityId } from '../../../shared/domain';
 import { UserEmail } from '../domain/user-email.valueobject';
 import { UserName } from '../domain/user-name.valueobject';
 import { UserPassword } from '../domain/user-password.valueobject';
-import { UserEntity } from '../domain/user.entity';
+import { User } from '../domain/user.entity';
 import { UserDto } from '../dtos/user.dto';
 
 export class UserMapper {
-  public static async toPersistence(user: UserEntity): Promise<Prisma.BaseUserModelCreateInput> {
+  public static async toPersistence(user: User): Promise<Prisma.BaseUserModelCreateInput> {
     const userSnapshot = user.createSnapshot();
     const password = userSnapshot.password;
     let hashedPassword;
@@ -28,7 +28,7 @@ export class UserMapper {
     };
   }
 
-  public static toDomain(baseUserModel: BaseUserModel): UserEntity {
+  public static toDomain(baseUserModel: BaseUserModel): User {
     const {
       baseUserId,
       createdAt,
@@ -44,7 +44,7 @@ export class UserMapper {
       hashed: true,
     });
     const userEmailResult = UserEmail.create(userEmail);
-    const userEntityResult = UserEntity.create({
+    const userEntityResult = User.create({
       createdAt,
       email: userEmailResult.getValue(),
       isEmailVerified: isEmailVerified,
@@ -54,13 +54,13 @@ export class UserMapper {
     return userEntityResult.getValue();
   }
 
-  public static toDto(userEntity: UserEntity): UserDto {
+  public static toDto(user: User): UserDto {
     const {
       createdAt,
       email,
       isEmailVerified,
       username,
-    } = userEntity.createSnapshot();
+    } = user.createSnapshot();
     return {
       createdAt: createdAt.toISOString(),
       email: email.value,

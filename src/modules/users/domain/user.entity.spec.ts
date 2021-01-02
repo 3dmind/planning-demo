@@ -1,16 +1,28 @@
 import * as faker from 'faker';
+import * as uuid from 'uuid';
+import { UserEntityBuilder } from '../../../../test/builder/user-entity.builder';
 import { UniqueEntityId } from '../../../shared/domain';
 import { UserEmail } from './user-email.valueobject';
 import { UserId } from './user-id.entity';
 import { UserName } from './user-name.valueobject';
 import { UserPassword } from './user-password.valueobject';
 import { UserProps } from './user-props.interface';
-import { UserEntity } from './user.entity';
+import { User } from './user.entity';
 
-describe('UserEntity', () => {
+jest.mock('uuid');
+
+describe('User', () => {
+  beforeAll(() => {
+    uuid.v4.mockReturnValue(faker.random.uuid());
+  });
+
+  afterAll(() => {
+    uuid.mockRestore();
+  });
+
   const idFixture = faker.random.uuid();
   const userNameFixture = faker.internet.userName();
-  const passwordFixture = faker.internet.password(6);
+  const passwordFixture = faker.internet.password(UserPassword.minLength);
   const emailFixture = faker.internet.email();
   const entityId = new UniqueEntityId(idFixture);
   const username = UserName.create(userNameFixture).getValue();
@@ -19,40 +31,67 @@ describe('UserEntity', () => {
   }).getValue();
   const email = UserEmail.create(emailFixture).getValue();
 
-  describe('Guard user properties', () => {
-    it('should guard username', () => {
-      expect.assertions(1);
-      const props = { username: null } as UserProps;
+  it('should guard "username" property', () => {
+    expect.assertions(1);
+    const props = { username: null } as UserProps;
 
-      const userEntityResult = UserEntity.create(props, entityId);
+    const userResult = User.create(props, entityId);
 
-      expect(userEntityResult.isFailure).toBe(true);
-    });
+    expect(userResult.isFailure).toBe(true);
+  });
 
-    it('should guard password', () => {
-      expect.assertions(1);
-      const props = {
-        username,
-        password: null,
-      } as UserProps;
+  it('should guard "password" property', () => {
+    expect.assertions(1);
+    const props = {
+      username,
+      password: null,
+    } as UserProps;
 
-      const userEntityResult = UserEntity.create(props, entityId);
+    const userResult = User.create(props, entityId);
 
-      expect(userEntityResult.isFailure).toBe(true);
-    });
+    expect(userResult.isFailure).toBe(true);
+  });
 
-    it('should guard email', () => {
-      expect.assertions(1);
-      const props = {
-        username,
-        password,
-        email: null,
-      } as UserProps;
+  it('should guard "email" property', () => {
+    expect.assertions(1);
+    const props = {
+      username,
+      password,
+      email: null,
+    } as UserProps;
 
-      const userEntityResult = UserEntity.create(props, entityId);
+    const userResult = User.create(props, entityId);
 
-      expect(userEntityResult.isFailure).toBe(true);
-    });
+    expect(userResult.isFailure).toBe(true);
+  });
+
+  it('should guard "isEmailVerified" property', () => {
+    expect.assertions(1);
+    const props = {
+      username,
+      password,
+      email,
+      isEmailVerified: null,
+    } as UserProps;
+
+    const userResult = User.create(props, entityId);
+
+    expect(userResult.isFailure).toBe(true);
+  });
+
+  it('should guard "createdAt" property', () => {
+    expect.assertions(1);
+    const props = {
+      username,
+      password,
+      email,
+      isEmailVerified: false,
+      createdAt: null,
+    } as UserProps;
+
+    const userResult = User.create(props, entityId);
+
+    expect(userResult.isFailure).toBe(true);
   });
 
   it('should create', () => {
@@ -65,26 +104,22 @@ describe('UserEntity', () => {
       createdAt: new Date(),
     };
 
-    const userEntityResult = UserEntity.create(props, entityId);
-    const userEntity = userEntityResult.getValue();
+    const userResult = User.create(props, entityId);
+    const user = userResult.getValue();
 
-    expect(userEntityResult.isSuccess).toBe(true);
-    expect(userEntity.userId).toBeInstanceOf(UserId);
-    expect(userEntity.userId.id.equals(entityId)).toBe(true);
-    expect(userEntity.props.isEmailVerified).toBe(true);
-    expect(userEntity.props.createdAt).toEqual(props.createdAt);
-    expect(userEntity.email).toBe(email);
-    expect(userEntity.password).toBe(password);
+    expect(userResult.isSuccess).toBe(true);
+    expect(user.userId).toBeInstanceOf(UserId);
+    expect(user.userId.id.equals(entityId)).toBe(true);
+    expect(user.props.isEmailVerified).toBe(true);
+    expect(user.props.createdAt).toEqual(props.createdAt);
+    expect(user.email).toBe(email);
+    expect(user.password).toBe(password);
   });
 
   it('should determine if user is logged in', () => {
     const accessTokenFixture = faker.random.alphaNumeric(20);
     const refreshTokenFixture = faker.random.alphaNumeric(20);
-    const user = UserEntity.create({
-      email,
-      password,
-      username,
-    }).getValue();
+    const user = new UserEntityBuilder().build();
 
     expect(user.isLoggedIn()).toBe(false);
 

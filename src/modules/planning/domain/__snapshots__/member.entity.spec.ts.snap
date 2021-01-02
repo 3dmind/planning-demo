@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Member entity should create snapshot 1`] = `
+MemberSnapshot {
+  "createdAt": 1977-01-01T00:00:00.000Z,
+  "memberId": MemberId {
+    "_id": UniqueEntityId {
+      "value": "773f023e-3c57-4bd5-aa0a-0e0e0cc985ab",
+    },
+    "props": null,
+  },
+  "userId": UserId {
+    "_id": UniqueEntityId {
+      "value": "b21b86ba-a05c-4425-b8d7-09dda742199d",
+    },
+    "props": null,
+  },
+}
+`;

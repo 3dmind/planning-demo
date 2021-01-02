@@ -1,13 +1,13 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { Request } from 'express';
-import { UserEntity } from '../domain/user.entity';
+import { User } from '../domain/user.entity';
 
 interface RequestWithUser extends Request {
-  user: UserEntity;
+  user: User;
 }
 
-export const User = createParamDecorator(
-  (data: unknown, ctx: ExecutionContext): UserEntity => {
+export const UserEntity = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext): User => {
     const request = ctx.switchToHttp().getRequest<RequestWithUser>();
     return request.user;
   },

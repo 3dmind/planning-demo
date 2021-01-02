@@ -9,19 +9,19 @@ import {
 } from '../../../../shared/core';
 import { AccessToken, RefreshToken } from '../../domain/jwt';
 import { JwtClaims } from '../../domain/jwt-claims.interface';
-import { UserEntity } from '../../domain/user.entity';
+import { User } from '../../domain/user.entity';
 import { AuthService } from '../../services/auth.service';
 import { LoginResponseDto } from './login-response.dto';
 
 type Response = Either<AppErrors.UnexpectedError, Result<LoginResponseDto>>;
 
 @Injectable()
-export class LoginUsecase implements UseCase<UserEntity, Response> {
+export class LoginUsecase implements UseCase<User, Response> {
   private readonly logger = new Logger(LoginUsecase.name);
 
   constructor(private readonly authService: AuthService) {}
 
-  async execute(user: UserEntity): Promise<Response> {
+  async execute(user: User): Promise<Response> {
     this.logger.log('User is going to log in...');
     try {
       const userSnapshot = user.createSnapshot();

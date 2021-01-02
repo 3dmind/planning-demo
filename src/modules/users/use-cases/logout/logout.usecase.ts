@@ -38,7 +38,7 @@ export class LogoutUsecase implements UseCase<LogoutDto, Response> {
 
     try {
       const username = userNameResult.getValue();
-      const { found, userEntity } = await this.userRepository.getUserByUsername(
+      const { found, user } = await this.userRepository.getUserByUsername(
         username,
       );
 
@@ -50,7 +50,7 @@ export class LogoutUsecase implements UseCase<LogoutDto, Response> {
         return left(userNotFoundError);
       }
 
-      await this.authService.deAuthenticateUser(userEntity);
+      await this.authService.deAuthenticateUser(user);
       this.logger.log('User successfully logged out');
       return right(Result.ok<void>());
     } catch (error) {

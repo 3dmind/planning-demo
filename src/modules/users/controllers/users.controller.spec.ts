@@ -1,14 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { mock, mockReset } from 'jest-mock-extended';
-import { CreateUserUsecase } from '../use-cases/create-user/create-user.usecase';
 import { GetUserByUserNameUsecase } from '../use-cases/get-user-by-user-name/get-user-by-user-name.usecase';
 import { LoginUsecase } from '../use-cases/login/login.usecase';
 import { LogoutUsecase } from '../use-cases/logout/logout.usecase';
 import { RefreshAccessTokenUsecase } from '../use-cases/refresh-access-token/refresh-access-token.usecase';
+import { RegisterUserUsecase } from '../use-cases/register-user/register-user.usecase';
 import { UsersController } from './users.controller';
 
 describe('Users Controller', () => {
-  const mockedCreateUserUseCase = mock<CreateUserUsecase>();
+  const mockedCreateUserUseCase = mock<RegisterUserUsecase>();
   const mockedGetUserByUserNameUseCase = mock<GetUserByUserNameUsecase>();
   const mockedLoginUseCase = mock<LoginUsecase>();
   const mockedLogoutUseCase = mock<LogoutUsecase>();
@@ -20,7 +20,7 @@ describe('Users Controller', () => {
       controllers: [UsersController],
       providers: [
         {
-          provide: CreateUserUsecase,
+          provide: RegisterUserUsecase,
           useValue: mockedCreateUserUseCase,
         },
         {

@@ -93,7 +93,7 @@ describe('ValidateUserUsecase', () => {
     const missMatchingPasswordFixture = faker.internet.password(
       UserPassword.minLength,
     );
-    const userEntity = new UserEntityBuilder({
+    const user = new UserEntityBuilder({
       username: usernameFixture,
       password: hashedPassword,
       passwordIsHashed: true,
@@ -104,7 +104,7 @@ describe('ValidateUserUsecase', () => {
     };
     mockedUserRepository.getUserByUsername.mockResolvedValue({
       found: true,
-      userEntity,
+      user,
     });
 
     const result = await useCase.execute(request);
@@ -144,7 +144,7 @@ describe('ValidateUserUsecase', () => {
     })
       .getValue()
       .getHashedValue();
-    const userEntity = new UserEntityBuilder({
+    const user = new UserEntityBuilder({
       username: usernameFixture,
       password: hashedPassword,
       passwordIsHashed: true,
@@ -155,12 +155,12 @@ describe('ValidateUserUsecase', () => {
     };
     mockedUserRepository.getUserByUsername.mockResolvedValue({
       found: true,
-      userEntity,
+      user,
     });
 
     const result = await useCase.execute(request);
 
     expect(result.isRight()).toBe(true);
-    expect(result.value.getValue()).toBe(userEntity);
+    expect(result.value.getValue()).toBe(user);
   });
 });

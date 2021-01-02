@@ -8,7 +8,7 @@ import {
   UseCase,
 } from '../../../../shared/core';
 import { UserName } from '../../domain/user-name.valueobject';
-import { UserEntity } from '../../domain/user.entity';
+import { User } from '../../domain/user.entity';
 import { UserRepository } from '../../repositories/user.repository';
 import { GetUserByUserNameDto } from './get-user-by-user-name.dto';
 import { GetUserByUserNameError } from './get-user-by-user-name.errors';
@@ -17,7 +17,7 @@ type Response = Either<
   | GetUserByUserNameError.UserNotFoundError
   | AppErrors.UnexpectedError
   | Result<any>,
-  Result<UserEntity>
+  Result<User>
 >;
 
 @Injectable()
@@ -39,7 +39,7 @@ export class GetUserByUserNameUsecase
     const username = userNameResult.getValue();
 
     try {
-      const { found, userEntity } = await this.userRepository.getUserByUsername(
+      const { found, user } = await this.userRepository.getUserByUsername(
         username,
       );
 
@@ -52,7 +52,7 @@ export class GetUserByUserNameUsecase
       }
 
       this.logger.log('User successfully found');
-      return right(Result.ok<UserEntity>(userEntity));
+      return right(Result.ok<User>(user));
     } catch (error) {
       this.logger.error(error.message, error);
       return left(new AppErrors.UnexpectedError(error));

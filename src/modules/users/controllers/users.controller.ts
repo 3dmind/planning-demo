@@ -14,16 +14,13 @@ import {
 import { Username } from '../../../decorators/username.decorator';
 import { JwtAuthGuard } from '../../../guards/jwt-auth.guard';
 import { AppErrors } from '../../../shared/core';
-import { User } from '../decorators/user.decorator';
+import { UserEntity } from '../decorators/user-entity.decorator';
 import { AccessToken } from '../domain/jwt';
-import { UserEntity } from '../domain/user.entity';
+import { User } from '../domain/user.entity';
 import { UserDto } from '../dtos/user.dto';
 import { JwtRefreshAuthGuard } from '../guards/jwt-refresh-auth.guard';
 import { LocalAuthGuard } from '../guards/local-auth.guard';
 import { UserMapper } from '../mappers/user.mapper';
-import { CreateUserDto } from '../use-cases/create-user/create-user.dto';
-import { CreateUserErrors } from '../use-cases/create-user/create-user.errors';
-import { CreateUserUsecase } from '../use-cases/create-user/create-user.usecase';
 import { GetUserByUserNameError } from '../use-cases/get-user-by-user-name/get-user-by-user-name.errors';
 import { GetUserByUserNameUsecase } from '../use-cases/get-user-by-user-name/get-user-by-user-name.usecase';
 import { LoginResponseDto } from '../use-cases/login/login-response.dto';
@@ -34,11 +31,14 @@ import { RefreshAccessTokenResponseDto } from '../use-cases/refresh-access-token
 import { RefreshAccessTokenErrors } from '../use-cases/refresh-access-token/refresh-access-token.errors';
 import { RefreshAccessTokenUsecase } from '../use-cases/refresh-access-token/refresh-access-token.usecase';
 import { RefreshTokenDto } from '../use-cases/refresh-access-token/refresh-token.dto';
+import { RegisterUserDto } from '../use-cases/register-user/register-user.dto';
+import { RegisterUserErrors } from '../use-cases/register-user/register-user.errors';
+import { RegisterUserUsecase } from '../use-cases/register-user/register-user.usecase';
 
 @Controller('users')
 export class UsersController {
   constructor(
-    private readonly createUserUsecase: CreateUserUsecase,
+    private readonly createUserUsecase: RegisterUserUsecase,
     private readonly loginUsecase: LoginUsecase,
     private readonly getUserByUserNameUsecase: GetUserByUserNameUsecase,
     private readonly refreshAccessTokenUsecase: RefreshAccessTokenUsecase,
@@ -47,16 +47,16 @@ export class UsersController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async createUser(@Body() createTaskDto: CreateUserDto): Promise<void> {
-    const result = await this.createUserUsecase.execute(createTaskDto);
+  async createUser(@Body() registerUserDto: RegisterUserDto): Promise<void> {
+    const result = await this.createUserUsecase.execute(registerUserDto);
 
     if (result.isLeft()) {
       const error = result.value;
       switch (error.constructor) {
         case AppErrors.UnexpectedError:
           throw new InternalServerErrorException(error.errorValue().message);
-        case CreateUserErrors.EmailAlreadyExistsError:
-        case CreateUserErrors.UsernameTakenError:
+        case RegisterUserErrors.EmailAlreadyExistsError:
+        case RegisterUserErrors.UsernameTakenError:
           throw new ConflictException(error.errorValue().message);
         default:
           throw new UnprocessableEntityException(error.errorValue());
@@ -67,8 +67,8 @@ export class UsersController {
   @UseGuards(LocalAuthGuard)
   @Post('/login')
   @HttpCode(HttpStatus.OK)
-  async login(@User() validatedUser: UserEntity): Promise<LoginResponseDto> {
-    const result = await this.loginUsecase.execute(validatedUser);
+  async login(@UserEntity() user: User): Promise<LoginResponseDto> {
+    const result = await this.loginUsecase.execute(user);
 
     if (result.isLeft()) {
       const error = result.value;
@@ -84,8 +84,8 @@ export class UsersController {
     const result = await this.getUserByUserNameUsecase.execute({ username });
 
     if (result.isRight()) {
-      const userEntity = result.value.getValue();
-      return UserMapper.toDto(userEntity);
+      const user = result.value.getValue();
+      return UserMapper.toDto(user);
     }
 
     if (result.isLeft()) {

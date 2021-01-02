@@ -9,13 +9,23 @@ datasource db {
 
 model BaseUserModel {
   @@map("BaseUser")
-  baseUserId      String    @id
-  updatedAt       DateTime  @updatedAt
+  baseUserId      String        @id
+  updatedAt       DateTime      @updatedAt
   createdAt       DateTime
   username        String
   userPassword    String
-  userEmail       String    @unique
-  isEmailVerified Boolean   @default(false)
+  userEmail       String        @unique
+  isEmailVerified Boolean       @default(false)
+  memberModel     MemberModel?
+}
+
+model MemberModel {
+  @@map("Member")
+  memberId      String         @id
+  updatedAt     DateTime       @updatedAt
+  createdAt     DateTime
+  baseUserModel BaseUserModel  @relation(fields: [memberBaseId], references: [baseUserId])
+  memberBaseId  String
 }
 
 model TaskModel {

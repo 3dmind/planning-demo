@@ -4,7 +4,7 @@ import { ApiConfigService } from '../../../api-config/api-config.service';
 import { RedisCacheService } from '../../../redis-cache/redis-cache.service';
 import { AccessToken, RefreshToken } from '../domain/jwt';
 import { JwtClaims } from '../domain/jwt-claims.interface';
-import { UserEntity } from '../domain/user.entity';
+import { User } from '../domain/user.entity';
 
 type Tokens = {
   accessToken: AccessToken;
@@ -45,7 +45,7 @@ export class AuthService {
     });
   }
 
-  public async saveAuthenticatedUser(user: UserEntity): Promise<void> {
+  public async saveAuthenticatedUser(user: User): Promise<void> {
     if (user.isLoggedIn()) {
       const userSnapshot = user.createSnapshot();
       const value = JSON.stringify({
@@ -58,7 +58,7 @@ export class AuthService {
     }
   }
 
-  public async deAuthenticateUser(user: UserEntity): Promise<void> {
+  public async deAuthenticateUser(user: User): Promise<void> {
     const userSnapshot = user.createSnapshot();
     await this.redisCacheService.del(userSnapshot.username.value);
   }

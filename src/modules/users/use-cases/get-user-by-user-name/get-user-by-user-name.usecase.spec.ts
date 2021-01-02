@@ -81,12 +81,12 @@ describe('GetUserByUserNameUsecase', () => {
   it('should succeed', async () => {
     expect.assertions(2);
     const usernameFixture = faker.internet.userName();
-    const userEntity = new UserEntityBuilder({
+    const user = new UserEntityBuilder({
       username: usernameFixture,
     }).build();
     mockedUserRepository.getUserByUsername.mockResolvedValueOnce({
       found: true,
-      userEntity,
+      user,
     });
     const requestFixture: GetUserByUserNameDto = {
       username: usernameFixture,
@@ -95,6 +95,6 @@ describe('GetUserByUserNameUsecase', () => {
     const result = await useCase.execute(requestFixture);
 
     expect(result.isRight()).toBe(true);
-    expect(result.value.getValue()).toBe(userEntity);
+    expect(result.value.getValue()).toBe(user);
   });
 });

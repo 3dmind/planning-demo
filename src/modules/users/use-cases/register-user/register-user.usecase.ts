@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { DomainEventPublisherService } from '../../../../domain-event-publisher/domain-event-publisher.service';
 import {
   AppErrors,
   Either,
@@ -10,27 +11,30 @@ import {
 import { UserEmail } from '../../domain/user-email.valueobject';
 import { UserName } from '../../domain/user-name.valueobject';
 import { UserPassword } from '../../domain/user-password.valueobject';
-import { UserEntity } from '../../domain/user.entity';
+import { User } from '../../domain/user.entity';
 import { UserRepository } from '../../repositories/user.repository';
-import { CreateUserDto } from './create-user.dto';
-import { CreateUserErrors } from './create-user.errors';
+import { RegisterUserDto } from './register-user.dto';
+import { RegisterUserErrors } from './register-user.errors';
 
 type Response = Either<
-  | CreateUserErrors.EmailAlreadyExistsError
-  | CreateUserErrors.UsernameTakenError
+  | RegisterUserErrors.EmailAlreadyExistsError
+  | RegisterUserErrors.UsernameTakenError
   | AppErrors.UnexpectedError
   | Result<any>,
   Result<void>
 >;
 
 @Injectable()
-export class CreateUserUsecase implements UseCase<CreateUserDto, Response> {
-  private readonly logger = new Logger(CreateUserUsecase.name);
+export class RegisterUserUsecase implements UseCase<RegisterUserDto, Response> {
+  private readonly logger = new Logger(RegisterUserUsecase.name);
 
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly domainEventPublisherService: DomainEventPublisherService,
+  ) {}
 
-  async execute(request: CreateUserDto): Promise<Response> {
-    this.logger.log('Creating user...');
+  async execute(request: RegisterUserDto): Promise<Response> {
+    this.logger.log('Registering user...');
     const userNameResult = UserName.create(request.username);
     const userPasswordResult = UserPassword.create({
       value: request.password,
@@ -54,7 +58,7 @@ export class CreateUserUsecase implements UseCase<CreateUserDto, Response> {
     try {
       const userAlreadyExists = await this.userRepository.exists(email);
       if (userAlreadyExists) {
-        const emailAlreadyExistsError = new CreateUserErrors.EmailAlreadyExistsError(
+        const emailAlreadyExistsError = new RegisterUserErrors.EmailAlreadyExistsError(
           email.value,
         );
         this.logger.debug(emailAlreadyExistsError.errorValue().message);
@@ -64,25 +68,28 @@ export class CreateUserUsecase implements UseCase<CreateUserDto, Response> {
       const { found } = await this.userRepository.getUserByUsername(username);
 
       if (found) {
-        const usernameTakenError = new CreateUserErrors.UsernameTakenError(
+        const usernameTakenError = new RegisterUserErrors.UsernameTakenError(
           username.value,
         );
         this.logger.debug(usernameTakenError.errorValue().message);
         return left(usernameTakenError);
       }
 
-      const userEntityResult = UserEntity.create({
+      const userResult = User.register({
         username,
         password,
         email,
       });
-      if (userEntityResult.isFailure) {
-        this.logger.debug(userEntityResult.error.toString());
-        return left(Result.fail(userEntityResult.error.toString()));
+      if (userResult.isFailure) {
+        this.logger.debug(userResult.error.toString());
+        return left(Result.fail(userResult.error.toString()));
       }
 
-      await this.userRepository.save(userEntityResult.getValue());
-      this.logger.log('User successfully created');
+      const user = userResult.getValue();
+      await this.userRepository.save(user);
+      this.domainEventPublisherService.publish(user);
+
+      this.logger.log('User successfully registered');
       return right(Result.ok());
     } catch (error) {
       this.logger.error(error.message, error);

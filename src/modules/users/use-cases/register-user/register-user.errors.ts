@@ -1,6 +1,6 @@
 import { Result, UseCaseError } from '../../../../shared/core';
 
-export namespace CreateUserErrors {
+export namespace RegisterUserErrors {
   export class EmailAlreadyExistsError extends Result<UseCaseError> {
     constructor(email: string) {
       super(false, {

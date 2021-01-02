@@ -6,7 +6,7 @@ import {
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';
 import { AppErrors } from '../../../shared/core';
-import { UserEntity } from '../domain/user.entity';
+import { User } from '../domain/user.entity';
 import { ValidateUserErrors } from '../use-cases/validate-user/validate-user.errors';
 import { ValidateUserUsecase } from '../use-cases/validate-user/validate-user.usecase';
 
@@ -16,10 +16,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     super();
   }
 
-  public async validate(
-    username: string,
-    password: string,
-  ): Promise<UserEntity> {
+  public async validate(username: string, password: string): Promise<User> {
     const result = await this.validateUserUseCase.execute({
       username,
       password,

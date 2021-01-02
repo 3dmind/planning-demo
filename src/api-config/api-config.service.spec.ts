@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
 import { ApiConfigService } from './api-config.service';
 
-describe.only('ApiConfigService', () => {
+describe('ApiConfigService', () => {
   const OLD_ENV = Object.assign({}, process.env);
   let service: ApiConfigService;
 

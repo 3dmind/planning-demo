@@ -10,7 +10,7 @@ import {
 import { UniqueEntityId } from '../../../../../shared/domain';
 import { TaskId } from '../../../domain/task-id.entity';
 import { Task } from '../../../domain/task.entity';
-import { TaskRepository } from '../../../repositories/task.repository';
+import { TaskRepository } from '../../../repositories/task/task.repository';
 import { TickOffTaskDto } from './tick-off-task.dto';
 import { TickOffTasksErrors } from './tick-off-task.errors';
 

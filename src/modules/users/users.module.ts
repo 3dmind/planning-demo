@@ -6,7 +6,8 @@ import { DomainEventPublisherModule } from '../../domain-event-publisher/domain-
 import { PrismaModule } from '../../prisma/prisma.module';
 import { RedisCacheModule } from '../../redis-cache/redis-cache.module';
 import { UsersController } from './controllers/users.controller';
-import { UserRepository } from './repositories/user.repository';
+import { UserRepositoryProvider } from './repositories/providers';
+import { UserRepository } from './repositories/user/user.repository';
 import { AuthService } from './services/auth.service';
 import { JwtAccessTokenStrategy } from './strategies/jwt-access-token.strategy';
 import { JwtRefreshTokenStrategy } from './strategies/jwt-refresh-token.strategy';
@@ -39,7 +40,7 @@ import { ValidateUserUsecase } from './use-cases/validate-user/validate-user.use
     LogoutUsecase,
     RefreshAccessTokenUsecase,
     RegisterUserUsecase,
-    UserRepository,
+    UserRepositoryProvider,
     ValidateUserUsecase,
   ],
   exports: [UserRepository],

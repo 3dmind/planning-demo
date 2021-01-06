@@ -1,30 +1,30 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
-import { mock, mockReset } from 'jest-mock-extended';
 import { AppErrors, Result } from '../../../../../shared/core';
 import { Task } from '../../../domain/task.entity';
-import { TaskRepository } from '../../../repositories/task.repository';
+import { InMemoryTaskRepository } from '../../../repositories/task/in-memory-task.repository';
+import { TaskRepository } from '../../../repositories/task/task.repository';
 import { NoteTaskDto } from './note-task.dto';
 import { NoteTaskUsecase } from './note-task.usecase';
 
 describe('NoteTaskUsecase', () => {
-  const mockedTaskRepository = mock<TaskRepository>();
+  let taskRepository: TaskRepository;
   let noteTaskUseCase: NoteTaskUsecase;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        { provide: TaskRepository, useValue: mockedTaskRepository },
+        {
+          provide: TaskRepository,
+          useClass: InMemoryTaskRepository,
+        },
         NoteTaskUsecase,
       ],
     }).compile();
     module.useLogger(false);
 
+    taskRepository = await module.resolve<TaskRepository>(TaskRepository);
     noteTaskUseCase = await module.resolve<NoteTaskUsecase>(NoteTaskUsecase);
-  });
-
-  afterAll(() => {
-    mockReset(mockedTaskRepository);
   });
 
   it('should fail if Description cannot be created', async () => {
@@ -56,14 +56,18 @@ describe('NoteTaskUsecase', () => {
     expect.assertions(2);
     const text = faker.lorem.words(5);
     const request: NoteTaskDto = { text };
-    mockedTaskRepository.save.mockImplementationOnce(() => {
-      throw new Error();
-    });
+    const spy = jest
+      .spyOn(taskRepository, 'save')
+      .mockImplementationOnce(() => {
+        throw new Error();
+      });
 
     const result = await noteTaskUseCase.execute(request);
 
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(AppErrors.UnexpectedError);
+
+    spy.mockRestore();
   });
 
   it('should succeed', async () => {

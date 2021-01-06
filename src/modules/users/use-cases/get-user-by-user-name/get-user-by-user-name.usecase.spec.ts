@@ -1,33 +1,33 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
-import { mock, mockReset } from 'jest-mock-extended';
 import { UserEntityBuilder } from '../../../../../test/builder/user-entity.builder';
 import { AppErrors } from '../../../../shared/core';
-import { UserRepository } from '../../repositories/user.repository';
+import { InMemoryUserRepository } from '../../repositories/user/in-memory-user.repository';
+import { UserRepository } from '../../repositories/user/user.repository';
 import { GetUserByUserNameDto } from './get-user-by-user-name.dto';
 import { GetUserByUserNameError } from './get-user-by-user-name.errors';
 import { GetUserByUserNameUsecase } from './get-user-by-user-name.usecase';
 
 describe('GetUserByUserNameUsecase', () => {
-  const mockedUserRepository = mock<UserRepository>();
+  let userRepository: UserRepository;
   let useCase: GetUserByUserNameUsecase;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        { provide: UserRepository, useValue: mockedUserRepository },
+        {
+          provide: UserRepository,
+          useClass: InMemoryUserRepository,
+        },
         GetUserByUserNameUsecase,
       ],
     }).compile();
     module.useLogger(false);
 
+    userRepository = await module.resolve<UserRepository>(UserRepository);
     useCase = await module.resolve<GetUserByUserNameUsecase>(
       GetUserByUserNameUsecase,
     );
-  });
-
-  afterAll(() => {
-    mockReset(mockedUserRepository);
   });
 
   it('should fail if username cannot be created', async () => {
@@ -47,9 +47,6 @@ describe('GetUserByUserNameUsecase', () => {
     const requestFixture: GetUserByUserNameDto = {
       username: usernameFixture,
     };
-    mockedUserRepository.getUserByUsername.mockResolvedValueOnce({
-      found: false,
-    });
 
     const result = await useCase.execute(requestFixture);
 
@@ -68,8 +65,9 @@ describe('GetUserByUserNameUsecase', () => {
     const requestFixture: GetUserByUserNameDto = {
       username: usernameFixture,
     };
-    mockedUserRepository.getUserByUsername.mockImplementationOnce(() => {
-      throw new Error('BOOM!');
+    const spy = jest.spyOn(userRepository, 'getUserByUsername');
+    spy.mockImplementationOnce(() => {
+      throw new Error();
     });
 
     const result = await useCase.execute(requestFixture);
@@ -84,13 +82,10 @@ describe('GetUserByUserNameUsecase', () => {
     const user = new UserEntityBuilder({
       username: usernameFixture,
     }).build();
-    mockedUserRepository.getUserByUsername.mockResolvedValueOnce({
-      found: true,
-      user,
-    });
     const requestFixture: GetUserByUserNameDto = {
       username: usernameFixture,
     };
+    await userRepository.save(user);
 
     const result = await useCase.execute(requestFixture);
 

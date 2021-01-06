@@ -1,33 +1,33 @@
 import { Test } from '@nestjs/testing';
 import * as faker from 'faker';
-import { mock, mockReset } from 'jest-mock-extended';
 import { TaskEntityBuilder } from '../../../../../../test/builder/task-entity.builder';
 import { AppErrors, Result } from '../../../../../shared/core';
 import { TaskId } from '../../../domain/task-id.entity';
 import { Task } from '../../../domain/task.entity';
-import { TaskRepository } from '../../../repositories/task.repository';
+import { InMemoryTaskRepository } from '../../../repositories/task/in-memory-task.repository';
+import { TaskRepository } from '../../../repositories/task/task.repository';
 import { ResumeTaskDto } from './resume-task.dto';
 import { ResumeTaskErrors } from './resume-task.errors';
 import { ResumeTaskUsecase } from './resume-task.usecase';
 
 describe('ResumeTaskUsecase', () => {
-  const mockedTaskRepository = mock<TaskRepository>();
+  let taskRepository: TaskRepository;
   let useCase: ResumeTaskUsecase;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const module = await Test.createTestingModule({
       providers: [
-        { provide: TaskRepository, useValue: mockedTaskRepository },
+        {
+          provide: TaskRepository,
+          useClass: InMemoryTaskRepository,
+        },
         ResumeTaskUsecase,
       ],
     }).compile();
     module.useLogger(false);
 
-    useCase = module.get<ResumeTaskUsecase>(ResumeTaskUsecase);
-  });
-
-  afterAll(() => {
-    mockReset(mockedTaskRepository);
+    taskRepository = await module.resolve<TaskRepository>(TaskRepository);
+    useCase = await module.resolve<ResumeTaskUsecase>(ResumeTaskUsecase);
   });
 
   it('should fail if task-id cannot be created', async () => {
@@ -47,9 +47,6 @@ describe('ResumeTaskUsecase', () => {
   it('should fail if a task cannot be found', async () => {
     const taskId = faker.random.uuid();
     const request: ResumeTaskDto = { taskId };
-    mockedTaskRepository.getTaskByTaskId.mockResolvedValue({
-      found: false,
-    });
 
     const result = await useCase.execute(request);
 
@@ -63,24 +60,24 @@ describe('ResumeTaskUsecase', () => {
   it('should fail on any other error', async () => {
     const taskId = faker.random.uuid();
     const request: ResumeTaskDto = { taskId };
-    mockedTaskRepository.getTaskByTaskId.mockImplementationOnce(() => {
-      throw new Error();
-    });
+    const spy = jest
+      .spyOn(taskRepository, 'getTaskByTaskId')
+      .mockImplementationOnce(() => {
+        throw new Error();
+      });
 
     const result = await useCase.execute(request);
 
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(AppErrors.UnexpectedError);
+
+    spy.mockRestore();
   });
 
   it('should succeed', async () => {
-    const text = faker.lorem.words(5);
-    const task = new TaskEntityBuilder(text).makeTickedOff().build();
+    const task = new TaskEntityBuilder().makeTickedOff().build();
     const request: ResumeTaskDto = { taskId: task.taskId.id.toString() };
-    mockedTaskRepository.getTaskByTaskId.mockResolvedValueOnce({
-      found: true,
-      task,
-    });
+    await taskRepository.save(task);
 
     const result = await useCase.execute(request);
     const resumedTask: Task = result.value.getValue();

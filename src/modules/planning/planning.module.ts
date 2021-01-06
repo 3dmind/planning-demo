@@ -2,8 +2,10 @@ import { Logger, Module } from '@nestjs/common';
 import { PrismaModule } from '../../prisma/prisma.module';
 import { UsersModule } from '../users/users.module';
 import { TasksController } from './controllers/tasks.controller';
-import { MemberRepository } from './repositories/member.repository';
-import { TaskRepository } from './repositories/task.repository';
+import {
+  MemberRepositoryProvider,
+  TaskRepositoryProvider,
+} from './repositories/providers';
 import { AfterUserRegisteredSubscriber } from './subscribers/after-user-registered.subscriber';
 import { CreateMemberUsecase } from './use-cases/members/create-member/create-member.usecase';
 import { ArchiveTaskUsecase } from './use-cases/tasks/archive-task/archive-task.usecase';
@@ -29,10 +31,10 @@ import { TickOffTaskUsecase } from './use-cases/tasks/tick-off-task/tick-off-tas
     GetAllArchivedTasksUsecase,
     GetAllTasksUsecase,
     Logger,
-    MemberRepository,
+    MemberRepositoryProvider,
     NoteTaskUsecase,
     ResumeTaskUsecase,
-    TaskRepository,
+    TaskRepositoryProvider,
     TickOffTaskUsecase,
   ],
 })

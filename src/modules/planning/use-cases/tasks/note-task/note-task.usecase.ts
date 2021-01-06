@@ -9,7 +9,7 @@ import {
 } from '../../../../../shared/core';
 import { Description } from '../../../domain/description.valueobject';
 import { Task } from '../../../domain/task.entity';
-import { TaskRepository } from '../../../repositories/task.repository';
+import { TaskRepository } from '../../../repositories/task/task.repository';
 import { NoteTaskDto } from './note-task.dto';
 
 type Response = Either<AppErrors.UnexpectedError | Result<any>, Result<Task>>;

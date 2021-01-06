@@ -1,41 +1,40 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
-import { mock, mockReset } from 'jest-mock-extended';
 import { UserEntityBuilder } from '../../../../../../test/builder/user-entity.builder';
 import { AppErrors } from '../../../../../shared/core';
-import { UserRepository } from '../../../../users/repositories/user.repository';
-import { MemberRepository } from '../../../repositories/member.repository';
+import { InMemoryUserRepository } from '../../../../users/repositories/user/in-memory-user.repository';
+import { UserRepository } from '../../../../users/repositories/user/user.repository';
+import { Member } from '../../../domain/member.entity';
+import { InMemoryMemberRepository } from '../../../repositories/member/in-memory-member.repository';
+import { MemberRepository } from '../../../repositories/member/member.repository';
 import { CreateMemberDto } from './create-member.dto';
 import { CreateMemberErrors } from './create-member.errors';
 import { CreateMemberUsecase } from './create-member.usecase';
 
 describe('CreateMemberUsecase', () => {
-  const mockedUserRepository = mock<UserRepository>();
-  const mockedMemberRepository = mock<MemberRepository>();
+  let userRepository: UserRepository;
+  let memberRepository: MemberRepository;
   let useCase: CreateMemberUsecase;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
           provide: UserRepository,
-          useValue: mockedUserRepository,
+          useClass: InMemoryUserRepository,
         },
         {
           provide: MemberRepository,
-          useValue: mockedMemberRepository,
+          useClass: InMemoryMemberRepository,
         },
         CreateMemberUsecase,
       ],
     }).compile();
     module.useLogger(false);
 
+    userRepository = await module.resolve<UserRepository>(UserRepository);
+    memberRepository = await module.resolve<MemberRepository>(MemberRepository);
     useCase = await module.resolve<CreateMemberUsecase>(CreateMemberUsecase);
-  });
-
-  afterAll(async () => {
-    mockReset(mockedUserRepository);
-    mockReset(mockedMemberRepository);
   });
 
   it('should be defined', () => {
@@ -48,9 +47,6 @@ describe('CreateMemberUsecase', () => {
     const request: CreateMemberDto = {
       userId: idFixture,
     };
-    mockedUserRepository.getUserByUserId.mockResolvedValueOnce({
-      found: false,
-    });
 
     const result = await useCase.execute(request);
 
@@ -67,16 +63,14 @@ describe('CreateMemberUsecase', () => {
     expect.assertions(3);
     const userFixture = new UserEntityBuilder().build();
     const idFixture = userFixture.id.toString();
+    const memberFixture = Member.create({
+      userId: userFixture.userId,
+    }).getValue();
     const request: CreateMemberDto = {
       userId: idFixture,
     };
-    mockedUserRepository.getUserByUserId.mockResolvedValueOnce({
-      found: true,
-      user: userFixture,
-    });
-    mockedMemberRepository.getMemberByUserId.mockResolvedValueOnce({
-      found: true,
-    });
+    await userRepository.save(userFixture);
+    await memberRepository.save(memberFixture);
 
     const result = await useCase.execute(request);
 
@@ -95,7 +89,8 @@ describe('CreateMemberUsecase', () => {
     const request: CreateMemberDto = {
       userId: idFixture,
     };
-    mockedUserRepository.getUserByUserId.mockImplementationOnce(() => {
+    const spy = jest.spyOn(userRepository, 'getUserByUserId');
+    spy.mockImplementationOnce(() => {
       throw new Error();
     });
 
@@ -103,6 +98,8 @@ describe('CreateMemberUsecase', () => {
 
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(AppErrors.UnexpectedError);
+
+    spy.mockRestore();
   });
 
   it('should succeed', async () => {
@@ -111,13 +108,7 @@ describe('CreateMemberUsecase', () => {
     const request: CreateMemberDto = {
       userId: userFixture.userId.id.toString(),
     };
-    mockedUserRepository.getUserByUserId.mockResolvedValueOnce({
-      found: true,
-      user: userFixture,
-    });
-    mockedMemberRepository.getMemberByUserId.mockResolvedValueOnce({
-      found: false,
-    });
+    await userRepository.save(userFixture);
 
     const result = await useCase.execute(request);
 

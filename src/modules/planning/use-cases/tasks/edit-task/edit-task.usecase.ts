@@ -11,7 +11,7 @@ import { UniqueEntityId } from '../../../../../shared/domain';
 import { Description } from '../../../domain/description.valueobject';
 import { TaskId } from '../../../domain/task-id.entity';
 import { Task } from '../../../domain/task.entity';
-import { TaskRepository } from '../../../repositories/task.repository';
+import { TaskRepository } from '../../../repositories/task/task.repository';
 import { EditTaskErrors } from './edit-task.errors';
 
 type Request = {

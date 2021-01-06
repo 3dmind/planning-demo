@@ -1,32 +1,32 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
-import { mock, mockReset } from 'jest-mock-extended';
 import { UserEntityBuilder } from '../../../../../test/builder/user-entity.builder';
 import { AppErrors } from '../../../../shared/core';
 import { UserPassword } from '../../domain/user-password.valueobject';
-import { UserRepository } from '../../repositories/user.repository';
+import { InMemoryUserRepository } from '../../repositories/user/in-memory-user.repository';
+import { UserRepository } from '../../repositories/user/user.repository';
 import { ValidateUserDto } from './validate-user.dto';
 import { ValidateUserErrors } from './validate-user.errors';
 import { ValidateUserUsecase } from './validate-user.usecase';
 
 describe('ValidateUserUsecase', () => {
-  const mockedUserRepository = mock<UserRepository>();
+  let userRepository: UserRepository;
   let useCase: ValidateUserUsecase;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        { provide: UserRepository, useValue: mockedUserRepository },
+        {
+          provide: UserRepository,
+          useClass: InMemoryUserRepository,
+        },
         ValidateUserUsecase,
       ],
     }).compile();
     module.useLogger(false);
 
+    userRepository = await module.resolve<UserRepository>(UserRepository);
     useCase = await module.resolve<ValidateUserUsecase>(ValidateUserUsecase);
-  });
-
-  afterAll(() => {
-    mockReset(mockedUserRepository);
   });
 
   it('should fail if username cannot be created', async () => {
@@ -65,9 +65,6 @@ describe('ValidateUserUsecase', () => {
       username: usernameFixture,
       password: passwordFixture,
     };
-    mockedUserRepository.getUserByUsername.mockResolvedValueOnce({
-      found: false,
-    });
 
     const result = await useCase.execute(request);
 
@@ -102,10 +99,7 @@ describe('ValidateUserUsecase', () => {
       username: usernameFixture,
       password: missMatchingPasswordFixture,
     };
-    mockedUserRepository.getUserByUsername.mockResolvedValue({
-      found: true,
-      user,
-    });
+    await userRepository.save(user);
 
     const result = await useCase.execute(request);
 
@@ -124,14 +118,18 @@ describe('ValidateUserUsecase', () => {
       username: usernameFixture,
       password: passwordFixture,
     };
-    mockedUserRepository.getUserByUsername.mockImplementationOnce(() => {
-      throw new Error('BOOM!');
-    });
+    const spy = jest
+      .spyOn(userRepository, 'getUserByUsername')
+      .mockImplementationOnce(() => {
+        throw new Error();
+      });
 
     const result = await useCase.execute(request);
 
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(AppErrors.UnexpectedError);
+
+    spy.mockRestore();
   });
 
   it('should succeed', async () => {
@@ -153,10 +151,7 @@ describe('ValidateUserUsecase', () => {
       username: usernameFixture,
       password: passwordFixture,
     };
-    mockedUserRepository.getUserByUsername.mockResolvedValue({
-      found: true,
-      user,
-    });
+    await userRepository.save(user);
 
     const result = await useCase.execute(request);
 

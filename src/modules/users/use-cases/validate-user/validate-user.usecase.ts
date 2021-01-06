@@ -10,7 +10,7 @@ import {
 import { UserName } from '../../domain/user-name.valueobject';
 import { UserPassword } from '../../domain/user-password.valueobject';
 import { User } from '../../domain/user.entity';
-import { UserRepository } from '../../repositories/user.repository';
+import { UserRepository } from '../../repositories/user/user.repository';
 import { ValidateUserDto } from './validate-user.dto';
 import { ValidateUserErrors } from './validate-user.errors';
 

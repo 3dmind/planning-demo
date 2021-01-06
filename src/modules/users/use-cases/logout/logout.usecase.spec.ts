@@ -7,14 +7,14 @@ import { UserEntityBuilder } from '../../../../../test/builder/user-entity.build
 import { ApiConfigService } from '../../../../api-config/api-config.service';
 import { RedisCacheService } from '../../../../redis-cache/redis-cache.service';
 import { AppErrors } from '../../../../shared/core';
-import { UserRepository } from '../../repositories/user.repository';
+import { InMemoryUserRepository } from '../../repositories/user/in-memory-user.repository';
+import { UserRepository } from '../../repositories/user/user.repository';
 import { AuthService } from '../../services/auth.service';
 import { LogoutDto } from './logout.dto';
 import { LogoutErrors } from './logout.errors';
 import { LogoutUsecase } from './logout.usecase';
 
 describe('LogoutUsecase', () => {
-  const mockedUserRepository = mock<UserRepository>();
   const mockedApiConfigService = mock<ApiConfigService>();
   const accessTokenSecretFixture = 'defaultaccesstokensecret';
   const accessTokenTtlFixture = 10; // seconds
@@ -23,9 +23,10 @@ describe('LogoutUsecase', () => {
 
   let redisCacheService: RedisCacheService;
   let authService: AuthService;
+  let userRepository: UserRepository;
   let useCase: LogoutUsecase;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     mockedApiConfigService.getAccessTokenSecret.mockReturnValue(
       accessTokenSecretFixture,
     );
@@ -45,7 +46,7 @@ describe('LogoutUsecase', () => {
       providers: [
         { provide: 'JWT_MODULE_OPTIONS', useValue: {} },
         { provide: ApiConfigService, useValue: mockedApiConfigService },
-        { provide: UserRepository, useValue: mockedUserRepository },
+        { provide: UserRepository, useClass: InMemoryUserRepository },
         RedisCacheService,
         JwtService,
         AuthService,
@@ -54,16 +55,16 @@ describe('LogoutUsecase', () => {
     }).compile();
     module.useLogger(false);
 
-    useCase = await module.resolve<LogoutUsecase>(LogoutUsecase);
     authService = await module.resolve<AuthService>(AuthService);
     redisCacheService = await module.resolve<RedisCacheService>(
       RedisCacheService,
     );
+    userRepository = await module.resolve<UserRepository>(UserRepository);
+    useCase = await module.resolve<LogoutUsecase>(LogoutUsecase);
   });
 
   afterAll(() => {
     mockReset(mockedApiConfigService);
-    mockReset(mockedUserRepository);
   });
 
   it('should be defined', () => {
@@ -85,9 +86,6 @@ describe('LogoutUsecase', () => {
     expect.assertions(3);
     const username = faker.internet.userName();
     const dto: LogoutDto = { username };
-    mockedUserRepository.getUserByUsername.mockResolvedValueOnce({
-      found: false,
-    });
 
     const result = await useCase.execute(dto);
 
@@ -102,14 +100,17 @@ describe('LogoutUsecase', () => {
     expect.assertions(2);
     const username = faker.internet.userName();
     const dto: LogoutDto = { username };
-    mockedUserRepository.getUserByUsername.mockImplementationOnce(() => {
-      throw new Error('BOOM!');
+    const spy = jest.spyOn(userRepository, 'getUserByUsername');
+    spy.mockImplementationOnce(() => {
+      throw new Error();
     });
 
     const result = await useCase.execute(dto);
 
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(AppErrors.UnexpectedError);
+
+    spy.mockRestore();
   });
 
   it('should succeed', async () => {
@@ -117,10 +118,7 @@ describe('LogoutUsecase', () => {
     const username = faker.internet.userName();
     const user = new UserEntityBuilder({ username }).makeLoggedIn().build();
     const dto: LogoutDto = { username };
-    mockedUserRepository.getUserByUsername.mockResolvedValueOnce({
-      found: true,
-      user,
-    });
+    await userRepository.save(user);
     await authService.saveAuthenticatedUser(user);
 
     let value = await redisCacheService.get(username);

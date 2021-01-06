@@ -8,7 +8,7 @@ import {
   UseCase,
 } from '../../../../shared/core';
 import { UserName } from '../../domain/user-name.valueobject';
-import { UserRepository } from '../../repositories/user.repository';
+import { UserRepository } from '../../repositories/user/user.repository';
 import { AuthService } from '../../services/auth.service';
 import { LogoutDto } from './logout.dto';
 import { LogoutErrors } from './logout.errors';

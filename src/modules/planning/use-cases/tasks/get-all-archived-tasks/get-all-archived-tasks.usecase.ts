@@ -8,7 +8,7 @@ import {
   UseCase,
 } from '../../../../../shared/core';
 import { Task } from '../../../domain/task.entity';
-import { TaskRepository } from '../../../repositories/task.repository';
+import { TaskRepository } from '../../../repositories/task/task.repository';
 
 type Response = Either<AppErrors.UnexpectedError, Result<Task[]>>;
 

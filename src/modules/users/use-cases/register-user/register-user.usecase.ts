@@ -12,7 +12,7 @@ import { UserEmail } from '../../domain/user-email.valueobject';
 import { UserName } from '../../domain/user-name.valueobject';
 import { UserPassword } from '../../domain/user-password.valueobject';
 import { User } from '../../domain/user.entity';
-import { UserRepository } from '../../repositories/user.repository';
+import { UserRepository } from '../../repositories/user/user.repository';
 import { RegisterUserDto } from './register-user.dto';
 import { RegisterUserErrors } from './register-user.errors';
 

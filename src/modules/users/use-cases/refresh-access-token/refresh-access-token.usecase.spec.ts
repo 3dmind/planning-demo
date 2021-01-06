@@ -8,7 +8,8 @@ import { UserEntityBuilder } from '../../../../../test/builder/user-entity.build
 import { ApiConfigService } from '../../../../api-config/api-config.service';
 import { RedisCacheService } from '../../../../redis-cache/redis-cache.service';
 import { AppErrors } from '../../../../shared/core';
-import { UserRepository } from '../../repositories/user.repository';
+import { InMemoryUserRepository } from '../../repositories/user/in-memory-user.repository';
+import { UserRepository } from '../../repositories/user/user.repository';
 import { AuthService } from '../../services/auth.service';
 import { RefreshAccessTokenRequestDto } from './refresh-access-token-request.dto';
 import { RefreshAccessTokenErrors } from './refresh-access-token.errors';
@@ -16,17 +17,15 @@ import { RefreshAccessTokenUsecase } from './refresh-access-token.usecase';
 
 describe('RefreshAccessTokenUsecase', () => {
   const mockedConfigService = mock<ApiConfigService>();
-  const mockedUserRepository = mock<UserRepository>();
-
   const accessTokenSecretFixture = 'defaultaccesstokensecret';
   const accessTokenTtlFixture = 10; // seconds
   const refreshTokenSecretFixture = 'defaultrefreshtokensecret';
   const refreshTokenTtlFixture = 10; // seconds
-
   let authService: AuthService;
+  let userRepository: UserRepository;
   let useCase: RefreshAccessTokenUsecase;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     mockedConfigService.getAccessTokenSecret.mockReturnValue(
       accessTokenSecretFixture,
     );
@@ -45,9 +44,18 @@ describe('RefreshAccessTokenUsecase', () => {
       imports: [CacheModule.register({ store: 'memory' })],
 
       providers: [
-        { provide: JWT_MODULE_OPTIONS, useValue: {} },
-        { provide: ApiConfigService, useValue: mockedConfigService },
-        { provide: UserRepository, useValue: mockedUserRepository },
+        {
+          provide: JWT_MODULE_OPTIONS,
+          useValue: {},
+        },
+        {
+          provide: ApiConfigService,
+          useValue: mockedConfigService,
+        },
+        {
+          provide: UserRepository,
+          useClass: InMemoryUserRepository,
+        },
         RedisCacheService,
         JwtService,
         AuthService,
@@ -57,6 +65,7 @@ describe('RefreshAccessTokenUsecase', () => {
     module.useLogger(false);
 
     authService = await module.resolve<AuthService>(AuthService);
+    userRepository = await module.resolve<UserRepository>(UserRepository);
     useCase = await module.resolve<RefreshAccessTokenUsecase>(
       RefreshAccessTokenUsecase,
     );
@@ -64,7 +73,6 @@ describe('RefreshAccessTokenUsecase', () => {
 
   afterAll(() => {
     mockReset(mockedConfigService);
-    mockReset(mockedUserRepository);
   });
 
   it('should be defined', () => {
@@ -89,9 +97,6 @@ describe('RefreshAccessTokenUsecase', () => {
     const request: RefreshAccessTokenRequestDto = {
       username: usernameFixture,
     };
-    mockedUserRepository.getUserByUsername.mockResolvedValueOnce({
-      found: false,
-    });
 
     const result = await useCase.execute(request);
 
@@ -110,8 +115,9 @@ describe('RefreshAccessTokenUsecase', () => {
     const request: RefreshAccessTokenRequestDto = {
       username: usernameFixture,
     };
-    mockedUserRepository.getUserByUsername.mockImplementationOnce(() => {
-      throw new Error('BOOM!');
+    const spy = jest.spyOn(userRepository, 'getUserByUsername');
+    spy.mockImplementationOnce(() => {
+      throw new Error();
     });
 
     const result = await useCase.execute(request);
@@ -129,10 +135,7 @@ describe('RefreshAccessTokenUsecase', () => {
       .makeLoggedIn()
       .build();
     await authService.saveAuthenticatedUser(user);
-    mockedUserRepository.getUserByUsername.mockResolvedValueOnce({
-      found: true,
-      user,
-    });
+    await userRepository.save(user);
 
     const request: RefreshAccessTokenRequestDto = {
       username: usernameFixture,

@@ -1,33 +1,33 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
-import { mock, mockReset } from 'jest-mock-extended';
 import { TaskEntityBuilder } from '../../../../../../test/builder/task-entity.builder';
 import { AppErrors, Result } from '../../../../../shared/core';
 import { TaskId } from '../../../domain/task-id.entity';
 import { Task } from '../../../domain/task.entity';
-import { TaskRepository } from '../../../repositories/task.repository';
+import { InMemoryTaskRepository } from '../../../repositories/task/in-memory-task.repository';
+import { TaskRepository } from '../../../repositories/task/task.repository';
 import { TickOffTaskDto } from './tick-off-task.dto';
 import { TickOffTasksErrors } from './tick-off-task.errors';
 import { TickOffTaskUsecase } from './tick-off-task.usecase';
 
 describe('TickOffTaskUsecase', () => {
-  const mockedTaskRepository = mock<TaskRepository>();
+  let taskRepository: TaskRepository;
   let useCase: TickOffTaskUsecase;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        { provide: TaskRepository, useValue: mockedTaskRepository },
+        {
+          provide: TaskRepository,
+          useClass: InMemoryTaskRepository,
+        },
         TickOffTaskUsecase,
       ],
     }).compile();
     module.useLogger(false);
 
+    taskRepository = await module.resolve<TaskRepository>(TaskRepository);
     useCase = await module.resolve<TickOffTaskUsecase>(TickOffTaskUsecase);
-  });
-
-  afterAll(() => {
-    mockReset(mockedTaskRepository);
   });
 
   it('should fail if task-id cannot be created', async () => {
@@ -46,10 +46,6 @@ describe('TickOffTaskUsecase', () => {
 
   it('should fail if a task cannot be found', async () => {
     const taskId = faker.random.uuid();
-    mockedTaskRepository.getTaskByTaskId.mockResolvedValue({
-      found: false,
-    });
-
     const request: TickOffTaskDto = { taskId };
     const result = await useCase.execute(request);
 
@@ -63,24 +59,24 @@ describe('TickOffTaskUsecase', () => {
   it('should fail on any other error', async () => {
     const taskId = faker.random.uuid();
     const request: TickOffTaskDto = { taskId };
-    mockedTaskRepository.getTaskByTaskId.mockImplementationOnce(() => {
-      throw new Error();
-    });
+    const spy = jest
+      .spyOn(taskRepository, 'getTaskByTaskId')
+      .mockImplementationOnce(() => {
+        throw new Error();
+      });
 
     const result = await useCase.execute(request);
 
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(AppErrors.UnexpectedError);
+
+    spy.mockRestore();
   });
 
   it('should succeed', async () => {
-    const text = faker.lorem.words(5);
-    const task = new TaskEntityBuilder(text).build();
+    const task = new TaskEntityBuilder().build();
     const request: TickOffTaskDto = { taskId: task.taskId.id.toString() };
-    mockedTaskRepository.getTaskByTaskId.mockResolvedValueOnce({
-      found: true,
-      task,
-    });
+    await taskRepository.save(task);
 
     const result = await useCase.execute(request);
     const tickedOffTask: Task = result.value.getValue();

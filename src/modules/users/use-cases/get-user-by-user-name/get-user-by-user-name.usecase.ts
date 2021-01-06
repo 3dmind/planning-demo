@@ -9,7 +9,7 @@ import {
 } from '../../../../shared/core';
 import { UserName } from '../../domain/user-name.valueobject';
 import { User } from '../../domain/user.entity';
-import { UserRepository } from '../../repositories/user.repository';
+import { UserRepository } from '../../repositories/user/user.repository';
 import { GetUserByUserNameDto } from './get-user-by-user-name.dto';
 import { GetUserByUserNameError } from './get-user-by-user-name.errors';
 

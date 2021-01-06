@@ -8,9 +8,9 @@ import {
   UseCase,
 } from '../../../../../shared/core';
 import { UniqueEntityId } from '../../../../../shared/domain';
-import { UserRepository } from '../../../../users/repositories/user.repository';
+import { UserRepository } from '../../../../users/repositories/user/user.repository';
 import { Member } from '../../../domain/member.entity';
-import { MemberRepository } from '../../../repositories/member.repository';
+import { MemberRepository } from '../../../repositories/member/member.repository';
 import { CreateMemberDto } from './create-member.dto';
 import { CreateMemberErrors } from './create-member.errors';
 

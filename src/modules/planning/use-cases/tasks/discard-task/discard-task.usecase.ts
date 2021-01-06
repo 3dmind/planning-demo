@@ -10,7 +10,7 @@ import {
 import { UniqueEntityId } from '../../../../../shared/domain';
 import { TaskId } from '../../../domain/task-id.entity';
 import { Task } from '../../../domain/task.entity';
-import { TaskRepository } from '../../../repositories/task.repository';
+import { TaskRepository } from '../../../repositories/task/task.repository';
 import { DiscardTaskDto } from './discard-task.dto';
 import { DiscardTaskErrors } from './discard-task.errors';
 

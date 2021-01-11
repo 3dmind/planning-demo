@@ -2,7 +2,6 @@ import { CacheModule } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { JWT_MODULE_OPTIONS } from '@nestjs/jwt/dist/jwt.constants';
 import { Test, TestingModule } from '@nestjs/testing';
-import * as faker from 'faker';
 import { mock, mockReset } from 'jest-mock-extended';
 import { UserEntityBuilder } from '../../../../../test/builder/user-entity.builder';
 import { ApiConfigService } from '../../../../api-config/api-config.service';
@@ -11,8 +10,6 @@ import { AppErrors } from '../../../../shared/core';
 import { InMemoryUserRepository } from '../../repositories/user/in-memory-user.repository';
 import { UserRepository } from '../../repositories/user/user.repository';
 import { AuthService } from '../../services/auth.service';
-import { RefreshAccessTokenRequestDto } from './refresh-access-token-request.dto';
-import { RefreshAccessTokenErrors } from './refresh-access-token.errors';
 import { RefreshAccessTokenUsecase } from './refresh-access-token.usecase';
 
 describe('RefreshAccessTokenUsecase', () => {
@@ -80,47 +77,15 @@ describe('RefreshAccessTokenUsecase', () => {
     expect(useCase).toBeDefined();
   });
 
-  it('should fail if username cannot be created', async () => {
-    expect.assertions(1);
-    const request: RefreshAccessTokenRequestDto = {
-      username: '',
-    };
-
-    const result = await useCase.execute(request);
-
-    expect(result.isLeft()).toBe(true);
-  });
-
-  it('should fail if user cannot be found', async () => {
-    expect.assertions(3);
-    const usernameFixture = faker.internet.userName();
-    const request: RefreshAccessTokenRequestDto = {
-      username: usernameFixture,
-    };
-
-    const result = await useCase.execute(request);
-
-    expect(result.isLeft()).toBe(true);
-    expect(result.value).toBeInstanceOf(
-      RefreshAccessTokenErrors.UserNotFoundError,
-    );
-    expect(result.value.errorValue().message).toEqual(
-      `User with the username '${usernameFixture}' does not exist.`,
-    );
-  });
-
   it('should fail on any other error', async () => {
     expect.assertions(2);
-    const usernameFixture = faker.internet.userName();
-    const request: RefreshAccessTokenRequestDto = {
-      username: usernameFixture,
-    };
-    const spy = jest.spyOn(userRepository, 'getUserByUsername');
+    const user = new UserEntityBuilder().build();
+    const spy = jest.spyOn(authService, 'createAccessToken');
     spy.mockImplementationOnce(() => {
       throw new Error();
     });
 
-    const result = await useCase.execute(request);
+    const result = await useCase.execute(user);
 
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(AppErrors.UnexpectedError);
@@ -128,20 +93,11 @@ describe('RefreshAccessTokenUsecase', () => {
 
   it('should succeed', async () => {
     expect.assertions(1);
-    const usernameFixture = faker.internet.userName();
-    const user = new UserEntityBuilder({
-      username: usernameFixture,
-    })
-      .makeLoggedIn()
-      .build();
+    const user = new UserEntityBuilder().makeLoggedIn().build();
     await authService.saveAuthenticatedUser(user);
     await userRepository.save(user);
 
-    const request: RefreshAccessTokenRequestDto = {
-      username: usernameFixture,
-    };
-
-    const result = await useCase.execute(request);
+    const result = await useCase.execute(user);
 
     expect(result.isRight()).toBe(true);
   });

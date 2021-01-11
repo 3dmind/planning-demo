@@ -9,22 +9,14 @@ import {
 } from '../../../../shared/core';
 import { AccessToken } from '../../domain/jwt';
 import { JwtClaims } from '../../domain/jwt-claims.interface';
-import { UserName } from '../../domain/user-name.valueobject';
+import { User } from '../../domain/user.entity';
 import { UserRepository } from '../../repositories/user/user.repository';
 import { AuthService } from '../../services/auth.service';
-import { RefreshAccessTokenRequestDto } from './refresh-access-token-request.dto';
-import { RefreshAccessTokenErrors } from './refresh-access-token.errors';
 
-type Response = Either<
-  | RefreshAccessTokenErrors.UserNotFoundError
-  | AppErrors.UnexpectedError
-  | Result<any>,
-  Result<AccessToken>
->;
+type Response = Either<AppErrors.UnexpectedError, Result<AccessToken>>;
 
 @Injectable()
-export class RefreshAccessTokenUsecase
-  implements UseCase<RefreshAccessTokenRequestDto, Response> {
+export class RefreshAccessTokenUsecase implements UseCase<User, Response> {
   private readonly logger = new Logger(RefreshAccessTokenUsecase.name);
 
   constructor(
@@ -32,32 +24,16 @@ export class RefreshAccessTokenUsecase
     private readonly authService: AuthService,
   ) {}
 
-  async execute(request: RefreshAccessTokenRequestDto): Promise<Response> {
+  async execute(user: User): Promise<Response> {
     this.logger.log('User is going to refresh access token...');
-    const userNameResult = UserName.create(request.username);
-
-    if (userNameResult.isFailure) {
-      this.logger.debug(userNameResult.error.toString());
-      return left(Result.fail(userNameResult.error.toString()));
-    }
 
     try {
-      const username = userNameResult.getValue();
-      const { found, user } = await this.userRepository.getUserByUsername(
-        username,
+      const userSnapshot = user.createSnapshot();
+      const savedTokens = await this.authService.getTokens(
+        userSnapshot.username.value,
       );
-
-      if (!found) {
-        const userNotFoundError = new RefreshAccessTokenErrors.UserNotFoundError(
-          username.value,
-        );
-        this.logger.debug(userNotFoundError.errorValue().message);
-        return left(userNotFoundError);
-      }
-
-      const savedTokens = await this.authService.getTokens(username.value);
       const payload: JwtClaims = {
-        username: username.value,
+        username: userSnapshot.username.value,
       };
       const newAccessToken: AccessToken = this.authService.createAccessToken(
         payload,
@@ -68,7 +44,7 @@ export class RefreshAccessTokenUsecase
       this.logger.log('Access token successfully refreshed');
       return right(Result.ok<AccessToken>(newAccessToken));
     } catch (error) {
-      this.logger.error(error.message, error);
+      this.logger.error(error.message, error.stack);
       return left(new AppErrors.UnexpectedError(error));
     }
   }

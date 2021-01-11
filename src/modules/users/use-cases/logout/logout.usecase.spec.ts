@@ -10,8 +10,6 @@ import { AppErrors } from '../../../../shared/core';
 import { InMemoryUserRepository } from '../../repositories/user/in-memory-user.repository';
 import { UserRepository } from '../../repositories/user/user.repository';
 import { AuthService } from '../../services/auth.service';
-import { LogoutDto } from './logout.dto';
-import { LogoutErrors } from './logout.errors';
 import { LogoutUsecase } from './logout.usecase';
 
 describe('LogoutUsecase', () => {
@@ -71,41 +69,15 @@ describe('LogoutUsecase', () => {
     expect(useCase).toBeDefined();
   });
 
-  it('should fail if username cannot be created', async () => {
-    expect.assertions(1);
-    const dto: LogoutDto = {
-      username: '',
-    };
-
-    const result = await useCase.execute(dto);
-
-    expect(result.isLeft()).toBe(true);
-  });
-
-  it('should fail if user cannot be found', async () => {
-    expect.assertions(3);
-    const username = faker.internet.userName();
-    const dto: LogoutDto = { username };
-
-    const result = await useCase.execute(dto);
-
-    expect(result.isLeft()).toBe(true);
-    expect(result.value).toBeInstanceOf(LogoutErrors.UserNotFoundError);
-    expect(result.value.errorValue().message).toEqual(
-      `User with the username '${username}' does not exist.`,
-    );
-  });
-
   it('should fail on any other error', async () => {
     expect.assertions(2);
-    const username = faker.internet.userName();
-    const dto: LogoutDto = { username };
-    const spy = jest.spyOn(userRepository, 'getUserByUsername');
+    const user = new UserEntityBuilder().makeLoggedIn().build();
+    const spy = jest.spyOn(authService, 'deAuthenticateUser');
     spy.mockImplementationOnce(() => {
       throw new Error();
     });
 
-    const result = await useCase.execute(dto);
+    const result = await useCase.execute(user);
 
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(AppErrors.UnexpectedError);
@@ -117,14 +89,13 @@ describe('LogoutUsecase', () => {
     expect.assertions(3);
     const username = faker.internet.userName();
     const user = new UserEntityBuilder({ username }).makeLoggedIn().build();
-    const dto: LogoutDto = { username };
     await userRepository.save(user);
     await authService.saveAuthenticatedUser(user);
 
     let value = await redisCacheService.get(username);
     expect(value).toBeDefined();
 
-    const result = await useCase.execute(dto);
+    const result = await useCase.execute(user);
     expect(result.isRight()).toBe(true);
 
     value = await redisCacheService.get(username);

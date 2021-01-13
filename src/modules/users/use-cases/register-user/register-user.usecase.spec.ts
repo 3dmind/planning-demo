@@ -86,10 +86,9 @@ describe('RegisterUserUsecase', () => {
   it('should fail if user already exists', async () => {
     expect.assertions(3);
     const user = new UserEntityBuilder().build();
-    const userSnapshot = user.createSnapshot();
-    const emailFixture = userSnapshot.email.value;
-    const passwordFixture = userSnapshot.password.value;
-    const userNameFixture = userSnapshot.username.value;
+    const emailFixture = user.email.value;
+    const passwordFixture = user.password.value;
+    const userNameFixture = user.username.value;
     await userRepository.save(user);
 
     const result = await useCase.execute({
@@ -110,10 +109,9 @@ describe('RegisterUserUsecase', () => {
   it('should fail if username already taken', async () => {
     expect.assertions(3);
     const user = new UserEntityBuilder().build();
-    const userSnapshot = user.createSnapshot();
-    const emailFixture = userSnapshot.email.value;
-    const passwordFixture = userSnapshot.password.value;
-    const userNameFixture = userSnapshot.username.value;
+    const emailFixture = user.email.value;
+    const passwordFixture = user.password.value;
+    const userNameFixture = user.username.value;
     const spy = jest.spyOn(userRepository, 'exists').mockResolvedValue(false);
     await userRepository.save(user);
 

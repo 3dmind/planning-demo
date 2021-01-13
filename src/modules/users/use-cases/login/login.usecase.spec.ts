@@ -81,7 +81,6 @@ describe('LoginUsecase', () => {
   it('should succeed', async () => {
     expect.assertions(3);
     const user = new UserEntityBuilder().build();
-    const userSnapshot = user.createSnapshot();
 
     const result = await useCase.execute(user);
 
@@ -91,7 +90,7 @@ describe('LoginUsecase', () => {
       refresh_token: expect.any(String),
     });
 
-    const value = await redisCacheService.get(userSnapshot.username.value);
+    const value = await redisCacheService.get(user.username.value);
 
     expect(value).toBeDefined();
   });

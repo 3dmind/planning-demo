@@ -28,12 +28,9 @@ export class RefreshAccessTokenUsecase implements UseCase<User, Response> {
     this.logger.log('User is going to refresh access token...');
 
     try {
-      const userSnapshot = user.createSnapshot();
-      const savedTokens = await this.authService.getTokens(
-        userSnapshot.username.value,
-      );
+      const savedTokens = await this.authService.getTokens(user.username.value);
       const payload: JwtClaims = {
-        username: userSnapshot.username.value,
+        username: user.username.value,
       };
       const newAccessToken: AccessToken = this.authService.createAccessToken(
         payload,

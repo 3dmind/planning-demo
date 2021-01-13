@@ -4,9 +4,9 @@ import { UserRegistered } from './events/user-registered.domainevent';
 import { AccessToken, RefreshToken } from './jwt';
 import { UserEmail } from './user-email.valueobject';
 import { UserId } from './user-id.entity';
+import { UserName } from './user-name.valueobject';
 import { UserPassword } from './user-password.valueobject';
 import { UserProps } from './user-props.interface';
-import { UserSnapshot } from './user-snapshot';
 
 export class User extends AggregateRoot<UserProps> {
   private constructor(props: UserProps, id: UniqueEntityId) {
@@ -17,12 +17,32 @@ export class User extends AggregateRoot<UserProps> {
     return UserId.create(this._id).getValue();
   }
 
+  get createdAt(): Date {
+    return this.props.createdAt;
+  }
+
   get email(): UserEmail {
     return this.props.email;
   }
 
+  get isEmailVerified(): boolean {
+    return this.props.isEmailVerified;
+  }
+
   get password(): UserPassword {
     return this.props.password;
+  }
+
+  get username(): UserName {
+    return this.props.username;
+  }
+
+  get accessToken(): AccessToken {
+    return this.props.accessToken;
+  }
+
+  get refreshToken(): RefreshToken {
+    return this.props.refreshToken;
   }
 
   public static create(props: UserProps, id?: UniqueEntityId): Result<User> {
@@ -55,10 +75,6 @@ export class User extends AggregateRoot<UserProps> {
     user.addDomainEvent(new UserRegistered(user));
 
     return userResult;
-  }
-
-  public createSnapshot(): UserSnapshot {
-    return new UserSnapshot(this.props, this.userId);
   }
 
   public setTokens(accessToken: AccessToken, refreshToken: RefreshToken): void {

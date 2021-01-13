@@ -47,20 +47,18 @@ export class AuthService {
 
   public async saveAuthenticatedUser(user: User): Promise<void> {
     if (user.isLoggedIn()) {
-      const userSnapshot = user.createSnapshot();
       const value = JSON.stringify({
-        accessToken: userSnapshot.accessToken,
-        refreshToken: userSnapshot.refreshToken,
+        accessToken: user.accessToken,
+        refreshToken: user.refreshToken,
       });
-      await this.redisCacheService.set(userSnapshot.username.value, value, {
+      await this.redisCacheService.set(user.username.value, value, {
         ttl: this.refreshTokenTtl,
       });
     }
   }
 
   public async deAuthenticateUser(user: User): Promise<void> {
-    const userSnapshot = user.createSnapshot();
-    await this.redisCacheService.del(userSnapshot.username.value);
+    await this.redisCacheService.del(user.username.value);
   }
 
   public async getTokens(username: string): Promise<Tokens> {

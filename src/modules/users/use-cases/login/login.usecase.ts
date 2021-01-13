@@ -24,9 +24,8 @@ export class LoginUsecase implements UseCase<User, Response> {
   async execute(user: User): Promise<Response> {
     this.logger.log('User is going to log in...');
     try {
-      const userSnapshot = user.createSnapshot();
       const payload: JwtClaims = {
-        username: userSnapshot.username.value,
+        username: user.username.value,
       };
       const accessToken: AccessToken = this.authService.createAccessToken(
         payload,

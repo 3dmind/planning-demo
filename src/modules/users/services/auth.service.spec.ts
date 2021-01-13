@@ -87,17 +87,16 @@ describe('AuthService', () => {
   it('should save authenticated user', async () => {
     expect.assertions(1);
     const user = new UserEntityBuilder().build();
-    const userSnapshot = user.createSnapshot();
     const accessToken = service.createAccessToken({
-      username: userSnapshot.username.value,
+      username: user.username.value,
     });
     const refreshToken = service.createRefreshToken({
-      username: userSnapshot.username.value,
+      username: user.username.value,
     });
     user.setTokens(accessToken, refreshToken);
 
     await service.saveAuthenticatedUser(user);
-    const result = await redisCacheService.get(userSnapshot.username.value);
+    const result = await redisCacheService.get(user.username.value);
 
     expect(result).toBeDefined();
   });

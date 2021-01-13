@@ -8,8 +8,7 @@ import { UserDto } from '../dtos/user.dto';
 
 export class UserMapper {
   public static async toPersistence(user: User): Promise<Prisma.BaseUserModelCreateInput> {
-    const userSnapshot = user.createSnapshot();
-    const password = userSnapshot.password;
+    const password = user.password;
     let hashedPassword;
 
     if (password.isAlreadyHashed()) {
@@ -19,11 +18,11 @@ export class UserMapper {
     }
 
     return {
-      baseUserId: userSnapshot.userId.id.toString(),
-      createdAt: userSnapshot.createdAt,
-      isEmailVerified: userSnapshot.isEmailVerified,
-      userEmail: userSnapshot.email.value,
-      username: userSnapshot.username.value,
+      baseUserId: user.userId.id.toString(),
+      createdAt: user.createdAt,
+      isEmailVerified: user.isEmailVerified,
+      userEmail: user.email.value,
+      username: user.username.value,
       userPassword: hashedPassword,
     };
   }
@@ -55,17 +54,11 @@ export class UserMapper {
   }
 
   public static toDto(user: User): UserDto {
-    const {
-      createdAt,
-      email,
-      isEmailVerified,
-      username,
-    } = user.createSnapshot();
     return {
-      createdAt: createdAt.toISOString(),
-      email: email.value,
-      isEmailVerified: isEmailVerified,
-      username: username.value,
+      createdAt: user.createdAt.toISOString(),
+      email: user.email.value,
+      isEmailVerified: user.isEmailVerified,
+      username: user.username.value,
     };
   }
 }

@@ -65,7 +65,7 @@ describe('LocalStrategy', () => {
       passwordIsHashed: true,
       password: hashedPassword,
     }).build();
-    const username = user.createSnapshot().username.value;
+    const username = user.username.value;
     const passwordFixture = faker.internet.password(UserPassword.minLength);
     const passwordDoesntMatchError = new ValidateUserErrors.PasswordDoesntMatchError();
     await userRepository.save(user);

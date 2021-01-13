@@ -110,8 +110,8 @@ describe('User', () => {
     expect(userResult.isSuccess).toBe(true);
     expect(user.userId).toBeInstanceOf(UserId);
     expect(user.userId.id.equals(entityId)).toBe(true);
-    expect(user.props.isEmailVerified).toBe(true);
-    expect(user.props.createdAt).toEqual(props.createdAt);
+    expect(user.isEmailVerified).toBe(true);
+    expect(user.createdAt).toEqual(props.createdAt);
     expect(user.email).toBe(email);
     expect(user.password).toBe(password);
   });

@@ -16,9 +16,7 @@ describe('InMemoryUserRepository', () => {
     const user = new UserEntityBuilder().build();
     await repository.save(user);
 
-    const result = await repository.getUserByUsername(
-      user.createSnapshot().username,
-    );
+    const result = await repository.getUserByUsername(user.username);
 
     expect(result.found).toBe(true);
     expect(result.user.equals(user)).toBe(true);

@@ -26,12 +26,13 @@ model MemberModel {
   createdAt     DateTime
   baseUserModel BaseUserModel  @relation(fields: [memberBaseId], references: [baseUserId])
   memberBaseId  String
+  taskModels    TaskModel[]
 }
 
 model TaskModel {
   @@map("Task")
-  taskId      String    @id
-  updatedAt   DateTime  @updatedAt
+  taskId      String       @id
+  updatedAt   DateTime     @updatedAt
   description String
   createdAt   DateTime
   tickedOff   Boolean
@@ -42,4 +43,6 @@ model TaskModel {
   archivedAt  DateTime?
   discarded   Boolean
   discardedAt DateTime?
+  ownerModel  MemberModel  @relation(fields: [ownerId], references: [memberId])
+  ownerId     String
 }

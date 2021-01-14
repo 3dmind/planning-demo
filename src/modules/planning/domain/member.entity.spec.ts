@@ -35,7 +35,7 @@ describe('Member entity', () => {
   });
 
   it('should create new member', () => {
-    expect.assertions(4);
+    expect.assertions(5);
     const userIdFixture = UserId.create().getValue();
     const idFixture = faker.random.uuid();
     const entityIdFixture = new UniqueEntityId(idFixture);
@@ -52,6 +52,7 @@ describe('Member entity', () => {
 
     expect(memberResult.isSuccess).toBe(true);
     expect(member.memberId.id.equals(entityIdFixture)).toBe(true);
+    expect(member.ownerId.id.equals(entityIdFixture)).toBe(true);
     expect(member.userId.equals(userIdFixture)).toBe(true);
     expect(member.createdAt).toBe(dateFixture);
   });

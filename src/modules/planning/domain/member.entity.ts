@@ -3,6 +3,7 @@ import { Entity, UniqueEntityId } from '../../../shared/domain';
 import { UserId } from '../../users/domain/user-id.entity';
 import { MemberId } from './member-id.entity';
 import { MemberProps } from './member-props.interface';
+import { OwnerId } from './owner-id.entity';
 
 export class Member extends Entity<MemberProps> {
   private constructor(props: MemberProps, id?: UniqueEntityId) {
@@ -11,6 +12,10 @@ export class Member extends Entity<MemberProps> {
 
   get memberId(): MemberId {
     return MemberId.create(this._id).getValue();
+  }
+
+  get ownerId(): OwnerId {
+    return OwnerId.create(this._id).getValue();
   }
 
   get userId(): UserId {

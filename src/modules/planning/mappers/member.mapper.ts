@@ -5,13 +5,12 @@ import { Member } from '../domain/member.entity';
 
 export class MemberMapper {
   public static toPersistence(member: Member): Prisma.MemberModelCreateInput {
-    const memberSnapshot = member.createSnapshot();
     return {
-      createdAt: memberSnapshot.createdAt,
-      memberId: memberSnapshot.memberId.id.toString(),
+      createdAt: member.createdAt,
+      memberId: member.memberId.id.toString(),
       baseUserModel: {
         connect: {
-          baseUserId: memberSnapshot.userId.id.toString(),
+          baseUserId: member.userId.id.toString(),
         },
       },
     };

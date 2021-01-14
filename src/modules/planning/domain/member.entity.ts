@@ -3,7 +3,6 @@ import { Entity, UniqueEntityId } from '../../../shared/domain';
 import { UserId } from '../../users/domain/user-id.entity';
 import { MemberId } from './member-id.entity';
 import { MemberProps } from './member-props.interface';
-import { MemberSnapshot } from './member-snapshot';
 
 export class Member extends Entity<MemberProps> {
   private constructor(props: MemberProps, id?: UniqueEntityId) {
@@ -16,6 +15,10 @@ export class Member extends Entity<MemberProps> {
 
   get userId(): UserId {
     return this.props.userId;
+  }
+
+  get createdAt(): Date {
+    return this.props.createdAt;
   }
 
   public static create(
@@ -41,9 +44,5 @@ export class Member extends Entity<MemberProps> {
       id,
     );
     return Result.ok<Member>(member);
-  }
-
-  public createSnapshot(): MemberSnapshot {
-    return new MemberSnapshot(this.props, this.memberId);
   }
 }

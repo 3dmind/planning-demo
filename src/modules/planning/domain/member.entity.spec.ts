@@ -2,7 +2,6 @@ import * as faker from 'faker';
 import * as uuid from 'uuid';
 import { UniqueEntityId } from '../../../shared/domain';
 import { UserId } from '../../users/domain/user-id.entity';
-import { UserName } from '../../users/domain/user-name.valueobject';
 import { MemberProps } from './member-props.interface';
 import { Member } from './member.entity';
 
@@ -36,14 +35,15 @@ describe('Member entity', () => {
   });
 
   it('should create new member', () => {
-    expect.assertions(2);
+    expect.assertions(4);
     const userIdFixture = UserId.create().getValue();
-    UserName.create(faker.internet.userName()).getValue();
     const idFixture = faker.random.uuid();
     const entityIdFixture = new UniqueEntityId(idFixture);
+    const dateFixture = new Date();
 
     const memberResult = Member.create(
       {
+        createdAt: dateFixture,
         userId: userIdFixture,
       },
       entityIdFixture,
@@ -51,29 +51,8 @@ describe('Member entity', () => {
     const member = memberResult.getValue();
 
     expect(memberResult.isSuccess).toBe(true);
-    expect(member.memberId.id.toValue()).toEqual(idFixture);
-  });
-
-  it('should create snapshot', () => {
-    expect.assertions(1);
-    const userIdFixture = UserId.create(
-      new UniqueEntityId('b21b86ba-a05c-4425-b8d7-09dda742199d'),
-    ).getValue();
-    UserName.create('TomTest').getValue();
-    const dateFixture = new Date(Date.parse('1977-01-01'));
-    const idFixture = new UniqueEntityId(
-      '773f023e-3c57-4bd5-aa0a-0e0e0cc985ab',
-    );
-    const member = Member.create(
-      {
-        userId: userIdFixture,
-        createdAt: dateFixture,
-      },
-      idFixture,
-    ).getValue();
-
-    const memberSnapshot = member.createSnapshot();
-
-    expect(memberSnapshot).toMatchSnapshot();
+    expect(member.memberId.id.equals(entityIdFixture)).toBe(true);
+    expect(member.userId.equals(userIdFixture)).toBe(true);
+    expect(member.createdAt).toBe(dateFixture);
   });
 });

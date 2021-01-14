@@ -89,7 +89,7 @@ describe('EditTaskUsecase', () => {
 
   it('should succeed', async () => {
     const text = faker.lorem.words(5);
-    const task = new TaskEntityBuilder(text).build();
+    const task = new TaskEntityBuilder().withDescription(text).build();
     const newText = faker.lorem.words(5);
     await taskRepository.save(task);
 

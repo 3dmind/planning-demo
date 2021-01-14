@@ -1,6 +1,7 @@
 import { Guard, Result } from '../../../shared/core';
 import { Entity, UniqueEntityId } from '../../../shared/domain';
 import { Description } from './description.valueobject';
+import { OwnerId } from './owner-id.entity';
 import { TaskId } from './task-id.entity';
 import { TaskProps } from './task-props.interface';
 import { TaskSnapshot } from './task-snapshot';
@@ -12,6 +13,10 @@ export class Task extends Entity<TaskProps> {
 
   get taskId(): TaskId {
     return TaskId.create(this._id).getValue();
+  }
+
+  get ownerId(): OwnerId {
+    return this.props.ownerId;
   }
 
   public static create(props: TaskProps, id?: UniqueEntityId): Result<Task> {
@@ -36,6 +41,10 @@ export class Task extends Entity<TaskProps> {
         argument: props.discarded,
         argumentName: 'discarded',
       },
+      {
+        argument: props.ownerId,
+        argumentName: 'ownerId',
+      },
     ]);
 
     if (!nullGuard.succeeded) {
@@ -45,7 +54,7 @@ export class Task extends Entity<TaskProps> {
     return Result.ok<Task>(new Task(props, id));
   }
 
-  public static note(description: Description): Result<Task> {
+  public static note(description: Description, ownerId: OwnerId): Result<Task> {
     return Task.create({
       archived: false,
       archivedAt: null,
@@ -54,6 +63,7 @@ export class Task extends Entity<TaskProps> {
       discarded: false,
       discardedAt: null,
       editedAt: null,
+      ownerId: ownerId,
       resumedAt: null,
       tickedOff: false,
       tickedOffAt: null,

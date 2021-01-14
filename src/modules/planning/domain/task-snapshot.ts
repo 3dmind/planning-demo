@@ -1,4 +1,5 @@
 import { Description } from './description.valueobject';
+import { OwnerId } from './owner-id.entity';
 import { TaskId } from './task-id.entity';
 import { TaskProps } from './task-props.interface';
 
@@ -11,6 +12,7 @@ export class TaskSnapshot {
   readonly isArchived: boolean;
   readonly isDiscarded: boolean;
   readonly isTickedOff: boolean;
+  readonly ownerId: OwnerId;
   readonly resumedAt: Date;
   readonly taskId: TaskId;
   readonly tickedOffAt: Date;
@@ -24,6 +26,7 @@ export class TaskSnapshot {
       discarded,
       discardedAt,
       editedAt,
+      ownerId,
       resumedAt,
       tickedOff,
       tickedOffAt,
@@ -36,6 +39,7 @@ export class TaskSnapshot {
     this.isArchived = archived;
     this.isDiscarded = discarded;
     this.isTickedOff = tickedOff;
+    this.ownerId = ownerId;
     this.resumedAt = resumedAt;
     this.taskId = taskId;
     this.tickedOffAt = tickedOffAt;

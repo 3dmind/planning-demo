@@ -9,7 +9,7 @@ describe('TaskMapper', () => {
   describe('map Entity to DTO', () => {
     it('should map noted Task to DTO', () => {
       const text = faker.lorem.words(5);
-      const task = new TaskEntityBuilder(text).build();
+      const task = new TaskEntityBuilder().withDescription(text).build();
 
       const dto = TaskMapper.toDto(task);
 
@@ -30,7 +30,9 @@ describe('TaskMapper', () => {
 
     it('should map ticked-off Task to DTO', () => {
       const text = faker.lorem.words(5);
-      const task = new TaskEntityBuilder(text).makeTickedOff().build();
+      const task = new TaskEntityBuilder().withDescription(text)
+                                          .makeTickedOff()
+                                          .build();
 
       const dto = TaskMapper.toDto(task);
 
@@ -51,10 +53,10 @@ describe('TaskMapper', () => {
 
     it('should map resumed Task to DTO', () => {
       const text = faker.lorem.words(5);
-      const task = new TaskEntityBuilder(text)
-        .makeTickedOff()
-        .makeResumed()
-        .build();
+      const task = new TaskEntityBuilder().withDescription(text)
+                                          .makeTickedOff()
+                                          .makeResumed()
+                                          .build();
 
       const dto = TaskMapper.toDto(task);
 
@@ -75,11 +77,11 @@ describe('TaskMapper', () => {
 
     it('should map archived Task to DTO', () => {
       const text = faker.lorem.words(5);
-      const task = new TaskEntityBuilder(text)
-        .makeTickedOff()
-        .makeResumed()
-        .makeArchived()
-        .build();
+      const task = new TaskEntityBuilder().withDescription(text)
+                                          .makeTickedOff()
+                                          .makeResumed()
+                                          .makeArchived()
+                                          .build();
 
       const dto = TaskMapper.toDto(task);
 
@@ -143,7 +145,7 @@ describe('TaskMapper', () => {
   describe('map Entity to Model', () => {
     it('should map noted Task to Model', () => {
       const text = faker.lorem.words(5);
-      const task = new TaskEntityBuilder(text).build();
+      const task = new TaskEntityBuilder().withDescription(text).build();
 
       const rawModel = TaskMapper.toPersistence(task);
 
@@ -159,12 +161,19 @@ describe('TaskMapper', () => {
         taskId: expect.any(String),
         tickedOff: false,
         tickedOffAt: null,
+        ownerModel: {
+          connect: {
+            memberId: expect.any(String),
+          },
+        },
       });
     });
 
     it('should map ticked-off Task to Model', () => {
       const text = faker.lorem.words(5);
-      const task = new TaskEntityBuilder(text).makeTickedOff().build();
+      const task = new TaskEntityBuilder().withDescription(text)
+                                          .makeTickedOff()
+                                          .build();
 
       const rawModel = TaskMapper.toPersistence(task);
 
@@ -180,15 +189,20 @@ describe('TaskMapper', () => {
         taskId: expect.any(String),
         tickedOff: true,
         tickedOffAt: expect.any(Date),
+        ownerModel: {
+          connect: {
+            memberId: expect.any(String),
+          },
+        },
       });
     });
 
     it('should map resumed Task to Model', () => {
       const text = faker.lorem.words(5);
-      const task = new TaskEntityBuilder(text)
-        .makeTickedOff()
-        .makeResumed()
-        .build();
+      const task = new TaskEntityBuilder().withDescription(text)
+                                          .makeTickedOff()
+                                          .makeResumed()
+                                          .build();
 
       const rawModel = TaskMapper.toPersistence(task);
 
@@ -204,16 +218,21 @@ describe('TaskMapper', () => {
         taskId: expect.any(String),
         tickedOff: false,
         tickedOffAt: expect.any(Date),
+        ownerModel: {
+          connect: {
+            memberId: expect.any(String),
+          },
+        },
       });
     });
 
     it('should map archived Task to Model', () => {
       const text = faker.lorem.words(5);
-      const task = new TaskEntityBuilder(text)
-        .makeTickedOff()
-        .makeResumed()
-        .makeArchived()
-        .build();
+      const task = new TaskEntityBuilder().withDescription(text)
+                                          .makeTickedOff()
+                                          .makeResumed()
+                                          .makeArchived()
+                                          .build();
 
       const rawModel = TaskMapper.toPersistence(task);
 
@@ -229,6 +248,11 @@ describe('TaskMapper', () => {
         taskId: expect.any(String),
         tickedOff: false,
         tickedOffAt: expect.any(Date),
+        ownerModel: {
+          connect: {
+            memberId: expect.any(String),
+          },
+        },
       });
     });
 
@@ -250,12 +274,19 @@ describe('TaskMapper', () => {
         taskId: expect.any(String),
         tickedOff: false,
         tickedOffAt: null,
+        ownerModel: {
+          connect: {
+            memberId: expect.any(String),
+          },
+        },
       });
     });
 
     it('should map discarded Task to Model', () => {
       const text = faker.lorem.words(5);
-      const task = new TaskEntityBuilder(text).makeDiscarded().build();
+      const task = new TaskEntityBuilder().withDescription(text)
+                                          .makeDiscarded()
+                                          .build();
 
       const rawModel = TaskMapper.toPersistence(task);
 
@@ -271,6 +302,11 @@ describe('TaskMapper', () => {
         taskId: expect.any(String),
         tickedOff: false,
         tickedOffAt: null,
+        ownerModel: {
+          connect: {
+            memberId: expect.any(String),
+          },
+        },
       });
     });
   });
@@ -279,6 +315,7 @@ describe('TaskMapper', () => {
     it('should map TaskModel to Task', () => {
       const mockedText = faker.lorem.words(5);
       const mockedId = faker.random.uuid();
+      const mockedOwnerId = faker.random.uuid();
       const mockedDate = new Date();
       const mockedTaskModel: TaskModel = {
         archived: true,
@@ -293,6 +330,7 @@ describe('TaskMapper', () => {
         tickedOff: true,
         tickedOffAt: mockedDate,
         updatedAt: mockedDate,
+        ownerId: mockedOwnerId,
       };
 
       const taskEntity = TaskMapper.toDomain(mockedTaskModel);

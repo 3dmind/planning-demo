@@ -3,6 +3,7 @@ import * as uuid from 'uuid';
 import { TaskEntityBuilder } from '../../../../test/builder/task-entity.builder';
 import { UniqueEntityId } from '../../../shared/domain';
 import { Description } from './description.valueobject';
+import { OwnerId } from './owner-id.entity';
 import { TaskId } from './task-id.entity';
 import { TaskProps } from './task-props.interface';
 import { Task } from './task.entity';
@@ -18,117 +19,106 @@ describe('Task', () => {
     uuid.mockRestore();
   });
 
-  describe('Guard task properties', () => {
-    it('should guard "description against "null" and "undefined"', () => {
-      const propsWithNull = { description: null } as TaskProps;
-      const propsWithUndefinedDescription = {} as TaskProps;
+  it('should guard "description" property', () => {
+    expect.assertions(1);
+    const props = { description: null } as TaskProps;
 
-      const taskResultNull = Task.create(propsWithNull);
-      const taskResultUndefined = Task.create(propsWithUndefinedDescription);
+    const result = Task.create(props);
 
-      expect(taskResultNull.isFailure).toBe(true);
-      expect(taskResultUndefined.isFailure).toBe(true);
-    });
+    expect(result.isFailure).toBe(true);
+  });
 
-    it('should guard "createdAt" against "null" and "undefined"', () => {
-      const description = Description.create(faker.lorem.words(5)).getValue();
+  it('should guard "createdAt" property', () => {
+    expect.assertions(1);
+    const description = Description.create(faker.lorem.words(5)).getValue();
+    const props = {
+      description,
+      createdAt: null,
+    } as TaskProps;
 
-      const propsWithNull = {
-        description,
-        createdAt: null,
-      } as TaskProps;
+    const result = Task.create(props);
 
-      const propsWithUndefinedCreatedDate = {
-        description,
-      } as TaskProps;
+    expect(result.isFailure).toBe(true);
+  });
 
-      const taskResultNull = Task.create(propsWithNull);
-      const taskResultUndefined = Task.create(propsWithUndefinedCreatedDate);
+  it('should guard "tickedOff" property', () => {
+    expect.assertions(1);
+    const description = Description.create(faker.lorem.words(5)).getValue();
+    const createdAt = new Date();
+    const props = {
+      description,
+      createdAt,
+      tickedOff: null,
+    } as TaskProps;
 
-      expect(taskResultNull.isFailure).toBe(true);
-      expect(taskResultUndefined.isFailure).toBe(true);
-    });
+    const result = Task.create(props);
 
-    it('should guard "tickedOff" against "null" and "undefined"', () => {
-      const description = Description.create(faker.lorem.words(5)).getValue();
-      const createdAt = new Date();
+    expect(result.isFailure).toBe(true);
+  });
 
-      const propsWithNull = {
-        description,
-        createdAt,
-        tickedOff: null,
-      } as TaskProps;
+  it('should guard "archived" property', () => {
+    expect.assertions(1);
+    const description = Description.create(faker.lorem.words(5)).getValue();
+    const createdAt = new Date();
+    const tickedOff = false;
+    const props = {
+      description,
+      createdAt,
+      tickedOff,
+      archived: null,
+    } as TaskProps;
 
-      const propsWithUndefinedTickedOff = {
-        description,
-        createdAt,
-      } as TaskProps;
+    const result = Task.create(props);
 
-      const taskResultNull = Task.create(propsWithNull);
-      const taskResultUndefined = Task.create(propsWithUndefinedTickedOff);
+    expect(result.isFailure).toBe(true);
+  });
 
-      expect(taskResultNull.isFailure).toBe(true);
-      expect(taskResultUndefined.isFailure).toBe(true);
-    });
+  it('should guard "discarded" property', () => {
+    expect.assertions(1);
+    const description = Description.create(faker.lorem.words(5)).getValue();
+    const createdAt = new Date();
+    const tickedOff = false;
+    const archived = false;
+    const props = {
+      description,
+      createdAt,
+      tickedOff,
+      archived,
+      discarded: null,
+    } as TaskProps;
 
-    it('should guard "archived" against "null" and "undefined"', () => {
-      const description = Description.create(faker.lorem.words(5)).getValue();
-      const createdAt = new Date();
-      const tickedOff = false;
+    const result = Task.create(props);
 
-      const propsWithNull = {
-        description,
-        createdAt,
-        tickedOff,
-        archived: null,
-      } as TaskProps;
+    expect(result.isFailure).toBe(true);
+  });
 
-      const propsWithUndefinedArchived = {
-        description,
-        createdAt,
-        tickedOff,
-      } as TaskProps;
+  it('should guard "ownerId" property', () => {
+    expect.assertions(1);
+    const description = Description.create(faker.lorem.words(5)).getValue();
+    const createdAt = new Date();
+    const tickedOff = false;
+    const archived = false;
+    const discarded = false;
+    const props = {
+      description,
+      createdAt,
+      tickedOff,
+      archived,
+      discarded,
+      ownerId: null,
+    } as TaskProps;
 
-      const taskResultNull = Task.create(propsWithNull);
-      const taskResultUndefined = Task.create(propsWithUndefinedArchived);
+    const result = Task.create(props);
 
-      expect(taskResultNull.isFailure).toBe(true);
-      expect(taskResultUndefined.isFailure).toBe(true);
-    });
-
-    it('should guard "discarded" against "null" and "undefined"', () => {
-      const description = Description.create(faker.lorem.words(5)).getValue();
-      const createdAt = new Date();
-      const tickedOff = false;
-      const archived = false;
-
-      const propsWithNull = {
-        description,
-        createdAt,
-        tickedOff,
-        archived,
-        discarded: null,
-      } as TaskProps;
-
-      const propsWithUndefinedDiscarded = {
-        description,
-        createdAt,
-        tickedOff,
-        archived,
-      } as TaskProps;
-
-      const taskResultNull = Task.create(propsWithNull);
-      const taskResultUndefined = Task.create(propsWithUndefinedDiscarded);
-
-      expect(taskResultNull.isFailure).toBe(true);
-      expect(taskResultUndefined.isFailure).toBe(true);
-    });
+    expect(result.isFailure).toBe(true);
   });
 
   it('should create task', () => {
+    expect.assertions(4);
     const text = faker.lorem.words(5);
-    const entityId = new UniqueEntityId();
     const description = Description.create(text).getValue();
+    const ownerId = OwnerId.create().getValue();
+    const entityId = new UniqueEntityId();
 
     const taskResult = Task.create(
       {
@@ -139,6 +129,7 @@ describe('Task', () => {
         discarded: false,
         discardedAt: null,
         editedAt: null,
+        ownerId,
         resumedAt: null,
         tickedOff: false,
         tickedOffAt: null,
@@ -150,17 +141,37 @@ describe('Task', () => {
     expect(taskResult.isSuccess).toBe(true);
     expect(task.taskId).toBeInstanceOf(TaskId);
     expect(task.taskId.id.equals(entityId)).toBe(true);
+    expect(task.ownerId.equals(ownerId)).toBe(true);
+  });
+
+  it('should create snapshot', () => {
+    expect.assertions(2);
+    const task = new TaskEntityBuilder()
+      .withDescription('Lorem ipsum')
+      .withId(new UniqueEntityId('8bb2a83e-cf7e-46d7-a7b0-49f49d94c460'))
+      .withOwnerId(
+        OwnerId.create(
+          new UniqueEntityId('74d21847-3298-4775-aaf8-942fed0f53e7'),
+        ).getValue(),
+      )
+      .withCreationDate(new Date(Date.parse('1977-01-01')))
+      .build();
+
+    const taskSnapshot = task.createSnapshot();
+
+    expect(taskSnapshot).toMatchSnapshot();
+    expect(Object.isFrozen(taskSnapshot)).toBe(true);
   });
 
   it('should note new task', () => {
+    expect.assertions(1);
     const text = faker.lorem.words(5);
     const description = Description.create(text).getValue();
+    const ownerId = OwnerId.create().getValue();
 
-    const taskResult = Task.note(description);
-    const task = taskResult.getValue();
+    const taskResult = Task.note(description, ownerId);
 
     expect(taskResult.isSuccess).toBe(true);
-    expect(task.taskId.id.toValue()).toBeDefined();
   });
 
   it('should tick off task', () => {
@@ -192,7 +203,7 @@ describe('Task', () => {
   it('should edit description', () => {
     expect.assertions(1);
     const text = faker.lorem.words(5);
-    const task = new TaskEntityBuilder(text).build();
+    const task = new TaskEntityBuilder().withDescription(text).build();
     const newText = faker.lorem.words(5);
     const newDescription = Description.create(newText).getValue();
 

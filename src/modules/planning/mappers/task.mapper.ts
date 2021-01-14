@@ -1,6 +1,7 @@
 import type { Prisma, TaskModel } from '@prisma/client';
 import { UniqueEntityId } from '../../../shared/domain';
 import { Description } from '../domain/description.valueobject';
+import { OwnerId } from '../domain/owner-id.entity';
 import { Task } from '../domain/task.entity';
 import { TaskDto } from '../dtos/task.dto';
 
@@ -19,6 +20,11 @@ export class TaskMapper {
       taskId: taskSnapshot.taskId.id.toString(),
       tickedOff: taskSnapshot.isTickedOff,
       tickedOffAt: taskSnapshot.tickedOffAt,
+      ownerModel: {
+        connect: {
+          memberId: taskSnapshot.ownerId.id.toString(),
+        },
+      },
     };
   }
 
@@ -27,6 +33,7 @@ export class TaskMapper {
     const descriptionResult = Description.create(
       taskModel.description,
     );
+    const ownerIdResult = OwnerId.create(new UniqueEntityId(taskModel.ownerId));
     const taskResult = Task.create(
       {
         archived: taskModel.archived,
@@ -39,6 +46,7 @@ export class TaskMapper {
         resumedAt: taskModel.resumedAt,
         tickedOff: taskModel.tickedOff,
         tickedOffAt: taskModel.tickedOffAt,
+        ownerId: ownerIdResult.getValue(),
       },
       id,
     );

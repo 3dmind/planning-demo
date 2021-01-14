@@ -1,4 +1,5 @@
 import { Description } from './description.valueobject';
+import { OwnerId } from './owner-id.entity';
 
 export interface TaskProps {
   archived: boolean;
@@ -8,6 +9,7 @@ export interface TaskProps {
   discarded: boolean;
   discardedAt: Date;
   editedAt: Date;
+  ownerId: OwnerId;
   resumedAt: Date;
   tickedOff: boolean;
   tickedOffAt: Date;

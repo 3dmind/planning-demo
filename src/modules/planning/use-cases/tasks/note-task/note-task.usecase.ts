@@ -7,34 +7,57 @@ import {
   right,
   UseCase,
 } from '../../../../../shared/core';
+import { UserId } from '../../../../users/domain/user-id.entity';
 import { Description } from '../../../domain/description.valueobject';
 import { Task } from '../../../domain/task.entity';
+import { MemberRepository } from '../../../repositories/member/member.repository';
 import { TaskRepository } from '../../../repositories/task/task.repository';
 import { NoteTaskDto } from './note-task.dto';
+import { NoteTaskErrors } from './note-task.errors';
 
-type Response = Either<AppErrors.UnexpectedError | Result<any>, Result<Task>>;
+type Request = {
+  userId: UserId;
+  dto: NoteTaskDto;
+};
+type Response = Either<
+  NoteTaskErrors.MemberNotFoundError | AppErrors.UnexpectedError | Result<any>,
+  Result<Task>
+>;
 
 @Injectable()
-export class NoteTaskUsecase implements UseCase<NoteTaskDto, Response> {
+export class NoteTaskUsecase implements UseCase<Request, Response> {
   private readonly logger = new Logger(NoteTaskUsecase.name);
 
-  constructor(private readonly taskRepository: TaskRepository) {}
+  constructor(
+    private readonly memberRepository: MemberRepository,
+    private readonly taskRepository: TaskRepository,
+  ) {}
 
-  async execute(request?: NoteTaskDto): Promise<Response> {
+  async execute(request: Request): Promise<Response> {
     this.logger.log('Noting new task...');
-    const { text } = request;
+
+    const { userId, dto } = request;
 
     try {
-      const descriptionResult = Description.create(text);
-
+      const descriptionResult = Description.create(dto.text);
       if (descriptionResult.isFailure) {
         this.logger.debug(descriptionResult.errorValue());
         return left(descriptionResult);
       }
 
-      const description = descriptionResult.getValue();
-      const taskResult = Task.note(description);
+      const { found, member } = await this.memberRepository.getMemberByUserId(
+        userId.id,
+      );
+      if (!found) {
+        const memberNotFoundError = new NoteTaskErrors.MemberNotFoundError(
+          userId.id.toString(),
+        );
+        this.logger.debug(memberNotFoundError.errorValue().message);
+        return left(memberNotFoundError);
+      }
 
+      const description = descriptionResult.getValue();
+      const taskResult = Task.note(description, member.ownerId);
       if (taskResult.isFailure) {
         this.logger.debug(taskResult.errorValue());
         return left(taskResult);

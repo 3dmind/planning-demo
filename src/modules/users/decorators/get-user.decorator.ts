@@ -1,10 +1,12 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import { UserId } from '../domain/user-id.entity';
 import { User } from '../domain/user.entity';
 import { RequestWithUser } from './request-with-user.interface';
 
-export const GetUser = createParamDecorator(
-  (data: unknown, ctx: ExecutionContext): User => {
+export const GetUser = createParamDecorator<undefined | 'userId'>(
+  (prop, ctx: ExecutionContext): User | UserId => {
     const request = ctx.switchToHttp().getRequest<RequestWithUser>();
-    return request.user;
+    const user = request.user;
+    return prop ? user?.[prop] : user;
   },
 );

@@ -14,7 +14,7 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../../../guards/jwt-auth.guard';
 import { AppErrors } from '../../../shared/core';
-import { GetUserId } from '../../users/decorators/get-user-id.decorator';
+import { GetUser } from '../../users/decorators/get-user.decorator';
 import { UserId } from '../../users/domain/user-id.entity';
 import { TaskDto } from '../dtos/task.dto';
 import { TaskMapper } from '../mappers/task.mapper';
@@ -68,7 +68,7 @@ export class TasksController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async noteTask(
-    @GetUserId() userId: UserId,
+    @GetUser('userId') userId: UserId,
     @Body() dto: NoteTaskDto,
   ): Promise<TaskDto> {
     const result = await this.noteTaskUseCase.execute({
@@ -92,10 +92,17 @@ export class TasksController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post(':id/tickoff')
   @HttpCode(HttpStatus.OK)
-  async tickOffTask(@Param('id') id: string): Promise<TaskDto> {
-    const result = await this.tickOffTaskUseCase.execute({ taskId: id });
+  async tickOffTask(
+    @GetUser('userId') userId: UserId,
+    @Param('id') id: string,
+  ): Promise<TaskDto> {
+    const result = await this.tickOffTaskUseCase.execute({
+      taskId: id,
+      userId,
+    });
 
     if (result.isRight()) {
       const task = result.value.getValue();
@@ -105,13 +112,14 @@ export class TasksController {
     if (result.isLeft()) {
       const error = result.value;
 
-      switch (error.constructor) {
+      switch (Reflect.getPrototypeOf(error).constructor) {
         case AppErrors.UnexpectedError:
           throw new InternalServerErrorException(error.errorValue().message);
+        case TickOffTasksErrors.MemberNotFoundError:
         case TickOffTasksErrors.TaskNotFoundError:
           throw new NotFoundException(error.errorValue().message);
         default:
-          throw new BadRequestException(error.errorValue());
+          throw new UnprocessableEntityException(error.errorValue());
       }
     }
   }

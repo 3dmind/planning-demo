@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../../prisma/prisma.service';
+import { OwnerId } from '../../domain/owner-id.entity';
 import { TaskId } from '../../domain/task-id.entity';
 import { Task } from '../../domain/task.entity';
 import { TaskMapper } from '../../mappers/task.mapper';
-import { TaskRepository } from './task.repository';
+import { MaybeTask, TaskRepository } from './task.repository';
 
 @Injectable()
 export class PrismaTaskRepository extends TaskRepository {
@@ -46,6 +47,26 @@ export class PrismaTaskRepository extends TaskRepository {
     const taskModel = await this.prismaService.taskModel.findUnique({
       where: {
         taskId: taskId.id.toString(),
+      },
+    });
+    const found = !!taskModel === true;
+
+    if (found) {
+      const task = TaskMapper.toDomain(taskModel);
+      return { found, task };
+    } else {
+      return { found };
+    }
+  }
+
+  public async getTaskOfOwnerByTaskId(
+    ownerId: OwnerId,
+    taskId: TaskId,
+  ): Promise<MaybeTask> {
+    const taskModel = await this.prismaService.taskModel.findFirst({
+      where: {
+        taskId: taskId.id.toString(),
+        ownerId: ownerId.id.toString(),
       },
     });
     const found = !!taskModel === true;

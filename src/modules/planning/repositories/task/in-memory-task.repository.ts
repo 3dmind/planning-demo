@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { OwnerId } from '../../domain/owner-id.entity';
 import { TaskId } from '../../domain/task-id.entity';
 import { Task } from '../../domain/task.entity';
-import { TaskRepository } from './task.repository';
+import { MaybeTask, TaskRepository } from './task.repository';
 
 /**
  * In-memory implementation of the task repository.
@@ -44,6 +45,27 @@ export class InMemoryTaskRepository extends TaskRepository {
     taskId: TaskId,
   ): Promise<{ found: boolean; task?: Task }> {
     const task = this.tasks.get(taskId.id.toString());
+    const found = !!task === true;
+
+    if (found) {
+      return {
+        found,
+        task,
+      };
+    } else {
+      return {
+        found,
+      };
+    }
+  }
+
+  public async getTaskOfOwnerByTaskId(
+    ownerId: OwnerId,
+    taskId: TaskId,
+  ): Promise<MaybeTask> {
+    const task = Array.from(this.tasks.values()).find((task) => {
+      return task.ownerId.equals(ownerId) && task.taskId.equals(taskId);
+    });
     const found = !!task === true;
 
     if (found) {

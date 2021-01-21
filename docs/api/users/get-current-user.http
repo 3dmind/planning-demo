@@ -1,3 +1,5 @@
+### Login
+
 POST http://localhost:{{port}}/users/login
 Content-Type: application/json
 
@@ -6,11 +8,24 @@ Content-Type: application/json
   "password": "{{password}}"
 }
 
-> {% client.global.set("access_token", response.body.access_token); %}
+> {%
+  client.test('Request executed successfully', function() {
+    client.assert(response.status === 200, 'Response status is not 200')
+    client.assert(response.body.hasOwnProperty('access_token'), 'Access token is not defined')
+    client.assert(response.body.access_token !== null, 'Access token is not defined')
+    client.assert(response.body.hasOwnProperty('refresh_token'), 'Refresh token is not defined')
+    client.assert(response.body.refresh_token !== null, 'Refresh token is not defined')
+  })
+  client.global.set("access_token", response.body.access_token);
+  %}
 
-###
+### Get current user
 
 GET http://localhost:{{port}}/users/me
 Authorization: Bearer {{access_token}}
 
-###
+> {%
+  client.test('Request executed successfully', function() {
+    client.assert(response.status === 200, 'Response status is not 200')
+  })
+  %}

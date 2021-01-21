@@ -1,3 +1,5 @@
+### Register a new user
+
 POST http://localhost:{{port}}/users
 Content-Type: application/json
 
@@ -7,4 +9,8 @@ Content-Type: application/json
   "email": "{{email}}"
 }
 
-###
+> {%
+  client.test('Request executed successfully', function() {
+    client.assert(response.status === 201, 'Response status is not 201')
+  })
+  %}

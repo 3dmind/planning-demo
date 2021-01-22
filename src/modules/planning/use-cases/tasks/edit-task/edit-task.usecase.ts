@@ -8,19 +8,26 @@ import {
   UseCase,
 } from '../../../../../shared/core';
 import { UniqueEntityId } from '../../../../../shared/domain';
+import { UserId } from '../../../../users/domain/user-id.entity';
 import { Description } from '../../../domain/description.valueobject';
 import { TaskId } from '../../../domain/task-id.entity';
 import { Task } from '../../../domain/task.entity';
+import { MemberRepository } from '../../../repositories/member/member.repository';
 import { TaskRepository } from '../../../repositories/task/task.repository';
+import { EditTaskDto } from './edit-task.dto';
 import { EditTaskErrors } from './edit-task.errors';
 
 type Request = {
+  dto: EditTaskDto;
   taskId: string;
-  text: string;
+  userId: UserId;
 };
 
 type Response = Either<
-  AppErrors.UnexpectedError | EditTaskErrors.TaskNotFoundError | Result<any>,
+  | EditTaskErrors.MemberNotFoundError
+  | EditTaskErrors.TaskNotFoundError
+  | AppErrors.UnexpectedError
+  | Result<any>,
   Result<Task>
 >;
 
@@ -28,12 +35,15 @@ type Response = Either<
 export class EditTaskUsecase implements UseCase<Request, Response> {
   private readonly logger = new Logger(EditTaskUsecase.name);
 
-  constructor(private readonly taskRepository: TaskRepository) {}
+  constructor(
+    private readonly memberRepository: MemberRepository,
+    private readonly taskRepository: TaskRepository,
+  ) {}
 
   async execute(request: Request): Promise<Response> {
     this.logger.log('Editing task...');
     const taskIdResult = TaskId.create(new UniqueEntityId(request.taskId));
-    const descriptionResult = Description.create(request.text);
+    const descriptionResult = Description.create(request.dto.text);
     const requestResult = Result.combine([taskIdResult, descriptionResult]);
 
     if (requestResult.isFailure) {
@@ -42,10 +52,27 @@ export class EditTaskUsecase implements UseCase<Request, Response> {
     }
 
     try {
-      const taskId = taskIdResult.getValue();
-      const { found, task } = await this.taskRepository.getTaskByTaskId(taskId);
+      const {
+        found: memberFound,
+        member,
+      } = await this.memberRepository.getMemberByUserId(request.userId.id);
+      if (!memberFound) {
+        const memberNotFoundError = new EditTaskErrors.MemberNotFoundError(
+          request.userId.id.toString(),
+        );
+        this.logger.debug(memberNotFoundError.errorValue().message);
+        return left(memberNotFoundError);
+      }
 
-      if (!found) {
+      const taskId = taskIdResult.getValue();
+      const {
+        found: taskFound,
+        task,
+      } = await this.taskRepository.getTaskOfOwnerByTaskId(
+        member.ownerId,
+        taskId,
+      );
+      if (!taskFound) {
         const taskNotFoundError = new EditTaskErrors.TaskNotFoundError(
           request.taskId,
         );

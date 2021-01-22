@@ -155,6 +155,38 @@ export class TasksController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/edit')
+  @HttpCode(HttpStatus.OK)
+  async editTask(
+    @GetUser('userId') userId: UserId,
+    @Param('id') id: string,
+    @Body() dto: EditTaskDto,
+  ): Promise<TaskDto> {
+    const result = await this.editTaskUseCase.execute({
+      dto,
+      userId,
+      taskId: id,
+    });
+
+    if (result.isRight()) {
+      const task = result.value.getValue();
+      return TaskMapper.toDto(task);
+    }
+
+    if (result.isLeft()) {
+      const error = result.value;
+      switch (error.constructor) {
+        case AppErrors.UnexpectedError:
+          throw new InternalServerErrorException(error.errorValue().messge);
+        case EditTaskErrors.TaskNotFoundError:
+          throw new NotFoundException(error.errorValue().message);
+        default:
+          throw new UnprocessableEntityException(error.errorValue());
+      }
+    }
+  }
+
   @Post(':id/archive')
   @HttpCode(HttpStatus.OK)
   async archiveTask(@Param('id') id: string): Promise<TaskDto> {
@@ -174,35 +206,6 @@ export class TasksController {
           throw new NotFoundException(error.errorValue().message);
         default:
           throw new BadRequestException(error.errorValue());
-      }
-    }
-  }
-
-  @Post(':id/edit')
-  @HttpCode(HttpStatus.OK)
-  async editTask(
-    @Param('id') id: string,
-    @Body() dto: EditTaskDto,
-  ): Promise<TaskDto> {
-    const result = await this.editTaskUseCase.execute({
-      taskId: id,
-      text: dto.text,
-    });
-
-    if (result.isRight()) {
-      const task = result.value.getValue();
-      return TaskMapper.toDto(task);
-    }
-
-    if (result.isLeft()) {
-      const error = result.value;
-      switch (error.constructor) {
-        case AppErrors.UnexpectedError:
-          throw new InternalServerErrorException(error.errorValue().messge);
-        case EditTaskErrors.TaskNotFoundError:
-          throw new NotFoundException(error.errorValue().message);
-        default:
-          throw new UnprocessableEntityException(error.errorValue());
       }
     }
   }

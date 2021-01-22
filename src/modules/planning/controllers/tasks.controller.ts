@@ -187,10 +187,17 @@ export class TasksController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post(':id/archive')
   @HttpCode(HttpStatus.OK)
-  async archiveTask(@Param('id') id: string): Promise<TaskDto> {
-    const result = await this.archivedTasksUseCase.execute({ taskId: id });
+  async archiveTask(
+    @GetUser('userId') userId: UserId,
+    @Param('id') id: string,
+  ): Promise<TaskDto> {
+    const result = await this.archivedTasksUseCase.execute({
+      taskId: id,
+      userId,
+    });
 
     if (result.isRight()) {
       const task = result.value.getValue();
@@ -200,12 +207,13 @@ export class TasksController {
     if (result.isLeft()) {
       const error = result.value;
       switch (error.constructor) {
-        case AppErrors.UnexpectedError:
-          throw new InternalServerErrorException(error.errorValue().messge);
+        case ArchiveTaskErrors.MemberNotFoundError:
         case ArchiveTaskErrors.TaskNotFoundError:
           throw new NotFoundException(error.errorValue().message);
+        case AppErrors.UnexpectedError:
+          throw new InternalServerErrorException(error.errorValue().messge);
         default:
-          throw new BadRequestException(error.errorValue());
+          throw new UnprocessableEntityException(error.errorValue());
       }
     }
   }

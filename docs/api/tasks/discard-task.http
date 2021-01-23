@@ -1,12 +1,56 @@
+### Login
+
+POST http://localhost:{{port}}/users/login
+Content-Type: application/json
+
+{
+  "username": "{{username}}",
+  "password": "{{password}}"
+}
+
+> {%
+  client.test('Request executed successfully', function() {
+    client.assert(response.status === 200, 'Response status is not 200')
+  })
+  client.global.set("access_token", response.body.access_token);
+  %}
+
+### Note a new task
+
 POST http://localhost:{{port}}/tasks
+Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
 {
   "text": "{{text}}"
 }
 
-> {% client.global.set('taskId', response.body.id); %}
+> {%
+  client.test('Request executed successfully', function() {
+    client.assert(response.status === 201, 'Response status is not 201')
+  })
+  client.test('Task was created successfully', function() {
+    client.assert(response.body.hasOwnProperty('id'), 'Cannot find \'id\' property')
+    client.assert(response.body.id !== null, 'Task ID is not defined')
+    client.assert(response.body.hasOwnProperty('isTickedOff'), 'Cannot find \'isTickedOff\' property')
+    client.assert(response.body.isTickedOff === false, 'Task is ticked-off')
+  })
+  client.global.set('taskId', response.body.id);
+  %}
 
-###
+### Discard the created task
 
 POST http://localhost:{{port}}/tasks/{{taskId}}/discard
+Authorization: Bearer {{access_token}}
+
+> {%
+  client.test('Request executed successfully', function() {
+    client.assert(response.status === 200, 'Response status is not 200')
+  })
+  client.test('Task was discarded successfully', function() {
+    client.assert(response.body.hasOwnProperty('isDiscarded'), 'Cannot find \'isDiscarded\' property')
+    client.assert(response.body.isDiscarded === true, 'Task is not discarded')
+    client.assert(response.body.hasOwnProperty('discardedAt'), 'Cannot find \'discardedAt\' property')
+    client.assert(response.body.discardedAt !== null, 'Discard date is not defined')
+  })
+  %}

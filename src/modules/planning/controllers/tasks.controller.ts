@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
@@ -218,10 +217,17 @@ export class TasksController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post(':id/discard')
   @HttpCode(HttpStatus.OK)
-  async discardTask(@Param('id') id: string): Promise<TaskDto> {
-    const result = await this.discardTaskUseCase.execute({ taskId: id });
+  async discardTask(
+    @GetUser('userId') userId: UserId,
+    @Param('id') id: string,
+  ): Promise<TaskDto> {
+    const result = await this.discardTaskUseCase.execute({
+      taskId: id,
+      userId,
+    });
 
     if (result.isRight()) {
       const task = result.value.getValue();
@@ -231,12 +237,13 @@ export class TasksController {
     if (result.isLeft()) {
       const error = result.value;
       switch (error.constructor) {
-        case AppErrors.UnexpectedError:
-          throw new InternalServerErrorException(error.errorValue().message);
+        case DiscardTaskErrors.MemberNotFoundError:
         case DiscardTaskErrors.TaskNotFoundError:
           throw new NotFoundException(error.errorValue().message);
+        case AppErrors.UnexpectedError:
+          throw new InternalServerErrorException(error.errorValue().message);
         default:
-          throw new BadRequestException(error.errorValue());
+          throw new UnprocessableEntityException(error.errorValue());
       }
     }
   }

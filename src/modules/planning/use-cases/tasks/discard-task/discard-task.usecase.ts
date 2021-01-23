@@ -8,37 +8,66 @@ import {
   UseCase,
 } from '../../../../../shared/core';
 import { UniqueEntityId } from '../../../../../shared/domain';
+import { UserId } from '../../../../users/domain/user-id.entity';
 import { TaskId } from '../../../domain/task-id.entity';
 import { Task } from '../../../domain/task.entity';
+import { MemberRepository } from '../../../repositories/member/member.repository';
 import { TaskRepository } from '../../../repositories/task/task.repository';
-import { DiscardTaskDto } from './discard-task.dto';
 import { DiscardTaskErrors } from './discard-task.errors';
 
+type Request = {
+  taskId: string;
+  userId: UserId;
+};
+
 type Response = Either<
-  AppErrors.UnexpectedError | DiscardTaskErrors.TaskNotFoundError | Result<any>,
+  | DiscardTaskErrors.MemberNotFoundError
+  | DiscardTaskErrors.TaskNotFoundError
+  | AppErrors.UnexpectedError
+  | Result<any>,
   Result<Task>
 >;
 
 @Injectable()
-export class DiscardTaskUsecase implements UseCase<DiscardTaskDto, Response> {
+export class DiscardTaskUsecase implements UseCase<Request, Response> {
   private readonly logger = new Logger(DiscardTaskUsecase.name);
 
-  constructor(private readonly taskRepository: TaskRepository) {}
+  constructor(
+    private readonly memberRepository: MemberRepository,
+    private readonly taskRepository: TaskRepository,
+  ) {}
 
-  async execute(request: DiscardTaskDto): Promise<Response> {
+  async execute(request: Request): Promise<Response> {
     this.logger.log('Discarding task...');
-    const taskIdResult = TaskId.create(new UniqueEntityId(request.taskId));
 
+    const taskIdResult = TaskId.create(new UniqueEntityId(request.taskId));
     if (taskIdResult.isFailure) {
       this.logger.debug(taskIdResult.errorValue());
       return left(taskIdResult);
     }
 
     try {
-      const taskId = taskIdResult.getValue();
-      const { found, task } = await this.taskRepository.getTaskByTaskId(taskId);
+      const {
+        found: memberFound,
+        member,
+      } = await this.memberRepository.getMemberByUserId(request.userId.id);
+      if (!memberFound) {
+        const memberNotFoundError = new DiscardTaskErrors.MemberNotFoundError(
+          request.userId.id.toString(),
+        );
+        this.logger.debug(memberNotFoundError.errorValue().message);
+        return left(memberNotFoundError);
+      }
 
-      if (!found) {
+      const taskId = taskIdResult.getValue();
+      const {
+        found: taskFound,
+        task,
+      } = await this.taskRepository.getTaskOfOwnerByTaskId(
+        member.ownerId,
+        taskId,
+      );
+      if (!taskFound) {
         const taskNotFoundError = new DiscardTaskErrors.TaskNotFoundError(
           request.taskId,
         );

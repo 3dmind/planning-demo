@@ -24,6 +24,7 @@ import { DiscardTaskUsecase } from '../use-cases/tasks/discard-task/discard-task
 import { EditTaskDto } from '../use-cases/tasks/edit-task/edit-task.dto';
 import { EditTaskErrors } from '../use-cases/tasks/edit-task/edit-task.errors';
 import { EditTaskUsecase } from '../use-cases/tasks/edit-task/edit-task.usecase';
+import { GetAllActiveTasksErrors } from '../use-cases/tasks/get-all-active-tasks/get-all-active-tasks.errors';
 import { GetAllActiveTasksUsecase } from '../use-cases/tasks/get-all-active-tasks/get-all-active-tasks.usecase';
 import { GetAllArchivedTasksUsecase } from '../use-cases/tasks/get-all-archived-tasks/get-all-archived-tasks.usecase';
 import { GetAllTasksUsecase } from '../use-cases/tasks/get-all-tasks/get-all-tasks.usecase';
@@ -248,9 +249,10 @@ export class TasksController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('/active')
-  async getActiveTasks(): Promise<TaskDto[]> {
-    const result = await this.getAllActiveTasksUseCase.execute();
+  async getActiveTasks(@GetUser('userId') userId: UserId): Promise<TaskDto[]> {
+    const result = await this.getAllActiveTasksUseCase.execute({ userId });
 
     if (result.isRight()) {
       const tasks = result.value.getValue();
@@ -259,7 +261,14 @@ export class TasksController {
 
     if (result.isLeft()) {
       const error = result.value;
-      throw new InternalServerErrorException(error.errorValue().message);
+      switch (Reflect.getPrototypeOf(error).constructor) {
+        case GetAllActiveTasksErrors.MemberNotFoundError:
+          throw new NotFoundException(error.errorValue().message);
+        case AppErrors.UnexpectedError:
+          throw new InternalServerErrorException(error.errorValue().message);
+        default:
+          throw new UnprocessableEntityException(error.errorValue());
+      }
     }
   }
 

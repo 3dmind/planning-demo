@@ -27,10 +27,16 @@ export class InMemoryTaskRepository extends TaskRepository {
     return this.tasks.has(taskId.id.toString());
   }
 
-  public async getActiveTasks(): Promise<Task[]> {
+  public async getAllActiveTaskOfOwnerByOwnerId(
+    ownerId: OwnerId,
+  ): Promise<Task[]> {
     const tasks = Array.from(this.tasks.values());
     return tasks.filter((task) => {
-      return !task.isArchived() && !task.isDiscarded();
+      return (
+        task.ownerId.equals(ownerId) &&
+        !task.isArchived() &&
+        !task.isDiscarded()
+      );
     });
   }
 
@@ -39,24 +45,6 @@ export class InMemoryTaskRepository extends TaskRepository {
     return tasks.filter((task) => {
       return task.isArchived() && !task.isDiscarded();
     });
-  }
-
-  public async getTaskByTaskId(
-    taskId: TaskId,
-  ): Promise<{ found: boolean; task?: Task }> {
-    const task = this.tasks.get(taskId.id.toString());
-    const found = !!task === true;
-
-    if (found) {
-      return {
-        found,
-        task,
-      };
-    } else {
-      return {
-        found,
-      };
-    }
   }
 
   public async getTaskOfOwnerByTaskId(

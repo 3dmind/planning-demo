@@ -21,9 +21,12 @@ export class PrismaTaskRepository extends TaskRepository {
     return !!taskModel === true;
   }
 
-  async getActiveTasks(): Promise<Task[]> {
+  public async getAllActiveTaskOfOwnerByOwnerId(
+    ownerId: OwnerId,
+  ): Promise<Task[]> {
     const taskModels = await this.prismaService.taskModel.findMany({
       where: {
+        ownerId: ownerId.id.toString(),
         archived: false,
         discarded: false,
       },
@@ -39,24 +42,6 @@ export class PrismaTaskRepository extends TaskRepository {
       },
     });
     return taskModels.map((model) => TaskMapper.toDomain(model));
-  }
-
-  async getTaskByTaskId(
-    taskId: TaskId,
-  ): Promise<{ found: boolean; task?: Task }> {
-    const taskModel = await this.prismaService.taskModel.findUnique({
-      where: {
-        taskId: taskId.id.toString(),
-      },
-    });
-    const found = !!taskModel === true;
-
-    if (found) {
-      const task = TaskMapper.toDomain(taskModel);
-      return { found, task };
-    } else {
-      return { found };
-    }
   }
 
   public async getTaskOfOwnerByTaskId(

@@ -56,7 +56,7 @@ describe('GetAllActiveTasksUsecase', () => {
   it('should fail on any error', async () => {
     expect.assertions(2);
     const spy = jest
-      .spyOn(taskRepository, 'getAllActiveTaskOfOwnerByOwnerId')
+      .spyOn(taskRepository, 'getAllActiveTasksOfOwnerByOwnerId')
       .mockImplementationOnce(() => {
         throw new Error();
       });

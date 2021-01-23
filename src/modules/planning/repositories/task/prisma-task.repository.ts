@@ -21,7 +21,7 @@ export class PrismaTaskRepository extends TaskRepository {
     return !!taskModel === true;
   }
 
-  public async getAllActiveTaskOfOwnerByOwnerId(
+  public async getAllActiveTasksOfOwnerByOwnerId(
     ownerId: OwnerId,
   ): Promise<Task[]> {
     const taskModels = await this.prismaService.taskModel.findMany({

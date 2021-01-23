@@ -45,7 +45,7 @@ export class GetAllActiveTasksUsecase implements UseCase<Request, Response> {
         return left(memberNotFoundError);
       }
 
-      const tasks = await this.taskRepository.getAllActiveTaskOfOwnerByOwnerId(
+      const tasks = await this.taskRepository.getAllActiveTasksOfOwnerByOwnerId(
         member.ownerId,
       );
       this.logger.log(`Found ${tasks.length} active tasks`);

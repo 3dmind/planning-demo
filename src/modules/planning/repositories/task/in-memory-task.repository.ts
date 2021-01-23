@@ -10,7 +10,7 @@ import { MaybeTask, TaskRepository } from './task.repository';
  * @example
  * Test.createTestingModule({
  *   providers: [{
- *     provide: MemberRepository,
+ *     provide: TaskRepository,
  *     useClass: InMemoryTaskRepository,
  *   }]
  * })
@@ -27,7 +27,7 @@ export class InMemoryTaskRepository extends TaskRepository {
     return this.tasks.has(taskId.id.toString());
   }
 
-  public async getAllActiveTaskOfOwnerByOwnerId(
+  public async getAllActiveTasksOfOwnerByOwnerId(
     ownerId: OwnerId,
   ): Promise<Task[]> {
     const tasks = Array.from(this.tasks.values());

@@ -10,7 +10,7 @@ export type MaybeTask = {
 export abstract class TaskRepository {
   abstract async exists(taskId: TaskId): Promise<boolean>;
 
-  abstract async getAllActiveTaskOfOwnerByOwnerId(
+  abstract async getAllActiveTasksOfOwnerByOwnerId(
     ownerId: OwnerId,
   ): Promise<Task[]>;
 

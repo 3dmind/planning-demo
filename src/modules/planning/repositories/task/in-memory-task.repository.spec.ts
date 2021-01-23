@@ -61,7 +61,7 @@ describe('InMemoryTaskRepository', () => {
     expect(tasks).not.toContain(discardedTask);
   });
 
-  it('should find all active task of a particular owner', async () => {
+  it('should find all active tasks of a particular owner', async () => {
     expect.assertions(5);
     const member1 = new MemberEntityBuilder().build();
     const member2 = new MemberEntityBuilder().build();
@@ -90,7 +90,7 @@ describe('InMemoryTaskRepository', () => {
     await repository.save(discardedTaskOfMember1);
     await repository.save(notedTaskOfMember2);
 
-    const tasks = await repository.getAllActiveTaskOfOwnerByOwnerId(
+    const tasks = await repository.getAllActiveTasksOfOwnerByOwnerId(
       member1.ownerId,
     );
 

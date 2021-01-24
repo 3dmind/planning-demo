@@ -3,7 +3,7 @@ import { PrismaService } from '../../../../prisma/prisma.service';
 import { UniqueEntityId } from '../../../../shared/domain';
 import { Member } from '../../domain/member.entity';
 import { MemberMapper } from '../../mappers/member.mapper';
-import { MemberRepository } from './member.repository';
+import { MaybeMember, MemberRepository } from './member.repository';
 
 @Injectable()
 export class PrismaMemberRepository extends MemberRepository {
@@ -20,9 +20,7 @@ export class PrismaMemberRepository extends MemberRepository {
     return !!memberModel === true;
   }
 
-  public async getMemberByUserId(
-    id: UniqueEntityId,
-  ): Promise<{ found: boolean; member?: Member }> {
+  public async getMemberByUserId(id: UniqueEntityId): Promise<MaybeMember> {
     const memberModel = await this.prismaService.memberModel.findFirst({
       where: {
         memberBaseId: id.toString(),

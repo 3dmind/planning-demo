@@ -3,7 +3,7 @@ import { UniqueEntityId } from '../../../../shared/domain';
 import { UserEmail } from '../../domain/user-email.valueobject';
 import { UserName } from '../../domain/user-name.valueobject';
 import { User } from '../../domain/user.entity';
-import { UserRepository } from './user.repository';
+import { MaybeUser, UserRepository } from './user.repository';
 
 /**
  * In-memory implementation of the user repository.
@@ -28,11 +28,8 @@ export class InMemoryUserRepository extends UserRepository {
     return this.users.has(userEmail.value);
   }
 
-  public async getUserByUsername(
-    userName: UserName,
-  ): Promise<{ found: boolean; user?: User }> {
-    const users = Array.from(this.users.values());
-    const user = users.find((user) => user.props.username.equals(userName));
+  public async getUserByUsername(userName: UserName): Promise<MaybeUser> {
+    const user = this.toArray().find((user) => user.username.equals(userName));
     const found = !!user === true;
 
     if (found) {
@@ -47,11 +44,8 @@ export class InMemoryUserRepository extends UserRepository {
     }
   }
 
-  public async getUserByUserId(
-    id: UniqueEntityId,
-  ): Promise<{ found: boolean; user?: User }> {
-    const users = Array.from(this.users.values());
-    const user = users.find((user) => user.userId.id.equals(id));
+  public async getUserByUserId(id: UniqueEntityId): Promise<MaybeUser> {
+    const user = this.toArray().find((user) => user.userId.id.equals(id));
     const found = !!user === true;
 
     if (found) {
@@ -71,5 +65,9 @@ export class InMemoryUserRepository extends UserRepository {
     if (!exists) {
       this.users.set(user.email.value, user);
     }
+  }
+
+  private toArray(): User[] {
+    return Array.from(this.users.values());
   }
 }

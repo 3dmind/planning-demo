@@ -5,7 +5,7 @@ import { UserEmail } from '../../domain/user-email.valueobject';
 import { UserName } from '../../domain/user-name.valueobject';
 import { User } from '../../domain/user.entity';
 import { UserMapper } from '../../mappers/user.mapper';
-import { UserRepository } from './user.repository';
+import { MaybeUser, UserRepository } from './user.repository';
 
 @Injectable()
 export class PrismaUserRepository extends UserRepository {
@@ -22,9 +22,7 @@ export class PrismaUserRepository extends UserRepository {
     return !!baseUser === true;
   }
 
-  async getUserByUsername(
-    userName: UserName,
-  ): Promise<{ found: boolean; user?: User }> {
+  async getUserByUsername(userName: UserName): Promise<MaybeUser> {
     const baseUserModel = await this.prismaService.baseUserModel.findFirst({
       where: {
         username: userName.value,
@@ -44,9 +42,7 @@ export class PrismaUserRepository extends UserRepository {
     }
   }
 
-  async getUserByUserId(
-    id: UniqueEntityId,
-  ): Promise<{ found: boolean; user?: User }> {
+  async getUserByUserId(id: UniqueEntityId): Promise<MaybeUser> {
     const baseUserModel = await this.prismaService.baseUserModel.findUnique({
       where: {
         baseUserId: id.toString(),

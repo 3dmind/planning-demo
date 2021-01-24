@@ -30,19 +30,14 @@ export class InMemoryTaskRepository extends TaskRepository {
   public async getAllActiveTasksOfOwnerByOwnerId(
     ownerId: OwnerId,
   ): Promise<Task[]> {
-    const tasks = Array.from(this.tasks.values());
-    return tasks.filter((task) => {
-      return (
-        task.ownerId.equals(ownerId) &&
-        !task.isArchived() &&
-        !task.isDiscarded()
-      );
-    });
+    return this.toArray()
+      .filter((task) => task.ownerId.equals(ownerId))
+      .filter((task) => !task.isArchived())
+      .filter((task) => !task.isDiscarded());
   }
 
   public async getArchivedTasks(): Promise<Task[]> {
-    const tasks = Array.from(this.tasks.values());
-    return tasks.filter((task) => {
+    return this.toArray().filter((task) => {
       return task.isArchived() && !task.isDiscarded();
     });
   }
@@ -50,8 +45,7 @@ export class InMemoryTaskRepository extends TaskRepository {
   public async getAllArchivedTasksOfOwnerByOwnerId(
     ownerId: OwnerId,
   ): Promise<Task[]> {
-    const tasks = Array.from(this.tasks.values());
-    return tasks
+    return this.toArray()
       .filter((task) => task.ownerId.equals(ownerId))
       .filter((task) => !task.isDiscarded())
       .filter((task) => task.isArchived());
@@ -61,9 +55,9 @@ export class InMemoryTaskRepository extends TaskRepository {
     ownerId: OwnerId,
     taskId: TaskId,
   ): Promise<MaybeTask> {
-    const task = Array.from(this.tasks.values()).find((task) => {
-      return task.ownerId.equals(ownerId) && task.taskId.equals(taskId);
-    });
+    const task = this.toArray()
+      .filter((task) => task.ownerId.equals(ownerId))
+      .find((task) => task.taskId.equals(taskId));
     const found = !!task === true;
 
     if (found) {
@@ -79,10 +73,14 @@ export class InMemoryTaskRepository extends TaskRepository {
   }
 
   public async getTasks(): Promise<Task[]> {
-    return Array.from(this.tasks.values());
+    return this.toArray();
   }
 
   public async save(task: Task): Promise<void> {
     this.tasks.set(task.taskId.id.toString(), task);
+  }
+
+  private toArray(): Task[] {
+    return Array.from(this.tasks.values());
   }
 }

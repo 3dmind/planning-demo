@@ -16,6 +16,10 @@ export abstract class TaskRepository {
 
   abstract async getArchivedTasks(): Promise<Task[]>;
 
+  abstract async getAllArchivedTasksOfOwnerByOwnerId(
+    ownerId: OwnerId,
+  ): Promise<Task[]>;
+
   abstract async getTaskOfOwnerByTaskId(
     ownerId: OwnerId,
     taskId: TaskId,

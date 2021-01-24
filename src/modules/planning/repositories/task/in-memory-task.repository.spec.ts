@@ -61,6 +61,46 @@ describe('InMemoryTaskRepository', () => {
     expect(tasks).not.toContain(discardedTask);
   });
 
+  it('should find all archived task of a particular owner', async () => {
+    expect.assertions(5);
+    const member1 = new MemberEntityBuilder().build();
+    const member2 = new MemberEntityBuilder().build();
+    const notedTaskOfMember1 = new TaskEntityBuilder()
+      .withOwnerId(member1.ownerId)
+      .build();
+    const tickedOffTaskOfMember1 = new TaskEntityBuilder()
+      .withOwnerId(member1.ownerId)
+      .makeTickedOff()
+      .build();
+    const archivedTaskOfMember1 = new TaskEntityBuilder()
+      .withOwnerId(member1.ownerId)
+      .makeArchived()
+      .build();
+    const discardedTaskOfMember1 = new TaskEntityBuilder()
+      .withOwnerId(member1.ownerId)
+      .makeDiscarded()
+      .build();
+    const notedTaskOfMember2 = new TaskEntityBuilder()
+      .withOwnerId(member2.ownerId)
+      .build();
+    const repository = new InMemoryTaskRepository();
+    await repository.save(notedTaskOfMember1);
+    await repository.save(tickedOffTaskOfMember1);
+    await repository.save(archivedTaskOfMember1);
+    await repository.save(discardedTaskOfMember1);
+    await repository.save(notedTaskOfMember2);
+
+    const tasks = await repository.getAllArchivedTasksOfOwnerByOwnerId(
+      member1.ownerId,
+    );
+
+    expect(tasks).toContain(archivedTaskOfMember1);
+    expect(tasks).not.toContain(notedTaskOfMember1);
+    expect(tasks).not.toContain(tickedOffTaskOfMember1);
+    expect(tasks).not.toContain(discardedTaskOfMember1);
+    expect(tasks).not.toContain(notedTaskOfMember2);
+  });
+
   it('should find all active tasks of a particular owner', async () => {
     expect.assertions(5);
     const member1 = new MemberEntityBuilder().build();

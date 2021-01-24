@@ -44,6 +44,19 @@ export class PrismaTaskRepository extends TaskRepository {
     return taskModels.map((model) => TaskMapper.toDomain(model));
   }
 
+  public async getAllArchivedTasksOfOwnerByOwnerId(
+    ownerId: OwnerId,
+  ): Promise<Task[]> {
+    const taskModels = await this.prismaService.taskModel.findMany({
+      where: {
+        ownerId: ownerId.id.toString(),
+        archived: true,
+        discarded: false,
+      },
+    });
+    return taskModels.map((model) => TaskMapper.toDomain(model));
+  }
+
   public async getTaskOfOwnerByTaskId(
     ownerId: OwnerId,
     taskId: TaskId,

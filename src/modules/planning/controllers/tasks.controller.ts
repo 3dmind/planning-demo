@@ -272,9 +272,12 @@ export class TasksController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('/archived')
-  async getArchivedTasks(): Promise<TaskDto[]> {
-    const result = await this.getAllArchivedTasksUseCase.execute();
+  async getArchivedTasks(
+    @GetUser('userId') userId: UserId,
+  ): Promise<TaskDto[]> {
+    const result = await this.getAllArchivedTasksUseCase.execute({ userId });
 
     if (result.isRight()) {
       const tasks = result.value.getValue();

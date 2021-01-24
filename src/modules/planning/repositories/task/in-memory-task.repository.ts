@@ -47,6 +47,16 @@ export class InMemoryTaskRepository extends TaskRepository {
     });
   }
 
+  public async getAllArchivedTasksOfOwnerByOwnerId(
+    ownerId: OwnerId,
+  ): Promise<Task[]> {
+    const tasks = Array.from(this.tasks.values());
+    return tasks
+      .filter((task) => task.ownerId.equals(ownerId))
+      .filter((task) => !task.isDiscarded())
+      .filter((task) => task.isArchived());
+  }
+
   public async getTaskOfOwnerByTaskId(
     ownerId: OwnerId,
     taskId: TaskId,

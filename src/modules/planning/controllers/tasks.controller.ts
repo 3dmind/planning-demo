@@ -27,7 +27,6 @@ import { EditTaskUsecase } from '../use-cases/tasks/edit-task/edit-task.usecase'
 import { GetAllActiveTasksErrors } from '../use-cases/tasks/get-all-active-tasks/get-all-active-tasks.errors';
 import { GetAllActiveTasksUsecase } from '../use-cases/tasks/get-all-active-tasks/get-all-active-tasks.usecase';
 import { GetAllArchivedTasksUsecase } from '../use-cases/tasks/get-all-archived-tasks/get-all-archived-tasks.usecase';
-import { GetAllTasksUsecase } from '../use-cases/tasks/get-all-tasks/get-all-tasks.usecase';
 import { NoteTaskDto } from '../use-cases/tasks/note-task/note-task.dto';
 import { NoteTaskUsecase } from '../use-cases/tasks/note-task/note-task.usecase';
 import { ResumeTaskErrors } from '../use-cases/tasks/resume-task/resume-task.errors';
@@ -38,31 +37,15 @@ import { TickOffTaskUsecase } from '../use-cases/tasks/tick-off-task/tick-off-ta
 @Controller('tasks')
 export class TasksController {
   constructor(
-    private readonly getAllTasksUseCase: GetAllTasksUsecase,
     private readonly noteTaskUseCase: NoteTaskUsecase,
     private readonly tickOffTaskUseCase: TickOffTaskUsecase,
     private readonly resumeTaskUseCase: ResumeTaskUsecase,
-    private readonly archivedTasksUseCase: ArchiveTaskUsecase,
     private readonly editTaskUseCase: EditTaskUsecase,
+    private readonly archivedTasksUseCase: ArchiveTaskUsecase,
     private readonly discardTaskUseCase: DiscardTaskUsecase,
     private readonly getAllActiveTasksUseCase: GetAllActiveTasksUsecase,
     private readonly getAllArchivedTasksUseCase: GetAllArchivedTasksUsecase,
   ) {}
-
-  @Get()
-  async getTasks(): Promise<TaskDto[]> {
-    const result = await this.getAllTasksUseCase.execute();
-
-    if (result.isRight()) {
-      const tasks = result.value.getValue();
-      return tasks.map((task) => TaskMapper.toDto(task));
-    }
-
-    if (result.isLeft()) {
-      const error = result.value;
-      throw new InternalServerErrorException(error.errorValue().message);
-    }
-  }
 
   @UseGuards(JwtAuthGuard)
   @Post()

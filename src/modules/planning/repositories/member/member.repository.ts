@@ -7,9 +7,9 @@ export type MaybeMember = {
 };
 
 export abstract class MemberRepository {
-  abstract async exists(id: UniqueEntityId): Promise<boolean>;
+  abstract exists(id: UniqueEntityId): Promise<boolean>;
 
-  abstract async getMemberByUserId(id: UniqueEntityId): Promise<MaybeMember>;
+  abstract getMemberByUserId(id: UniqueEntityId): Promise<MaybeMember>;
 
-  abstract async save(member: Member): Promise<void>;
+  abstract save(member: Member): Promise<void>;
 }

@@ -9,11 +9,11 @@ export type MaybeUser = {
 };
 
 export abstract class UserRepository {
-  abstract async exists(userEmail: UserEmail): Promise<boolean>;
+  abstract exists(userEmail: UserEmail): Promise<boolean>;
 
-  abstract async getUserByUsername(userName: UserName): Promise<MaybeUser>;
+  abstract getUserByUsername(userName: UserName): Promise<MaybeUser>;
 
-  abstract async getUserByUserId(id: UniqueEntityId): Promise<MaybeUser>;
+  abstract getUserByUserId(id: UniqueEntityId): Promise<MaybeUser>;
 
-  abstract async save(user: User): Promise<void>;
+  abstract save(user: User): Promise<void>;
 }

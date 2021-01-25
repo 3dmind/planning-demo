@@ -8,24 +8,22 @@ export type MaybeTask = {
 };
 
 export abstract class TaskRepository {
-  abstract async exists(taskId: TaskId): Promise<boolean>;
+  abstract exists(taskId: TaskId): Promise<boolean>;
 
-  abstract async getAllActiveTasksOfOwnerByOwnerId(
+  abstract getAllActiveTasksOfOwnerByOwnerId(ownerId: OwnerId): Promise<Task[]>;
+
+  abstract getArchivedTasks(): Promise<Task[]>;
+
+  abstract getAllArchivedTasksOfOwnerByOwnerId(
     ownerId: OwnerId,
   ): Promise<Task[]>;
 
-  abstract async getArchivedTasks(): Promise<Task[]>;
-
-  abstract async getAllArchivedTasksOfOwnerByOwnerId(
-    ownerId: OwnerId,
-  ): Promise<Task[]>;
-
-  abstract async getTaskOfOwnerByTaskId(
+  abstract getTaskOfOwnerByTaskId(
     ownerId: OwnerId,
     taskId: TaskId,
   ): Promise<MaybeTask>;
 
-  abstract async getTasks(): Promise<Task[]>;
+  abstract getTasks(): Promise<Task[]>;
 
-  abstract async save(task: Task): Promise<void>;
+  abstract save(task: Task): Promise<void>;
 }

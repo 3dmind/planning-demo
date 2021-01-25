@@ -1,12 +1,9 @@
 FROM node:14-alpine
 
-# Create app directory
+ENV CHECKPOINT_DISABLE=1
 WORKDIR /app
-
-# Install @prisma/cli for the migration
-RUN npm install -g @prisma/cli@2.15.0 --unsafe-perm
-
-# Copy schema and migration folder
-ADD ./ ./prisma/
-
-CMD ["prisma", "db", "push", "--skip-generate", "--preview-feature"]
+COPY package.json .
+COPY yarn.lock .
+COPY . ./prisma/
+RUN yarn install --production
+CMD ["yarn", "db:migrate:reset"]

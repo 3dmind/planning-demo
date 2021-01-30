@@ -26,6 +26,7 @@ import { EditTaskErrors } from '../use-cases/tasks/edit-task/edit-task.errors';
 import { EditTaskUsecase } from '../use-cases/tasks/edit-task/edit-task.usecase';
 import { GetAllActiveTasksErrors } from '../use-cases/tasks/get-all-active-tasks/get-all-active-tasks.errors';
 import { GetAllActiveTasksUsecase } from '../use-cases/tasks/get-all-active-tasks/get-all-active-tasks.usecase';
+import { GetAllArchivedTasksErrors } from '../use-cases/tasks/get-all-archived-tasks/get-all-archived-tasks.errors';
 import { GetAllArchivedTasksUsecase } from '../use-cases/tasks/get-all-archived-tasks/get-all-archived-tasks.usecase';
 import { NoteTaskDto } from '../use-cases/tasks/note-task/note-task.dto';
 import { NoteTaskUsecase } from '../use-cases/tasks/note-task/note-task.usecase';
@@ -67,7 +68,9 @@ export class TasksController {
     if (result.isLeft()) {
       const error = result.value;
 
-      if (error.constructor === AppErrors.UnexpectedError) {
+      if (
+        Reflect.getPrototypeOf(error).constructor === AppErrors.UnexpectedError
+      ) {
         throw new InternalServerErrorException(error.errorValue().message);
       } else {
         throw new UnprocessableEntityException(error.errorValue());
@@ -96,11 +99,11 @@ export class TasksController {
       const error = result.value;
 
       switch (Reflect.getPrototypeOf(error).constructor) {
-        case AppErrors.UnexpectedError:
-          throw new InternalServerErrorException(error.errorValue().message);
         case TickOffTasksErrors.MemberNotFoundError:
         case TickOffTasksErrors.TaskNotFoundError:
           throw new NotFoundException(error.errorValue().message);
+        case AppErrors.UnexpectedError:
+          throw new InternalServerErrorException(error.errorValue().message);
         default:
           throw new UnprocessableEntityException(error.errorValue());
       }
@@ -126,7 +129,7 @@ export class TasksController {
 
     if (result.isLeft()) {
       const error = result.value;
-      switch (error.constructor) {
+      switch (Reflect.getPrototypeOf(error).constructor) {
         case ResumeTaskErrors.MemberNotFoundError:
         case ResumeTaskErrors.TaskNotFoundError:
           throw new NotFoundException(error.errorValue().message);
@@ -159,11 +162,12 @@ export class TasksController {
 
     if (result.isLeft()) {
       const error = result.value;
-      switch (error.constructor) {
-        case AppErrors.UnexpectedError:
-          throw new InternalServerErrorException(error.errorValue().messge);
+      switch (Reflect.getPrototypeOf(error).constructor) {
+        case EditTaskErrors.MemberNotFoundError:
         case EditTaskErrors.TaskNotFoundError:
           throw new NotFoundException(error.errorValue().message);
+        case AppErrors.UnexpectedError:
+          throw new InternalServerErrorException(error.errorValue().messge);
         default:
           throw new UnprocessableEntityException(error.errorValue());
       }
@@ -189,7 +193,7 @@ export class TasksController {
 
     if (result.isLeft()) {
       const error = result.value;
-      switch (error.constructor) {
+      switch (Reflect.getPrototypeOf(error).constructor) {
         case ArchiveTaskErrors.MemberNotFoundError:
         case ArchiveTaskErrors.TaskNotFoundError:
           throw new NotFoundException(error.errorValue().message);
@@ -220,7 +224,7 @@ export class TasksController {
 
     if (result.isLeft()) {
       const error = result.value;
-      switch (error.constructor) {
+      switch (Reflect.getPrototypeOf(error).constructor) {
         case DiscardTaskErrors.MemberNotFoundError:
         case DiscardTaskErrors.TaskNotFoundError:
           throw new NotFoundException(error.errorValue().message);
@@ -269,7 +273,15 @@ export class TasksController {
 
     if (result.isLeft()) {
       const error = result.value;
-      throw new InternalServerErrorException(error.errorValue().message);
+
+      switch (Reflect.getPrototypeOf(error).constructor) {
+        case GetAllArchivedTasksErrors.MemberNotFoundError:
+          throw new NotFoundException(error.errorValue().message);
+        case AppErrors.UnexpectedError:
+          throw new InternalServerErrorException(error.errorValue().message);
+        default:
+          throw new UnprocessableEntityException(error.errorValue());
+      }
     }
   }
 }

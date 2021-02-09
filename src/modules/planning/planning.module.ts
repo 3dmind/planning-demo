@@ -2,6 +2,7 @@ import { Logger, Module } from '@nestjs/common';
 import { PrismaModule } from '../../prisma/prisma.module';
 import { UsersModule } from '../users/users.module';
 import { TasksController } from './controllers/tasks.controller';
+import { TaskService } from './domain/services/task.service';
 import {
   MemberRepositoryProvider,
   TaskRepositoryProvider,
@@ -33,6 +34,7 @@ import { TickOffTaskUsecase } from './use-cases/tasks/tick-off-task/tick-off-tas
     NoteTaskUsecase,
     ResumeTaskUsecase,
     TaskRepositoryProvider,
+    TaskService,
     TickOffTaskUsecase,
   ],
 })

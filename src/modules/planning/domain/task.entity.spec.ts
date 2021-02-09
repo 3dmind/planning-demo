@@ -2,6 +2,7 @@ import * as faker from 'faker';
 import * as uuid from 'uuid';
 import { TaskEntityBuilder } from '../../../../test/builder/task-entity.builder';
 import { UniqueEntityId } from '../../../shared/domain';
+import { AssigneeId } from './assignee-id.entity';
 import { Description } from './description.valueobject';
 import { OwnerId } from './owner-id.entity';
 import { TaskId } from './task-id.entity';
@@ -113,17 +114,42 @@ describe('Task', () => {
     expect(result.isFailure).toBe(true);
   });
 
+  it('should guard "assigneeId" property', () => {
+    expect.assertions(1);
+    const description = Description.create(faker.lorem.words(5)).getValue();
+    const ownerId = OwnerId.create().getValue();
+    const createdAt = new Date();
+    const tickedOff = false;
+    const archived = false;
+    const discarded = false;
+    const props = {
+      description,
+      createdAt,
+      tickedOff,
+      archived,
+      discarded,
+      ownerId,
+      assigneeId: null,
+    } as TaskProps;
+
+    const result = Task.create(props);
+
+    expect(result.isFailure).toBe(true);
+  });
+
   it('should create task', () => {
-    expect.assertions(4);
+    expect.assertions(5);
     const text = faker.lorem.words(5);
     const description = Description.create(text).getValue();
     const ownerId = OwnerId.create().getValue();
+    const assigneeId = AssigneeId.create().getValue();
     const entityId = new UniqueEntityId();
 
     const taskResult = Task.create(
       {
         archived: false,
         archivedAt: null,
+        assigneeId,
         createdAt: new Date(),
         description,
         discarded: false,
@@ -142,6 +168,7 @@ describe('Task', () => {
     expect(task.taskId).toBeInstanceOf(TaskId);
     expect(task.taskId.id.equals(entityId)).toBe(true);
     expect(task.ownerId.equals(ownerId)).toBe(true);
+    expect(task.assigneeId.equals(assigneeId)).toBe(true);
   });
 
   it('should create snapshot', () => {
@@ -152,6 +179,11 @@ describe('Task', () => {
       .withOwnerId(
         OwnerId.create(
           new UniqueEntityId('74d21847-3298-4775-aaf8-942fed0f53e7'),
+        ).getValue(),
+      )
+      .withAssigneeId(
+        AssigneeId.create(
+          new UniqueEntityId('27f0ca32-e888-4fcc-9908-b24bf152573d'),
         ).getValue(),
       )
       .withCreationDate(new Date(Date.parse('1977-01-01')))
@@ -168,8 +200,9 @@ describe('Task', () => {
     const text = faker.lorem.words(5);
     const description = Description.create(text).getValue();
     const ownerId = OwnerId.create().getValue();
+    const assigneeId = AssigneeId.create().getValue();
 
-    const taskResult = Task.note(description, ownerId);
+    const taskResult = Task.note(description, ownerId, assigneeId);
 
     expect(taskResult.isSuccess).toBe(true);
   });

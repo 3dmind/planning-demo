@@ -1,3 +1,4 @@
+import { AssigneeId } from './assignee-id.entity';
 import { Description } from './description.valueobject';
 import { OwnerId } from './owner-id.entity';
 import { TaskId } from './task-id.entity';
@@ -5,6 +6,7 @@ import { TaskProps } from './task-props.interface';
 
 export class TaskSnapshot {
   readonly archivedAt: Date;
+  readonly assigneeId: AssigneeId;
   readonly createdAt: Date;
   readonly description: Description;
   readonly discardedAt: Date;
@@ -21,6 +23,7 @@ export class TaskSnapshot {
     const {
       archived,
       archivedAt,
+      assigneeId,
       createdAt,
       description,
       discarded,
@@ -32,6 +35,7 @@ export class TaskSnapshot {
       tickedOffAt,
     } = props;
     this.archivedAt = archivedAt;
+    this.assigneeId = assigneeId;
     this.createdAt = createdAt;
     this.description = description;
     this.discardedAt = discardedAt;

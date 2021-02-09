@@ -22,28 +22,31 @@ model BaseUserModel {
 
 model MemberModel {
   @@map("Member")
-  memberId      String         @id
-  updatedAt     DateTime       @updatedAt
-  createdAt     DateTime
-  baseUserModel BaseUserModel  @relation(fields: [memberBaseId], references: [baseUserId])
-  memberBaseId  String
-  taskModels    TaskModel[]
+  memberId           String         @id
+  updatedAt          DateTime       @updatedAt
+  createdAt          DateTime
+  baseUserModel      BaseUserModel  @relation(fields: [memberBaseId], references: [baseUserId])
+  memberBaseId       String
+  ownTaskModels      TaskModel[]    @relation("OwnTasks")
+  assignedTaskModels TaskModel[]    @relation("AssignedTasks")
 }
 
 model TaskModel {
   @@map("Task")
-  taskId      String       @id
-  updatedAt   DateTime     @updatedAt
-  description String
-  createdAt   DateTime
-  tickedOff   Boolean
-  tickedOffAt DateTime?
-  resumedAt   DateTime?
-  editedAt    DateTime?
-  archived    Boolean
-  archivedAt  DateTime?
-  discarded   Boolean
-  discardedAt DateTime?
-  ownerModel  MemberModel  @relation(fields: [ownerId], references: [memberId])
-  ownerId     String
+  taskId        String       @id
+  updatedAt     DateTime     @updatedAt
+  description   String
+  createdAt     DateTime
+  tickedOff     Boolean
+  tickedOffAt   DateTime?
+  resumedAt     DateTime?
+  editedAt      DateTime?
+  archived      Boolean
+  archivedAt    DateTime?
+  discarded     Boolean
+  discardedAt   DateTime?
+  ownerModel    MemberModel  @relation("OwnTasks", fields: [ownerId], references: [memberId])
+  ownerId       String
+  assigneeModel MemberModel  @relation("AssignedTasks", fields: [assigneeId], references: [memberId])
+  assigneeId    String
 }

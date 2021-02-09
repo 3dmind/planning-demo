@@ -3,6 +3,12 @@
 exports[`Task should create snapshot 1`] = `
 TaskSnapshot {
   "archivedAt": null,
+  "assigneeId": AssigneeId {
+    "_id": UniqueEntityId {
+      "value": "27f0ca32-e888-4fcc-9908-b24bf152573d",
+    },
+    "props": null,
+  },
   "createdAt": 1977-01-01T00:00:00.000Z,
   "description": Description {
     "props": Object {

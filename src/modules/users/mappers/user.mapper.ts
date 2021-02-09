@@ -1,4 +1,4 @@
-import type { BaseUserModel, Prisma } from '@prisma/client';
+import { BaseUserModel, Prisma } from '@prisma/client';
 import { UniqueEntityId } from '../../../shared/domain';
 import { UserEmail } from '../domain/user-email.valueobject';
 import { UserName } from '../domain/user-name.valueobject';
@@ -7,7 +7,9 @@ import { User } from '../domain/user.entity';
 import { UserDto } from '../dtos/user.dto';
 
 export class UserMapper {
-  public static async toPersistence(user: User): Promise<Prisma.BaseUserModelCreateInput> {
+  public static async toPersistence(
+    user: User,
+  ): Promise<Prisma.BaseUserModelCreateInput> {
     const password = user.password;
     let hashedPassword;
 
@@ -43,13 +45,16 @@ export class UserMapper {
       hashed: true,
     });
     const userEmailResult = UserEmail.create(userEmail);
-    const userEntityResult = User.create({
-      createdAt,
-      email: userEmailResult.getValue(),
-      isEmailVerified: isEmailVerified,
-      password: userPasswordResult.getValue(),
-      username: userNameResult.getValue(),
-    }, entityId);
+    const userEntityResult = User.create(
+      {
+        createdAt,
+        email: userEmailResult.getValue(),
+        isEmailVerified: isEmailVerified,
+        password: userPasswordResult.getValue(),
+        username: userNameResult.getValue(),
+      },
+      entityId,
+    );
     return userEntityResult.getValue();
   }
 

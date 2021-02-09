@@ -1,4 +1,5 @@
 import * as faker from 'faker';
+import { AssigneeId } from '../../src/modules/planning/domain/assignee-id.entity';
 import { Description } from '../../src/modules/planning/domain/description.valueobject';
 import { OwnerId } from '../../src/modules/planning/domain/owner-id.entity';
 import { Task } from '../../src/modules/planning/domain/task.entity';
@@ -7,6 +8,7 @@ import { UniqueEntityId } from '../../src/shared/domain';
 export class TaskEntityBuilder {
   private archived: boolean;
   private archivedAt: Date;
+  private assigneeId: AssigneeId;
   private createdAt: Date;
   private description: Description;
   private discarded: boolean;
@@ -23,9 +25,11 @@ export class TaskEntityBuilder {
     const description = Description.create(faker.lorem.words(5)).getValue();
     const entityId = new UniqueEntityId();
     const ownerId = OwnerId.create().getValue();
+    const assigneeId = AssigneeId.create().getValue();
 
     this.archived = false;
     this.archivedAt = null;
+    this.assigneeId = assigneeId;
     this.createdAt = createdAt;
     this.description = description;
     this.discarded = false;
@@ -55,6 +59,11 @@ export class TaskEntityBuilder {
 
   withOwnerId(ownerId: OwnerId): TaskEntityBuilder {
     this.ownerId = ownerId;
+    return this;
+  }
+
+  withAssigneeId(assigneeId: AssigneeId): TaskEntityBuilder {
+    this.assigneeId = assigneeId;
     return this;
   }
 
@@ -93,6 +102,7 @@ export class TaskEntityBuilder {
       {
         archived: this.archived,
         archivedAt: this.archivedAt,
+        assigneeId: this.assigneeId,
         createdAt: this.createdAt,
         description: this.description,
         discarded: this.discarded,

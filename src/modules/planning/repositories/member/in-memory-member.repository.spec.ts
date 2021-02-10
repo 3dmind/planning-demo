@@ -13,6 +13,18 @@ describe('InMemoryMemberRepository', () => {
     await expect(repository.save(member)).resolves.not.toThrow();
   });
 
+  it('should find stored member by id', async () => {
+    const repository = new InMemoryMemberRepository();
+    const userId = UserId.create().getValue();
+    const member = Member.create({ userId }).getValue();
+    await repository.save(member);
+
+    const result = await repository.getMemberById(member.memberId);
+
+    expect(result.found).toBe(true);
+    expect(result.member.equals(member)).toBe(true);
+  });
+
   it('should find stored member by user id ', async () => {
     expect.assertions(2);
     const repository = new InMemoryMemberRepository();

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UniqueEntityId } from '../../../../shared/domain';
+import { MemberId } from '../../domain/member-id.entity';
 import { Member } from '../../domain/member.entity';
 import { MaybeMember, MemberRepository } from './member.repository';
 
@@ -24,6 +25,21 @@ export class InMemoryMemberRepository extends MemberRepository {
 
   public async exists(id: UniqueEntityId): Promise<boolean> {
     return this.members.has(id.toString());
+  }
+
+  public async getMemberById(memberId: MemberId): Promise<MaybeMember> {
+    const exists = await this.exists(memberId.id);
+    if (!exists) {
+      return {
+        found: false,
+      };
+    } else {
+      const member = this.members.get(memberId.toString());
+      return {
+        found: true,
+        member,
+      };
+    }
   }
 
   public async getMemberByUserId(id: UniqueEntityId): Promise<MaybeMember> {

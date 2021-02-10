@@ -15,7 +15,7 @@ describe('MemberId', () => {
   });
 
   it('should accept existing ID', () => {
-    expect.assertions(2);
+    expect.assertions(3);
     const expectedId = faker.random.uuid();
 
     const memberIdResult = MemberId.create(new UniqueEntityId(expectedId));
@@ -23,6 +23,7 @@ describe('MemberId', () => {
 
     expect(memberIdResult.isSuccess).toBe(true);
     expect(memberId.id.toValue()).toEqual(expectedId);
+    expect(memberId.toString()).toEqual(expectedId);
   });
 
   it('should create new ID', () => {

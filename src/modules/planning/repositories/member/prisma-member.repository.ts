@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../../prisma/prisma.service';
 import { UniqueEntityId } from '../../../../shared/domain';
+import { MemberId } from '../../domain/member-id.entity';
 import { Member } from '../../domain/member.entity';
 import { MemberMapper } from '../../mappers/member.mapper';
 import { MaybeMember, MemberRepository } from './member.repository';
@@ -18,6 +19,25 @@ export class PrismaMemberRepository extends MemberRepository {
       },
     });
     return !!memberModel === true;
+  }
+
+  public async getMemberById(memberId: MemberId): Promise<MaybeMember> {
+    const memberModel = await this.prismaService.memberModel.findUnique({
+      where: { memberId: memberId.toString() },
+    });
+    const found = !!memberModel === true;
+
+    if (found) {
+      const member = MemberMapper.toDomain(memberModel);
+      return {
+        found,
+        member,
+      };
+    } else {
+      return {
+        found,
+      };
+    }
   }
 
   public async getMemberByUserId(id: UniqueEntityId): Promise<MaybeMember> {

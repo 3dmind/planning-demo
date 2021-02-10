@@ -3,11 +3,16 @@ import { Entity, UniqueEntityId } from '../../../shared/domain';
 import { AssigneeId } from './assignee-id.entity';
 import { Description } from './description.valueobject';
 import { OwnerId } from './owner-id.entity';
+import { MemberIsNotAssignedToTask } from './specifications/member-is-not-assigned-to-task';
+import { OnlyOwnerCanAssignTask } from './specifications/only-owner-can-assign-task';
 import { TaskId } from './task-id.entity';
 import { TaskProps } from './task-props.interface';
 import { TaskSnapshot } from './task-snapshot';
 
 export class Task extends Entity<TaskProps> {
+  private onlyOwnerCanAssignTaskSpec = new OnlyOwnerCanAssignTask(this);
+  private memberIsNotAssignedToTaskSpec = new MemberIsNotAssignedToTask(this);
+
   private constructor(props: TaskProps, id?: UniqueEntityId) {
     super(props, id);
   }
@@ -84,44 +89,57 @@ export class Task extends Entity<TaskProps> {
     });
   }
 
-  createSnapshot(): TaskSnapshot {
+  public createSnapshot(): TaskSnapshot {
     return new TaskSnapshot(this.props, this.taskId);
   }
 
-  tickOff(): void {
+  public tickOff(): void {
     this.props.tickedOff = true;
     this.props.tickedOffAt = new Date();
   }
 
-  isTickedOff(): boolean {
+  public isTickedOff(): boolean {
     return this.props.tickedOff;
   }
 
-  resume(): void {
+  public resume(): void {
     this.props.tickedOff = false;
     this.props.resumedAt = new Date();
   }
 
-  archive(): void {
+  public archive(): void {
     this.props.archived = true;
     this.props.archivedAt = new Date();
   }
 
-  isArchived(): boolean {
+  public isArchived(): boolean {
     return this.props.archived;
   }
 
-  edit(newDescription: Description): void {
+  public edit(newDescription: Description): void {
     this.props.description = newDescription;
     this.props.editedAt = new Date();
   }
 
-  discard(): void {
+  public discard(): void {
     this.props.discarded = true;
     this.props.discardedAt = new Date();
   }
 
-  isDiscarded(): boolean {
+  public isDiscarded(): boolean {
     return this.props.discarded;
+  }
+
+  public assign(ownerId: OwnerId, assigneeId: AssigneeId): Result<Task> {
+    if (!this.onlyOwnerCanAssignTaskSpec.satisfiedBy(ownerId)) {
+      return Result.fail('Task is only assignable by task owner.');
+    }
+
+    if (!this.memberIsNotAssignedToTaskSpec.satisfiedBy(assigneeId)) {
+      return Result.fail('Member is assigned already.');
+    }
+
+    this.props.assigneeId = assigneeId;
+    return Result.ok();
   }
 }

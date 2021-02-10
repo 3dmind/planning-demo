@@ -1,5 +1,4 @@
 import * as faker from 'faker';
-import * as uuid from 'uuid';
 import { TaskEntityBuilder } from '../../../../test/builder/task-entity.builder';
 import { UniqueEntityId } from '../../../shared/domain';
 import { AssigneeId } from './assignee-id.entity';
@@ -9,17 +8,7 @@ import { TaskId } from './task-id.entity';
 import { TaskProps } from './task-props.interface';
 import { Task } from './task.entity';
 
-jest.mock('uuid');
-
 describe('Task', () => {
-  beforeAll(() => {
-    uuid.v4.mockReturnValue(faker.random.uuid());
-  });
-
-  afterAll(() => {
-    uuid.mockRestore();
-  });
-
   it('should guard "description" property', () => {
     expect.assertions(1);
     const props = { description: null } as TaskProps;
@@ -252,5 +241,36 @@ describe('Task', () => {
     task.discard();
 
     expect(task.isDiscarded()).toBe(true);
+  });
+
+  describe('assign task', () => {
+    it('should only be assignable by task owner', () => {
+      expect.assertions(2);
+      const taskOwnerId = OwnerId.create().getValue();
+      const assigneeId = AssigneeId.create().getValue();
+      const otherOwnerId = OwnerId.create().getValue();
+      const taskOne = new TaskEntityBuilder().withOwnerId(taskOwnerId).build();
+      const taskTwo = new TaskEntityBuilder().withOwnerId(taskOwnerId).build();
+
+      const resultOne = taskOne.assign(taskOwnerId, assigneeId);
+      const resultTwo = taskTwo.assign(otherOwnerId, assigneeId);
+
+      expect(resultOne.isSuccess).toBe(true);
+      expect(resultTwo.isFailure).toBe(true);
+    });
+
+    it('should not be assignable if the member is assigned already', () => {
+      expect.assertions(1);
+      const taskOwnerId = OwnerId.create().getValue();
+      const assigneeId = AssigneeId.create().getValue();
+      const task = new TaskEntityBuilder()
+        .withOwnerId(taskOwnerId)
+        .withAssigneeId(assigneeId)
+        .build();
+
+      const result = task.assign(taskOwnerId, assigneeId);
+
+      expect(result.isFailure).toBe(true);
+    });
   });
 });

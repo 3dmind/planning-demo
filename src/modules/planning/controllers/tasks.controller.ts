@@ -19,6 +19,9 @@ import { TaskDto } from '../dtos/task.dto';
 import { TaskMapper } from '../mappers/task.mapper';
 import { ArchiveTaskErrors } from '../use-cases/tasks/archive-task/archive-task.errors';
 import { ArchiveTaskUsecase } from '../use-cases/tasks/archive-task/archive-task.usecase';
+import { AssignTaskDto } from '../use-cases/tasks/assign-task/assign-task.dto';
+import { AssignTaskErrors } from '../use-cases/tasks/assign-task/assign-task.errors';
+import { AssignTaskUsecase } from '../use-cases/tasks/assign-task/assign-task.usecase';
 import { DiscardTaskErrors } from '../use-cases/tasks/discard-task/discard-task.errors';
 import { DiscardTaskUsecase } from '../use-cases/tasks/discard-task/discard-task.usecase';
 import { EditTaskDto } from '../use-cases/tasks/edit-task/edit-task.dto';
@@ -38,14 +41,15 @@ import { TickOffTaskUsecase } from '../use-cases/tasks/tick-off-task/tick-off-ta
 @Controller('tasks')
 export class TasksController {
   constructor(
-    private readonly noteTaskUseCase: NoteTaskUsecase,
-    private readonly tickOffTaskUseCase: TickOffTaskUsecase,
-    private readonly resumeTaskUseCase: ResumeTaskUsecase,
-    private readonly editTaskUseCase: EditTaskUsecase,
     private readonly archivedTasksUseCase: ArchiveTaskUsecase,
+    private readonly assignTaskUsecase: AssignTaskUsecase,
     private readonly discardTaskUseCase: DiscardTaskUsecase,
+    private readonly editTaskUseCase: EditTaskUsecase,
     private readonly getAllActiveTasksUseCase: GetAllActiveTasksUsecase,
     private readonly getAllArchivedTasksUseCase: GetAllArchivedTasksUsecase,
+    private readonly noteTaskUseCase: NoteTaskUsecase,
+    private readonly resumeTaskUseCase: ResumeTaskUsecase,
+    private readonly tickOffTaskUseCase: TickOffTaskUsecase,
   ) {}
 
   @UseGuards(JwtAuthGuard)
@@ -276,6 +280,40 @@ export class TasksController {
 
       switch (Reflect.getPrototypeOf(error).constructor) {
         case GetAllArchivedTasksErrors.MemberNotFoundError:
+          throw new NotFoundException(error.errorValue().message);
+        case AppErrors.UnexpectedError:
+          throw new InternalServerErrorException(error.errorValue().message);
+        default:
+          throw new UnprocessableEntityException(error.errorValue());
+      }
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/assign')
+  @HttpCode(HttpStatus.OK)
+  async assign(
+    @GetUser('userId') userId: UserId,
+    @Param('id') id: string,
+    @Body() dto: AssignTaskDto,
+  ): Promise<TaskDto> {
+    const result = await this.assignTaskUsecase.execute({
+      memberId: dto.memberId,
+      taskId: id,
+      userId,
+    });
+
+    if (result.isRight()) {
+      const task = result.value.getValue();
+      return TaskMapper.toDto(task);
+    }
+
+    if (result.isLeft()) {
+      const error = result.value;
+      switch (Reflect.getPrototypeOf(error).constructor) {
+        case AssignTaskErrors.MemberNotFoundByUserIdError:
+        case AssignTaskErrors.MemberNotFoundError:
+        case AssignTaskErrors.TaskNotFoundError:
           throw new NotFoundException(error.errorValue().message);
         case AppErrors.UnexpectedError:
           throw new InternalServerErrorException(error.errorValue().message);

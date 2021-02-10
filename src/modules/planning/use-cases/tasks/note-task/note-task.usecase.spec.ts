@@ -4,7 +4,6 @@ import { MemberEntityBuilder } from '../../../../../../test/builder/member-entit
 import { AppErrors, Result } from '../../../../../shared/core';
 import { UniqueEntityId } from '../../../../../shared/domain';
 import { UserId } from '../../../../users/domain/user-id.entity';
-import { TaskService } from '../../../domain/services/task.service';
 import { Task } from '../../../domain/task.entity';
 import { InMemoryMemberRepository } from '../../../repositories/member/in-memory-member.repository';
 import { MemberRepository } from '../../../repositories/member/member.repository';
@@ -30,7 +29,6 @@ describe('NoteTaskUsecase', () => {
           provide: MemberRepository,
           useClass: InMemoryMemberRepository,
         },
-        TaskService,
         NoteTaskUsecase,
       ],
     }).compile();

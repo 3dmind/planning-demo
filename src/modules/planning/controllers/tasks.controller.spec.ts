@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { mock, mockReset } from 'jest-mock-extended';
 import { ArchiveTaskUsecase } from '../use-cases/tasks/archive-task/archive-task.usecase';
+import { AssignTaskUsecase } from '../use-cases/tasks/assign-task/assign-task.usecase';
 import { DiscardTaskUsecase } from '../use-cases/tasks/discard-task/discard-task.usecase';
 import { EditTaskUsecase } from '../use-cases/tasks/edit-task/edit-task.usecase';
 import { GetAllActiveTasksUsecase } from '../use-cases/tasks/get-all-active-tasks/get-all-active-tasks.usecase';
@@ -19,6 +20,7 @@ describe('TasksController', () => {
   const mockedDiscardTaskUseCase = mock<DiscardTaskUsecase>();
   const mockedGetAllActiveTasksUseCase = mock<GetAllActiveTasksUsecase>();
   const mockedGetAllArchivedTasksUseCase = mock<GetAllArchivedTasksUsecase>();
+  const mockedAssignTaskUsecase = mock<AssignTaskUsecase>();
   let controller: TasksController;
 
   beforeAll(async () => {
@@ -38,6 +40,10 @@ describe('TasksController', () => {
         {
           provide: GetAllArchivedTasksUsecase,
           useValue: mockedGetAllArchivedTasksUseCase,
+        },
+        {
+          provide: AssignTaskUsecase,
+          useValue: mockedAssignTaskUsecase,
         },
       ],
     }).compile();

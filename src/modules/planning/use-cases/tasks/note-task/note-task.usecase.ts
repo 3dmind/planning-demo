@@ -9,7 +9,6 @@ import {
 } from '../../../../../shared/core';
 import { UserId } from '../../../../users/domain/user-id.entity';
 import { Description } from '../../../domain/description.valueobject';
-import { TaskService } from '../../../domain/services/task.service';
 import { Task } from '../../../domain/task.entity';
 import { MemberRepository } from '../../../repositories/member/member.repository';
 import { TaskRepository } from '../../../repositories/task/task.repository';
@@ -32,7 +31,6 @@ export class NoteTaskUsecase implements UseCase<Request, Response> {
   constructor(
     private readonly memberRepository: MemberRepository,
     private readonly taskRepository: TaskRepository,
-    private readonly taskService: TaskService,
   ) {}
 
   async execute(request: Request): Promise<Response> {
@@ -59,16 +57,17 @@ export class NoteTaskUsecase implements UseCase<Request, Response> {
       }
 
       const description = descriptionResult.getValue();
-      const result = this.taskService.noteTaskAndAssignToMember(
+      const taskResult = Task.note(
         description,
-        member,
+        member.ownerId,
+        member.assigneeId,
       );
-      if (result.isFailure) {
-        this.logger.debug(result.errorValue());
-        return left(result);
+      if (taskResult.isFailure) {
+        this.logger.debug(taskResult.errorValue());
+        return left(taskResult);
       }
 
-      const task = result.getValue();
+      const task = taskResult.getValue();
       await this.taskRepository.save(task);
       this.logger.log('Task successfully noted');
       return right(Result.ok<Task>(task));

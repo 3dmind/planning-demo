@@ -13,4 +13,8 @@ export class MemberId extends Entity<any> {
   public static create(id?: UniqueEntityId): Result<MemberId> {
     return Result.ok<MemberId>(new MemberId(id));
   }
+
+  public toString(): string {
+    return this._id.toString();
+  }
 }

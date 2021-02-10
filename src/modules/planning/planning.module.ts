@@ -2,7 +2,6 @@ import { Logger, Module } from '@nestjs/common';
 import { PrismaModule } from '../../prisma/prisma.module';
 import { UsersModule } from '../users/users.module';
 import { TasksController } from './controllers/tasks.controller';
-import { TaskService } from './domain/services/task.service';
 import {
   MemberRepositoryProvider,
   TaskRepositoryProvider,
@@ -10,6 +9,7 @@ import {
 import { AfterUserRegisteredSubscriber } from './subscribers/after-user-registered.subscriber';
 import { CreateMemberUsecase } from './use-cases/members/create-member/create-member.usecase';
 import { ArchiveTaskUsecase } from './use-cases/tasks/archive-task/archive-task.usecase';
+import { AssignTaskUsecase } from './use-cases/tasks/assign-task/assign-task.usecase';
 import { DiscardTaskUsecase } from './use-cases/tasks/discard-task/discard-task.usecase';
 import { EditTaskUsecase } from './use-cases/tasks/edit-task/edit-task.usecase';
 import { GetAllActiveTasksUsecase } from './use-cases/tasks/get-all-active-tasks/get-all-active-tasks.usecase';
@@ -24,6 +24,7 @@ import { TickOffTaskUsecase } from './use-cases/tasks/tick-off-task/tick-off-tas
   providers: [
     AfterUserRegisteredSubscriber,
     ArchiveTaskUsecase,
+    AssignTaskUsecase,
     CreateMemberUsecase,
     DiscardTaskUsecase,
     EditTaskUsecase,
@@ -34,7 +35,6 @@ import { TickOffTaskUsecase } from './use-cases/tasks/tick-off-task/tick-off-tas
     NoteTaskUsecase,
     ResumeTaskUsecase,
     TaskRepositoryProvider,
-    TaskService,
     TickOffTaskUsecase,
   ],
 })

@@ -1,6 +1,11 @@
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
-import { e2eUser, noMemberUser } from './seeds';
+import { alice, bob, e2eUser, noMemberUser } from './seeds';
+import {
+  memberForAlice,
+  memberForBob,
+  memberForE2eUser,
+} from './seeds/members';
 
 const SALT_ROUNDS = 10;
 const prisma = new PrismaClient();
@@ -10,36 +15,32 @@ async function hashPassword(password: string): Promise<string> {
 }
 
 async function main(): Promise<void> {
-  const result = await prisma.baseUserModel.createMany({
+  const users = await prisma.baseUserModel.createMany({
     data: [
       {
-        baseUserId: e2eUser.id,
-        createdAt: new Date().toISOString(),
-        isEmailVerified: e2eUser.isEmailVerified,
-        userEmail: e2eUser.email,
-        username: e2eUser.username,
-        userPassword: await hashPassword(e2eUser.password),
+        ...e2eUser,
+        userPassword: await hashPassword(e2eUser.userPassword),
       },
       {
-        baseUserId: noMemberUser.id,
-        createdAt: new Date().toISOString(),
-        isEmailVerified: noMemberUser.isEmailVerified,
-        userEmail: noMemberUser.email,
-        username: noMemberUser.username,
-        userPassword: await hashPassword(noMemberUser.password),
+        ...alice,
+        userPassword: await hashPassword(alice.userPassword),
+      },
+      {
+        ...bob,
+        userPassword: await hashPassword(bob.userPassword),
+      },
+      {
+        ...noMemberUser,
+        userPassword: await hashPassword(noMemberUser.userPassword),
       },
     ],
   });
-  console.log(`Created ${result.count} users.`);
+  console.log(`Created ${users.count} users.`);
 
-  await prisma.memberModel.create({
-    data: {
-      createdAt: new Date().toISOString(),
-      memberBaseId: e2eUser.id,
-      memberId: e2eUser.memberId,
-    },
+  const members = await prisma.memberModel.createMany({
+    data: [memberForAlice, memberForBob, memberForE2eUser],
   });
-  console.log(`Created associated member for user ${e2eUser.username}.`);
+  console.log(`Created ${members.count} members.`);
 }
 
 main()

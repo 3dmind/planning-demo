@@ -1,8 +1,8 @@
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import urlcat from 'urlcat';
-import { Api } from './api.enum';
-import { auth } from './auth';
+import { auth } from '../../../auth';
+import { TasksApi } from '../tasks-api.enum';
 
 export function archiveTask(
   app: INestApplication,
@@ -10,6 +10,6 @@ export function archiveTask(
   taskId: string,
 ): request.Test {
   return request(app.getHttpServer())
-    .post(urlcat(Api.TASKS_ARCHIVE, { id: taskId }))
+    .post(urlcat(TasksApi.TASKS_ARCHIVE, { id: taskId }))
     .auth(...auth(loginResponse));
 }

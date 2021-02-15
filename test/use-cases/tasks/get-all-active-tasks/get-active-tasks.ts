@@ -1,15 +1,13 @@
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import urlcat from 'urlcat';
-import { Api } from './api.enum';
-import { auth } from './auth';
+import { auth } from '../../../auth';
+import { TasksApi } from '../tasks-api.enum';
 
-export function resumeTask(
+export function getActiveTasks(
   app: INestApplication,
   loginResponse: request.Response,
-  taskId: string,
 ): request.Test {
   return request(app.getHttpServer())
-    .post(urlcat(Api.TASKS_RESUME, { id: taskId }))
+    .get(TasksApi.TASKS_ACTIVE)
     .auth(...auth(loginResponse));
 }

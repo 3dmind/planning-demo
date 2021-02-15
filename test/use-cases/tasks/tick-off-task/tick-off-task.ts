@@ -1,13 +1,15 @@
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { Api } from './api.enum';
-import { auth } from './auth';
+import urlcat from 'urlcat';
+import { auth } from '../../../auth';
+import { TasksApi } from '../tasks-api.enum';
 
-export function getActiveTasks(
+export function tickOffTask(
   app: INestApplication,
   loginResponse: request.Response,
+  taskId: string,
 ): request.Test {
   return request(app.getHttpServer())
-    .get(Api.TASKS_ACTIVE)
+    .post(urlcat(TasksApi.TASKS_TICK_OFF, { id: taskId }))
     .auth(...auth(loginResponse));
 }

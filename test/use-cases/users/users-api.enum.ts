@@ -1,4 +1,4 @@
-export enum Api {
+export enum UsersApi {
   USERS = '/users',
   USERS_LOGIN = '/users/login',
   USERS_LOGOUT = '/users/logout',

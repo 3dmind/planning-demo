@@ -1,8 +1,8 @@
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import urlcat from 'urlcat';
-import { Api } from '../../../api.enum';
 import { auth } from '../../../auth';
+import { TasksApi } from '../tasks-api.enum';
 
 export function assignTask(
   app: INestApplication,
@@ -11,7 +11,7 @@ export function assignTask(
   memberId: string,
 ): request.Test {
   return request(app.getHttpServer())
-    .post(urlcat(Api.TASKS_ASSIGN, { id: taskId }))
+    .post(urlcat(TasksApi.TASKS_ASSIGN, { id: taskId }))
     .auth(...auth(loginResponse))
     .send({
       memberId,

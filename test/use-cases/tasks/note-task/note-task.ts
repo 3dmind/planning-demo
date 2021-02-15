@@ -1,8 +1,8 @@
 import { INestApplication } from '@nestjs/common';
 import * as faker from 'faker';
 import * as request from 'supertest';
-import { Api } from './api.enum';
-import { auth } from './auth';
+import { auth } from '../../../auth';
+import { TasksApi } from '../tasks-api.enum';
 
 export function noteTask(
   app: INestApplication,
@@ -10,7 +10,7 @@ export function noteTask(
   text: string = faker.lorem.words(5),
 ): request.Test {
   return request(app.getHttpServer())
-    .post(Api.TASKS)
+    .post(TasksApi.TASKS)
     .auth(...auth(loginResponse))
     .send({
       text,

@@ -1,13 +1,13 @@
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { Api } from './api.enum';
-import { auth } from './auth';
+import { auth } from '../../../auth';
+import { TasksApi } from '../tasks-api.enum';
 
 export function getArchivedTasks(
   app: INestApplication,
   loginResponse: request.Response,
 ): request.Test {
   return request(app.getHttpServer())
-    .get(Api.TASKS_ARCHIVED)
+    .get(TasksApi.TASKS_ARCHIVED)
     .auth(...auth(loginResponse));
 }

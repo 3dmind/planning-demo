@@ -1,13 +1,15 @@
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { Api } from './api.enum';
-import { auth } from './auth';
+import urlcat from 'urlcat';
+import { auth } from '../../../auth';
+import { TasksApi } from '../tasks-api.enum';
 
-export function logout(
+export function discardTask(
   app: INestApplication,
   loginResponse: request.Response,
+  taskId: string,
 ): request.Test {
   return request(app.getHttpServer())
-    .post(Api.USERS_LOGOUT)
+    .post(urlcat(TasksApi.TASKS_DISCARD, { id: taskId }))
     .auth(...auth(loginResponse));
 }

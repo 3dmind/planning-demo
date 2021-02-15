@@ -2,9 +2,9 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import * as faker from 'faker';
 import { PlanningModule } from '../../../../src/modules/planning/planning.module';
-import { login } from '../../../login';
-import { logout } from '../../../logout';
-import { noteTask } from '../../../note-task';
+import { login } from '../../users/login/login';
+import { logout } from '../../users/logout/logout';
+import { noteTask } from '../note-task/note-task';
 import { assignTask } from './assign-task';
 
 describe('/tasks/:id/assign (e2e)', () => {

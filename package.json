@@ -10,6 +10,7 @@
     "url": "https://github.com/3dmind/planning-demo.git"
   },
   "scripts": {
+    "clean": "rimraf {dist,coverage}",
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",

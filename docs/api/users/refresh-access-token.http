@@ -9,13 +9,6 @@ Content-Type: application/json
 }
 
 > {%
-  client.test('Request executed successfully', function() {
-    client.assert(response.status === 200, 'Response status is not 200')
-    client.assert(response.body.hasOwnProperty('access_token'), 'Access token is not defined')
-    client.assert(response.body.access_token !== null, 'Access token is not defined')
-    client.assert(response.body.hasOwnProperty('refresh_token'), 'Refresh token is not defined')
-    client.assert(response.body.refresh_token !== null, 'Refresh token is not defined')
-  })
   client.global.set("refresh_token", response.body.refresh_token);
   %}
 
@@ -27,13 +20,3 @@ Content-Type: application/json
 {
   "refresh_token": "{{refresh_token}}"
 }
-
-> {%
-  client.test('Request executed successfully', function() {
-    client.assert(response.status === 200, 'Response status is not 200')
-    client.assert(response.body.hasOwnProperty('access_token'), 'Access token is not defined')
-    client.assert(response.body.access_token !== null, 'Access token is not defined')
-    client.assert(response.body.hasOwnProperty('refresh_token'), 'Refresh token is not defined')
-    client.assert(response.body.refresh_token !== null, 'Refresh token is not defined')
-  })
-  %}

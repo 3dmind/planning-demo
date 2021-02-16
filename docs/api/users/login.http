@@ -7,13 +7,3 @@ Content-Type: application/json
   "username": "{{username}}",
   "password": "{{password}}"
 }
-
-> {%
-  client.test('Request executed successfully', function() {
-    client.assert(response.status === 200, 'Response status is not 200')
-    client.assert(response.body.hasOwnProperty('access_token'), 'Access token is not defined')
-    client.assert(response.body.access_token !== null, 'Access token ')
-    client.assert(response.body.hasOwnProperty('refresh_token'))
-    client.assert(response.body.refresh_token !== null)
-  })
-  %}

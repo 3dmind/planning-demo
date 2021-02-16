@@ -9,9 +9,6 @@ Content-Type: application/json
 }
 
 > {%
-  client.test('Request executed successfully', function() {
-    client.assert(response.status === 200, 'Response status is not 200')
-  })
   client.global.set("access_token", response.body.access_token);
   %}
 
@@ -26,15 +23,6 @@ Content-Type: application/json
 }
 
 > {%
-  client.test('Request executed successfully', function() {
-    client.assert(response.status === 201, 'Response status is not 201')
-  })
-  client.test('Task was created successfully', function() {
-    client.assert(response.body.hasOwnProperty('id'), 'Cannot find \'id\' property')
-    client.assert(response.body.id !== null, 'Task ID is not defined')
-    client.assert(response.body.hasOwnProperty('isTickedOff'), 'Cannot find \'isTickedOff\' property')
-    client.assert(response.body.isTickedOff === false, 'Task is ticked-off')
-  })
   client.global.set('taskId', response.body.id);
   %}
 
@@ -43,31 +31,7 @@ Content-Type: application/json
 POST http://localhost:{{port}}/tasks/{{taskId}}/tickoff
 Authorization: Bearer {{access_token}}
 
-> {%
-  client.test('Request executed successfully', function() {
-    client.assert(response.status === 200, 'Response status is not 200')
-  })
-  client.test('Task was ticked-off successfully', function() {
-    client.assert(response.body.hasOwnProperty('isTickedOff'),'Cannot find \'isTickedOff\' property')
-    client.assert(response.body.isTickedOff === true, 'Task is not ticked-off')
-    client.assert(response.body.hasOwnProperty('tickedOffAt'), 'Cannot find \'tickedOffAt\' property')
-    client.assert(response.body.tickedOffAt !== null, 'Tick-off date is not defined')
-  })
-  %}
-
 ### Resume the created task
 
 POST http://localhost:{{port}}/tasks/{{taskId}}/resume
 Authorization: Bearer {{access_token}}
-
-> {%
-  client.test('Request executed successfully', function() {
-    client.assert(response.status === 200, 'Response status is not 200')
-  })
-  client.test('Task was resumed successfully', function() {
-    client.assert(response.body.hasOwnProperty('isTickedOff'), 'Cannot find \'isTickedOff\' property')
-    client.assert(response.body.isTickedOff === false, 'Task is not resumed')
-    client.assert(response.body.hasOwnProperty('resumedAt'), 'Cannot find \'resumedAt\' property')
-    client.assert(response.body.resumedAt !== null, 'Resume date is not defined')
-  })
-  %}

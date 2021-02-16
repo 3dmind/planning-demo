@@ -9,9 +9,6 @@ Content-Type: application/json
 }
 
 > {%
-  client.test('Request executed successfully', function() {
-    client.assert(response.status === 200, 'Response status is not 200')
-  })
   client.global.set("access_token", response.body.access_token);
   %}
 
@@ -23,12 +20,6 @@ Content-Type: application/json
 
 { "text": "{{text}}" }
 
-> {%
-  client.test('Request executed successfully', function() {
-    client.assert(response.status === 201, 'Response status is not 201')
-  })
-  %}
-
 ### Note new task
 
 POST http://localhost:{{port}}/tasks
@@ -38,9 +29,6 @@ Content-Type: application/json
 { "text": "{{text}}" }
 
 > {%
-  client.test('Request executed successfully', function() {
-    client.assert(response.status === 201, 'Response status is not 201')
-  })
   client.global.set('taskId', response.body.id);
   %}
 
@@ -49,12 +37,6 @@ Content-Type: application/json
 POST http://localhost:{{port}}/tasks/{{taskId}}/tickoff
 Authorization: Bearer {{access_token}}
 
-> {%
-  client.test('Request executed successfully', function() {
-    client.assert(response.status === 200, 'Response status is not 200')
-  })
-  %}
-
 ### Note new task
 
 POST http://localhost:{{port}}/tasks
@@ -64,9 +46,6 @@ Content-Type: application/json
 { "text": "{{text}}" }
 
 > {%
-  client.test('Request executed successfully', function() {
-    client.assert(response.status === 201, 'Response status is not 201')
-  })
   client.global.set('taskId', response.body.id);
   %}
 
@@ -75,12 +54,6 @@ Content-Type: application/json
 POST http://localhost:{{port}}/tasks/{{taskId}}/archive
 Authorization: Bearer {{access_token}}
 
-> {%
-  client.test('Request executed successfully', function() {
-    client.assert(response.status === 200, 'Response status is not 200')
-  })
-  %}
-
 ### Note new task
 
 POST http://localhost:{{port}}/tasks
@@ -90,9 +63,6 @@ Content-Type: application/json
 { "text": "{{text}}" }
 
 > {%
-  client.test('Request executed successfully', function() {
-    client.assert(response.status === 201, 'Response status is not 201')
-  })
   client.global.set('taskId', response.body.id);
   %}
 
@@ -101,22 +71,7 @@ Content-Type: application/json
 POST http://localhost:{{port}}/tasks/{{taskId}}/discard
 Authorization: Bearer {{access_token}}
 
-> {%
-  client.test('Request executed successfully', function() {
-    client.assert(response.status === 200, 'Response status is not 200')
-  })
-  %}
-
 ### Get all active task of the user
 
 GET http://localhost:{{port}}/tasks/active
 Authorization: Bearer {{access_token}}
-
-> {%
-  client.test('Request executed successfully', function() {
-    client.assert(response.status === 200, 'Response status is not 200')
-    client.assert(response.body.every(function (task) {
-      return !task.isArchived && !task.isDiscarded;
-    }) === true)
-  })
-  %}

@@ -8,9 +8,3 @@ Content-Type: application/json
   "password": "{{password}}",
   "email": "{{email}}"
 }
-
-> {%
-  client.test('Request executed successfully', function() {
-    client.assert(response.status === 201, 'Response status is not 201')
-  })
-  %}

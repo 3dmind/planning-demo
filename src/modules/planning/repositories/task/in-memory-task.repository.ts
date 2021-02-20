@@ -27,6 +27,21 @@ export class InMemoryTaskRepository extends TaskRepository {
     return this.tasks.has(taskId.id.toString());
   }
 
+  public async getTaskById(taskId: TaskId): Promise<MaybeTask> {
+    const found = this.tasks.has(taskId.toString());
+    if (found) {
+      const task = this.tasks.get(taskId.toString());
+      return {
+        found,
+        task,
+      };
+    } else {
+      return {
+        found,
+      };
+    }
+  }
+
   public async getAllActiveTasksOfOwnerByOwnerId(
     ownerId: OwnerId,
   ): Promise<Task[]> {
@@ -70,10 +85,6 @@ export class InMemoryTaskRepository extends TaskRepository {
         found,
       };
     }
-  }
-
-  public async getTasks(): Promise<Task[]> {
-    return this.toArray();
   }
 
   public async save(task: Task): Promise<void> {

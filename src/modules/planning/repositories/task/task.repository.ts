@@ -10,6 +10,8 @@ export type MaybeTask = {
 export abstract class TaskRepository {
   abstract exists(taskId: TaskId): Promise<boolean>;
 
+  abstract getTaskById(taskId: TaskId): Promise<MaybeTask>;
+
   abstract getAllActiveTasksOfOwnerByOwnerId(ownerId: OwnerId): Promise<Task[]>;
 
   abstract getArchivedTasks(): Promise<Task[]>;
@@ -22,8 +24,6 @@ export abstract class TaskRepository {
     ownerId: OwnerId,
     taskId: TaskId,
   ): Promise<MaybeTask>;
-
-  abstract getTasks(): Promise<Task[]>;
 
   abstract save(task: Task): Promise<void>;
 }

@@ -196,12 +196,28 @@ describe('Task', () => {
     expect(taskResult.isSuccess).toBe(true);
   });
 
-  it('should tick off task', () => {
-    const task = new TaskEntityBuilder().build();
+  describe('tick-off task', () => {
+    it('should be able to be ticked-off by the assigned member', () => {
+      expect.assertions(2);
+      const assigneeId = AssigneeId.create(new UniqueEntityId()).getValue();
+      const task = new TaskEntityBuilder().withAssigneeId(assigneeId).build();
 
-    task.tickOff();
+      const result = task.tickOff(assigneeId);
 
-    expect(task.isTickedOff()).toBe(true);
+      expect(result.isSuccess).toBe(true);
+      expect(task.isTickedOff()).toBe(true);
+    });
+
+    it('should not be able to be ticked-off by a not assigned member', () => {
+      expect.assertions(2);
+      const assigneeId = AssigneeId.create(new UniqueEntityId()).getValue();
+      const task = new TaskEntityBuilder().build();
+
+      const result = task.tickOff(assigneeId);
+
+      expect(result.isFailure).toBe(true);
+      expect(task.isTickedOff()).toBe(false);
+    });
   });
 
   it('should resume task', () => {

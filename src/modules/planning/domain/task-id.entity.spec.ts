@@ -22,6 +22,7 @@ describe('TaskId', () => {
 
     expect(taskIdResult.isSuccess).toBe(true);
     expect(taskId.id.toValue()).toEqual(expectedId);
+    expect(taskId.toString()).toEqual(expectedId);
   });
 
   it('should create new ID', () => {

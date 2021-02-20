@@ -60,11 +60,7 @@ export class TickOffTaskUsecase implements UseCase<Request, Response> {
       }
 
       const taskId = taskIdResult.getValue();
-      const {
-        found: taskFound,
-        task,
-      } = await this.taskRepository.getTaskOfOwnerByTaskId(
-        member.ownerId,
+      const { found: taskFound, task } = await this.taskRepository.getTaskById(
         taskId,
       );
       if (!taskFound) {
@@ -75,10 +71,14 @@ export class TickOffTaskUsecase implements UseCase<Request, Response> {
         return left(taskNotFoundError);
       }
 
-      task.tickOff();
-      await this.taskRepository.save(task);
-      this.logger.log('Task successfully ticked off');
-      return right(Result.ok<Task>(task));
+      const result = task.tickOff(member.assigneeId);
+      if (result.isFailure) {
+        return left(result);
+      } else {
+        await this.taskRepository.save(task);
+        this.logger.log('Task successfully ticked off');
+        return right(Result.ok(task));
+      }
     } catch (error) {
       this.logger.error(error.message, error);
       return left(new AppErrors.UnexpectedError(error));

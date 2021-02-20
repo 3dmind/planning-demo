@@ -4,12 +4,14 @@ import { AssigneeId } from './assignee-id.entity';
 import { Description } from './description.valueobject';
 import { OwnerId } from './owner-id.entity';
 import { MemberIsNotAssignedToTask } from './specifications/member-is-not-assigned-to-task';
+import { OnlyAssigneeCanTickOffTask } from './specifications/only-assignee-can-tick-off-task';
 import { OnlyOwnerCanAssignTask } from './specifications/only-owner-can-assign-task';
 import { TaskId } from './task-id.entity';
 import { TaskProps } from './task-props.interface';
 import { TaskSnapshot } from './task-snapshot';
 
 export class Task extends Entity<TaskProps> {
+  private onlyAssigneeCanTickOffTaskSpec = new OnlyAssigneeCanTickOffTask(this);
   private onlyOwnerCanAssignTaskSpec = new OnlyOwnerCanAssignTask(this);
   private memberIsNotAssignedToTaskSpec = new MemberIsNotAssignedToTask(this);
 
@@ -93,9 +95,13 @@ export class Task extends Entity<TaskProps> {
     return new TaskSnapshot(this.props, this.taskId);
   }
 
-  public tickOff(): void {
+  public tickOff(id: AssigneeId): Result<Task> {
+    if (!this.onlyAssigneeCanTickOffTaskSpec.satisfiedBy(id)) {
+      return Result.fail('Only the assigned member can tick-off the task.');
+    }
     this.props.tickedOff = true;
     this.props.tickedOffAt = new Date();
+    return Result.ok();
   }
 
   public isTickedOff(): boolean {

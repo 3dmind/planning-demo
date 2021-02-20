@@ -11,6 +11,17 @@ describe('InMemoryTaskRepository', () => {
     await expect(repository.save(task)).resolves.not.toThrow();
   });
 
+  it('should find task by its id', async () => {
+    expect.assertions(1);
+    const task = new TaskEntityBuilder().build();
+    const repository = new InMemoryTaskRepository();
+    await repository.save(task);
+
+    const maybeTask = await repository.getTaskById(task.taskId);
+
+    expect(maybeTask.found).toBe(true);
+  });
+
   it('should get a task of a particular owner', async () => {
     expect.assertions(3);
     const member1 = new MemberEntityBuilder().build();
@@ -29,21 +40,6 @@ describe('InMemoryTaskRepository', () => {
     expect(maybeTask.found).toBe(true);
     expect(maybeTask.task.ownerId.equals(member1.ownerId)).toBe(true);
     expect(maybeTask.task.taskId.equals(task1.taskId)).toBe(true);
-  });
-
-  it('should get all stored tasks', async () => {
-    expect.assertions(3);
-    const repository = new InMemoryTaskRepository();
-    const task1 = new TaskEntityBuilder().build();
-    const task2 = new TaskEntityBuilder().build();
-    await repository.save(task1);
-    await repository.save(task2);
-
-    const tasks = await repository.getTasks();
-
-    expect(tasks).toHaveLength(2);
-    expect(tasks).toContain(task1);
-    expect(tasks).toContain(task2);
   });
 
   it('should find all archived tasks', async () => {

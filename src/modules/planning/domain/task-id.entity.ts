@@ -13,4 +13,8 @@ export class TaskId extends Entity<any> {
   public static create(id?: UniqueEntityId): Result<TaskId> {
     return Result.ok<TaskId>(new TaskId(id));
   }
+
+  toString(): string {
+    return this._id.toString();
+  }
 }

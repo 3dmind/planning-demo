@@ -60,11 +60,7 @@ export class ResumeTaskUsecase implements UseCase<Request, Response> {
       }
 
       const taskId = taskIdResult.getValue();
-      const {
-        found: taskFound,
-        task,
-      } = await this.taskRepository.getTaskOfOwnerByTaskId(
-        member.ownerId,
+      const { found: taskFound, task } = await this.taskRepository.getTaskById(
         taskId,
       );
       if (!taskFound) {
@@ -75,10 +71,14 @@ export class ResumeTaskUsecase implements UseCase<Request, Response> {
         return left(taskNotFoundError);
       }
 
-      task.resume();
-      await this.taskRepository.save(task);
-      this.logger.log('Task successfully resumed');
-      return right(Result.ok<Task>(task));
+      const result = task.resume(member.assigneeId);
+      if (result.isFailure) {
+        return left(result);
+      } else {
+        await this.taskRepository.save(task);
+        this.logger.log('Task successfully resumed');
+        return right(Result.ok(task));
+      }
     } catch (error) {
       this.logger.error(error.message, error);
       return left(new AppErrors.UnexpectedError(error));

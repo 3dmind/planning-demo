@@ -89,9 +89,25 @@ describe('ResumeTaskUsecase', () => {
     );
   });
 
+  it('should fail if the memeber is not assigned to the task', async () => {
+    expect.assertions(2);
+    const member = new MemberEntityBuilder().build();
+    const task = new TaskEntityBuilder().makeTickedOff().build();
+    await memberRepository.save(member);
+    await taskRepository.save(task);
+
+    const result = await useCase.execute({
+      taskId: task.taskId.toString(),
+      userId: member.userId,
+    });
+
+    expect(result.isLeft()).toBe(true);
+    expect(task.isTickedOff()).toBe(true);
+  });
+
   it('should fail on any other error', async () => {
     const spy = jest
-      .spyOn(taskRepository, 'getTaskOfOwnerByTaskId')
+      .spyOn(taskRepository, 'getTaskById')
       .mockImplementationOnce(() => {
         throw new Error();
       });
@@ -113,7 +129,7 @@ describe('ResumeTaskUsecase', () => {
   it('should succeed', async () => {
     const member = new MemberEntityBuilder().build();
     const task = new TaskEntityBuilder()
-      .withOwnerId(member.ownerId)
+      .withAssigneeId(member.assigneeId)
       .makeTickedOff()
       .build();
     await memberRepository.save(member);

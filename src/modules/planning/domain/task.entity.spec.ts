@@ -220,13 +220,31 @@ describe('Task', () => {
     });
   });
 
-  it('should resume task', () => {
-    expect.assertions(1);
-    const task = new TaskEntityBuilder().makeTickedOff().build();
+  describe('resume task', () => {
+    it('should be able to be resumed by the assigned member', () => {
+      expect.assertions(2);
+      const assigneeId = AssigneeId.create(new UniqueEntityId()).getValue();
+      const task = new TaskEntityBuilder()
+        .withAssigneeId(assigneeId)
+        .makeTickedOff()
+        .build();
 
-    task.resume();
+      const result = task.resume(assigneeId);
 
-    expect(task.isTickedOff()).toBe(false);
+      expect(result.isSuccess).toBe(true);
+      expect(task.isTickedOff()).toBe(false);
+    });
+
+    it('should not be able to be resumed by a not assigned member', () => {
+      expect.assertions(2);
+      const assigneeId = AssigneeId.create(new UniqueEntityId()).getValue();
+      const task = new TaskEntityBuilder().makeTickedOff().build();
+
+      const result = task.resume(assigneeId);
+
+      expect(result.isFailure).toBe(true);
+      expect(task.isTickedOff()).toBe(true);
+    });
   });
 
   it('should archive task', () => {

@@ -4,6 +4,7 @@ import { AssigneeId } from './assignee-id.entity';
 import { Description } from './description.valueobject';
 import { OwnerId } from './owner-id.entity';
 import { MemberIsNotAssignedToTask } from './specifications/member-is-not-assigned-to-task';
+import { OnlyAssigneeCanResumeTask } from './specifications/only-assignee-can-resume-task';
 import { OnlyAssigneeCanTickOffTask } from './specifications/only-assignee-can-tick-off-task';
 import { OnlyOwnerCanAssignTask } from './specifications/only-owner-can-assign-task';
 import { TaskId } from './task-id.entity';
@@ -12,6 +13,7 @@ import { TaskSnapshot } from './task-snapshot';
 
 export class Task extends Entity<TaskProps> {
   private onlyAssigneeCanTickOffTaskSpec = new OnlyAssigneeCanTickOffTask(this);
+  private onlyAssigneeCanResumeTaskSpec = new OnlyAssigneeCanResumeTask(this);
   private onlyOwnerCanAssignTaskSpec = new OnlyOwnerCanAssignTask(this);
   private memberIsNotAssignedToTaskSpec = new MemberIsNotAssignedToTask(this);
 
@@ -108,9 +110,13 @@ export class Task extends Entity<TaskProps> {
     return this.props.tickedOff;
   }
 
-  public resume(): void {
+  public resume(id: AssigneeId): Result<Task> {
+    if (!this.onlyAssigneeCanResumeTaskSpec.satisfiedBy(id)) {
+      return Result.fail('Only the assigned member can resume the task.');
+    }
     this.props.tickedOff = false;
     this.props.resumedAt = new Date();
+    return Result.ok();
   }
 
   public archive(): void {

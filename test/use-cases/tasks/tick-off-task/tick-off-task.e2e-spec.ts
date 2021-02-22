@@ -45,7 +45,7 @@ describe('/tasks/:id/tickoff (POST)', () => {
     return logout(app, loginResponse).expect(HttpStatus.OK);
   });
 
-  it('should ', async () => {
+  it(`should respond with ${HttpStatus.UNPROCESSABLE_ENTITY} if the member is not the assignee`, async () => {
     let loginResponse: request.Response;
     loginResponse = await loginAsAlice(app).expect(HttpStatus.OK);
     const noteTaskResponse = await noteTask(app, loginResponse).expect(

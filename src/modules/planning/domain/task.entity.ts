@@ -4,18 +4,20 @@ import { AssigneeId } from './assignee-id.entity';
 import { Description } from './description.valueobject';
 import { OwnerId } from './owner-id.entity';
 import { MemberIsNotAssignedToTask } from './specifications/member-is-not-assigned-to-task';
-import { OnlyAssigneeCanResumeTask } from './specifications/only-assignee-can-resume-task';
-import { OnlyAssigneeCanTickOffTask } from './specifications/only-assignee-can-tick-off-task';
-import { OnlyOwnerCanAssignTask } from './specifications/only-owner-can-assign-task';
+import { MemberMustBeTaskAssignee } from './specifications/member-must-be-task-assignee';
+import { MemberMustBeTaskOwner } from './specifications/member-must-be-task-owner';
 import { TaskId } from './task-id.entity';
 import { TaskProps } from './task-props.interface';
 import { TaskSnapshot } from './task-snapshot';
 
 export class Task extends Entity<TaskProps> {
-  private onlyAssigneeCanTickOffTaskSpec = new OnlyAssigneeCanTickOffTask(this);
-  private onlyAssigneeCanResumeTaskSpec = new OnlyAssigneeCanResumeTask(this);
-  private onlyOwnerCanAssignTaskSpec = new OnlyOwnerCanAssignTask(this);
-  private memberIsNotAssignedToTaskSpec = new MemberIsNotAssignedToTask(this);
+  private readonly memberMustBeTaskOwner = new MemberMustBeTaskOwner(this);
+  private readonly memberMustBeTaskAssignee = new MemberMustBeTaskAssignee(
+    this,
+  );
+  private readonly memberIsNotAssignedToTask = new MemberIsNotAssignedToTask(
+    this,
+  );
 
   private constructor(props: TaskProps, id?: UniqueEntityId) {
     super(props, id);
@@ -98,7 +100,7 @@ export class Task extends Entity<TaskProps> {
   }
 
   public tickOff(id: AssigneeId): Result<Task> {
-    if (!this.onlyAssigneeCanTickOffTaskSpec.satisfiedBy(id)) {
+    if (!this.memberMustBeTaskAssignee.satisfiedBy(id)) {
       return Result.fail('Only the assigned member can tick-off the task.');
     }
     this.props.tickedOff = true;
@@ -111,7 +113,7 @@ export class Task extends Entity<TaskProps> {
   }
 
   public resume(id: AssigneeId): Result<Task> {
-    if (!this.onlyAssigneeCanResumeTaskSpec.satisfiedBy(id)) {
+    if (!this.memberMustBeTaskAssignee.satisfiedBy(id)) {
       return Result.fail('Only the assigned member can resume the task.');
     }
     this.props.tickedOff = false;
@@ -143,11 +145,11 @@ export class Task extends Entity<TaskProps> {
   }
 
   public assign(ownerId: OwnerId, assigneeId: AssigneeId): Result<Task> {
-    if (!this.onlyOwnerCanAssignTaskSpec.satisfiedBy(ownerId)) {
+    if (!this.memberMustBeTaskOwner.satisfiedBy(ownerId)) {
       return Result.fail('Task is only assignable by task owner.');
     }
 
-    if (!this.memberIsNotAssignedToTaskSpec.satisfiedBy(assigneeId)) {
+    if (!this.memberIsNotAssignedToTask.satisfiedBy(assigneeId)) {
       return Result.fail('Member is assigned already.');
     }
 

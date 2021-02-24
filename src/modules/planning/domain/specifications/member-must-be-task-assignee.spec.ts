@@ -1,15 +1,15 @@
 import { MemberEntityBuilder } from '../../../../../test/builder/member-entity.builder';
 import { TaskEntityBuilder } from '../../../../../test/builder/task-entity.builder';
-import { OnlyAssigneeCanTickOffTask } from './only-assignee-can-tick-off-task';
+import { MemberMustBeTaskAssignee } from './member-must-be-task-assignee';
 
-describe('OnlyAssigneeCanTickOffTask', () => {
+describe('MemberMustBeTaskAssignee', () => {
   it('should be satisfied if the member is assigned to the task', () => {
     expect.assertions(1);
     const member = new MemberEntityBuilder().build();
     const task = new TaskEntityBuilder()
       .withAssigneeId(member.assigneeId)
       .build();
-    const spec = new OnlyAssigneeCanTickOffTask(task);
+    const spec = new MemberMustBeTaskAssignee(task);
 
     const result = spec.satisfiedBy(member.assigneeId);
 
@@ -20,7 +20,7 @@ describe('OnlyAssigneeCanTickOffTask', () => {
     expect.assertions(1);
     const member = new MemberEntityBuilder().build();
     const task = new TaskEntityBuilder().build();
-    const spec = new OnlyAssigneeCanTickOffTask(task);
+    const spec = new MemberMustBeTaskAssignee(task);
 
     const result = spec.satisfiedBy(member.assigneeId);
 

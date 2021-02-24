@@ -130,9 +130,14 @@ export class Task extends Entity<TaskProps> {
     return this.props.archived;
   }
 
-  public edit(newDescription: Description): void {
+  public edit(newDescription: Description, ownerId: OwnerId): Result<Task> {
+    if (!this.memberMustBeTaskOwner.satisfiedBy(ownerId)) {
+      return Result.fail('Only the task owner can edit the description.');
+    }
+
     this.props.description = newDescription;
     this.props.editedAt = new Date();
+    return Result.ok();
   }
 
   public discard(): void {

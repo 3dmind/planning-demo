@@ -65,11 +65,7 @@ export class EditTaskUsecase implements UseCase<Request, Response> {
       }
 
       const taskId = taskIdResult.getValue();
-      const {
-        found: taskFound,
-        task,
-      } = await this.taskRepository.getTaskOfOwnerByTaskId(
-        member.ownerId,
+      const { found: taskFound, task } = await this.taskRepository.getTaskById(
         taskId,
       );
       if (!taskFound) {
@@ -80,10 +76,15 @@ export class EditTaskUsecase implements UseCase<Request, Response> {
         return left(taskNotFoundError);
       }
 
-      task.edit(descriptionResult.getValue());
-      await this.taskRepository.save(task);
-      this.logger.log('Task successfully edited');
-      return right(Result.ok<Task>(task));
+      const result = task.edit(descriptionResult.getValue(), member.ownerId);
+      if (result.isFailure) {
+        this.logger.debug(result.errorValue());
+        return left(result);
+      } else {
+        await this.taskRepository.save(task);
+        this.logger.log('Task successfully edited');
+        return right(Result.ok<Task>(task));
+      }
     } catch (error) {
       this.logger.error(error.message, error);
       return left(new AppErrors.UnexpectedError(error));

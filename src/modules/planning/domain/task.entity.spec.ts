@@ -3,6 +3,7 @@ import { TaskEntityBuilder } from '../../../../test/builder/task-entity.builder'
 import { UniqueEntityId } from '../../../shared/domain';
 import { AssigneeId } from './assignee-id.entity';
 import { Description } from './description.valueobject';
+import { MemberId } from './member-id.entity';
 import { OwnerId } from './owner-id.entity';
 import { TaskId } from './task-id.entity';
 import { TaskProps } from './task-props.interface';
@@ -247,6 +248,39 @@ describe('Task', () => {
     });
   });
 
+  describe('edit task description', () => {
+    it('should be able to be edited by the task owner', () => {
+      expect.assertions(2);
+      const text = faker.lorem.words(5);
+      const ownerId = OwnerId.create(new UniqueEntityId()).getValue();
+      const task = new TaskEntityBuilder()
+        .withDescription(text)
+        .withOwnerId(ownerId)
+        .build();
+      const newText = faker.lorem.words(5);
+      const newDescription = Description.create(newText).getValue();
+
+      const result = task.edit(newDescription, ownerId);
+
+      expect(result.isSuccess).toBe(true);
+      expect(task.props.description.equals(newDescription)).toBe(true);
+    });
+
+    it('should not be able to be edited by another member', () => {
+      expect.assertions(2);
+      const text = faker.lorem.words(5);
+      const memberId = MemberId.create(new UniqueEntityId()).getValue();
+      const task = new TaskEntityBuilder().withDescription(text).build();
+      const newText = faker.lorem.words(5);
+      const newDescription = Description.create(newText).getValue();
+
+      const result = task.edit(newDescription, memberId);
+
+      expect(result.isFailure).toBe(true);
+      expect(task.props.description.equals(newDescription)).toBe(false);
+    });
+  });
+
   it('should archive task', () => {
     expect.assertions(1);
     const task = new TaskEntityBuilder().build();
@@ -254,18 +288,6 @@ describe('Task', () => {
     task.archive();
 
     expect(task.isArchived()).toBe(true);
-  });
-
-  it('should edit description', () => {
-    expect.assertions(1);
-    const text = faker.lorem.words(5);
-    const task = new TaskEntityBuilder().withDescription(text).build();
-    const newText = faker.lorem.words(5);
-    const newDescription = Description.create(newText).getValue();
-
-    task.edit(newDescription);
-
-    expect(task.props.description.equals(newDescription)).toBe(true);
   });
 
   it('should discard task', () => {

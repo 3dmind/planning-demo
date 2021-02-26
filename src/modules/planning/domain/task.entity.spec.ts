@@ -336,12 +336,27 @@ describe('Task', () => {
     });
   });
 
-  it('should discard task', () => {
-    expect.assertions(1);
-    const task = new TaskEntityBuilder().build();
+  describe('discard task', () => {
+    it('should be able to be discarded by the task owner', () => {
+      expect.assertions(2);
+      const ownerId = OwnerId.create(new UniqueEntityId()).getValue();
+      const task = new TaskEntityBuilder().withOwnerId(ownerId).build();
 
-    task.discard();
+      const result = task.discard(ownerId);
 
-    expect(task.isDiscarded()).toBe(true);
+      expect(result.isSuccess).toBe(true);
+      expect(task.isDiscarded()).toBe(true);
+    });
+
+    it('should not be able to be discarded by another member', () => {
+      expect.assertions(2);
+      const memberId = MemberId.create(new UniqueEntityId()).getValue();
+      const task = new TaskEntityBuilder().build();
+
+      const result = task.discard(memberId);
+
+      expect(result.isFailure).toBe(true);
+      expect(task.isDiscarded()).toBe(false);
+    });
   });
 });

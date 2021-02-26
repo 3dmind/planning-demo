@@ -1,8 +1,9 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import * as request from 'supertest';
 import { TaskDto } from '../../../../src/modules/planning/dtos/task.dto';
 import { PlanningModule } from '../../../../src/modules/planning/planning.module';
-import { login } from '../../users/login/login';
+import { login, loginAsAlice, loginAsBob } from '../../users/login/login';
 import { logout } from '../../users/logout/logout';
 import { noteTask } from '../note-task/note-task';
 import { discardTask } from './discard-task';
@@ -22,7 +23,7 @@ describe('/tasks/:id/discard (POST)', () => {
     await app.close();
   });
 
-  it('member not found', async () => {
+  it(`should respond with ${HttpStatus.NOT_FOUND} if the member cannot be found`, async () => {
     const taskId = '8f262256-452b-4691-b5ce-eb590b4db147';
     const loginResponse = await login(
       app,
@@ -35,7 +36,7 @@ describe('/tasks/:id/discard (POST)', () => {
     return logout(app, loginResponse).expect(HttpStatus.OK);
   });
 
-  it('task not found', async () => {
+  it(`should respond with ${HttpStatus.NOT_FOUND} if the task cannot be found`, async () => {
     const taskId = '8f262256-452b-4691-b5ce-eb590b4db147';
     const loginResponse = await login(app).expect(HttpStatus.OK);
 
@@ -44,7 +45,22 @@ describe('/tasks/:id/discard (POST)', () => {
     return logout(app, loginResponse).expect(HttpStatus.OK);
   });
 
-  it('discard task', async () => {
+  it(`should respond with ${HttpStatus.UNPROCESSABLE_ENTITY} if the member is not the task owner`, async () => {
+    let loginResponse: request.Response;
+    loginResponse = await loginAsAlice(app).expect(HttpStatus.OK);
+    const noteTaskResponse = await noteTask(app, loginResponse).expect(
+      HttpStatus.CREATED,
+    );
+    loginResponse = await loginAsBob(app).expect(HttpStatus.OK);
+
+    discardTask(app, loginResponse, noteTaskResponse.body.id).expect(
+      HttpStatus.UNPROCESSABLE_ENTITY,
+    );
+
+    return logout(app, loginResponse).expect(HttpStatus.OK);
+  });
+
+  it(`should respond with ${HttpStatus.OK} if the task was discarded`, async () => {
     expect.assertions(1);
     const loginResponse = await login(app).expect(HttpStatus.OK);
     const noteTaskResponse = await noteTask(app, loginResponse).expect(

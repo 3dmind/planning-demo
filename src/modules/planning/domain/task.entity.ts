@@ -144,9 +144,13 @@ export class Task extends Entity<TaskProps> {
     return Result.ok();
   }
 
-  public discard(): void {
+  public discard(ownerId: OwnerId): Result<Task> {
+    if (!this.memberMustBeTaskOwner.satisfiedBy(ownerId)) {
+      return Result.fail('Only the owner can discard the task.');
+    }
     this.props.discarded = true;
     this.props.discardedAt = new Date();
+    return Result.ok();
   }
 
   public isDiscarded(): boolean {

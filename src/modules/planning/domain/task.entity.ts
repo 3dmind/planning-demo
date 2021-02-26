@@ -121,9 +121,13 @@ export class Task extends Entity<TaskProps> {
     return Result.ok();
   }
 
-  public archive(): void {
+  public archive(ownerId: OwnerId): Result<Task> {
+    if (!this.memberMustBeTaskOwner.satisfiedBy(ownerId)) {
+      return Result.fail('Only the owner can archive the task.');
+    }
     this.props.archived = true;
     this.props.archivedAt = new Date();
+    return Result.ok();
   }
 
   public isArchived(): boolean {

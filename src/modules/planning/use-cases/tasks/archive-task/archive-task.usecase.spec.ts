@@ -92,9 +92,24 @@ describe('ArchiveTaskUsecase', () => {
     );
   });
 
+  it('should fail if member is not the task owner', async () => {
+    expect.assertions(1);
+    const member = new MemberEntityBuilder().build();
+    const task = new TaskEntityBuilder().build();
+    await memberRepository.save(member);
+    await taskRepository.save(task);
+
+    const result = await useCase.execute({
+      taskId: task.taskId.toString(),
+      userId: member.userId,
+    });
+
+    expect(result.isLeft()).toBe(true);
+  });
+
   it('should fail on any other error', async () => {
     const spy = jest
-      .spyOn(taskRepository, 'getTaskOfOwnerByTaskId')
+      .spyOn(taskRepository, 'getTaskById')
       .mockImplementationOnce(() => {
         throw new Error();
       });

@@ -281,24 +281,6 @@ describe('Task', () => {
     });
   });
 
-  it('should archive task', () => {
-    expect.assertions(1);
-    const task = new TaskEntityBuilder().build();
-
-    task.archive();
-
-    expect(task.isArchived()).toBe(true);
-  });
-
-  it('should discard task', () => {
-    expect.assertions(1);
-    const task = new TaskEntityBuilder().build();
-
-    task.discard();
-
-    expect(task.isDiscarded()).toBe(true);
-  });
-
   describe('assign task', () => {
     it('should only be assignable by task owner', () => {
       expect.assertions(2);
@@ -328,5 +310,38 @@ describe('Task', () => {
 
       expect(result.isFailure).toBe(true);
     });
+  });
+
+  describe('archive task', () => {
+    it('should be able to be archived by the task owner', () => {
+      expect.assertions(2);
+      const ownerId = OwnerId.create(new UniqueEntityId()).getValue();
+      const task = new TaskEntityBuilder().withOwnerId(ownerId).build();
+
+      const result = task.archive(ownerId);
+
+      expect(result.isSuccess).toBe(true);
+      expect(task.isArchived()).toBe(true);
+    });
+
+    it('should not be able to be archived by another member', () => {
+      expect.assertions(2);
+      const memberId = MemberId.create(new UniqueEntityId()).getValue();
+      const task = new TaskEntityBuilder().build();
+
+      const result = task.archive(memberId);
+
+      expect(result.isFailure).toBe(true);
+      expect(task.isArchived()).toBe(false);
+    });
+  });
+
+  it('should discard task', () => {
+    expect.assertions(1);
+    const task = new TaskEntityBuilder().build();
+
+    task.discard();
+
+    expect(task.isDiscarded()).toBe(true);
   });
 });

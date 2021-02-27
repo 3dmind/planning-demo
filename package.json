@@ -97,7 +97,8 @@
       "^.+\\.ts$": "ts-jest"
     },
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "modulePathIgnorePatterns": ["prisma"]
   },
   "husky": {
     "hooks": {

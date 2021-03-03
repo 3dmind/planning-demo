@@ -1,3 +1,4 @@
+import { MemberId } from '../../domain/member-id.entity';
 import { OwnerId } from '../../domain/owner-id.entity';
 import { TaskId } from '../../domain/task-id.entity';
 import { Task } from '../../domain/task.entity';
@@ -12,14 +13,23 @@ export abstract class TaskRepository {
 
   abstract getTaskById(taskId: TaskId): Promise<MaybeTask>;
 
-  abstract getAllActiveTasksOfOwnerByOwnerId(ownerId: OwnerId): Promise<Task[]>;
+  abstract getAllActiveTasksOfMember(memberId: MemberId): Promise<Task[]>;
 
+  /**
+   * @deprecated
+   */
   abstract getArchivedTasks(): Promise<Task[]>;
 
+  /**
+   * @deprecated
+   */
   abstract getAllArchivedTasksOfOwnerByOwnerId(
     ownerId: OwnerId,
   ): Promise<Task[]>;
 
+  /**
+   * @deprecated
+   */
   abstract getTaskOfOwnerByTaskId(
     ownerId: OwnerId,
     taskId: TaskId,

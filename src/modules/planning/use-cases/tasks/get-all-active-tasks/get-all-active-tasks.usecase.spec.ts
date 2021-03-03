@@ -56,7 +56,7 @@ describe('GetAllActiveTasksUsecase', () => {
   it('should fail on any error', async () => {
     expect.assertions(2);
     const spy = jest
-      .spyOn(taskRepository, 'getAllActiveTasksOfOwnerByOwnerId')
+      .spyOn(taskRepository, 'getAllActiveTasksOfMember')
       .mockImplementationOnce(() => {
         throw new Error();
       });
@@ -74,45 +74,57 @@ describe('GetAllActiveTasksUsecase', () => {
   });
 
   it('should succeed', async () => {
-    expect.assertions(6);
-    const member1 = new MemberEntityBuilder().build();
-    const member2 = new MemberEntityBuilder().build();
-    const notedTaskOfMember1 = new TaskEntityBuilder()
-      .withOwnerId(member1.ownerId)
+    expect.assertions(8);
+    const memberOne = new MemberEntityBuilder().build();
+    const memberTwo = new MemberEntityBuilder().build();
+    const notedTaskOfMemberOne = new TaskEntityBuilder()
+      .withOwnerId(memberOne.ownerId)
       .build();
-    const tickedOffTaskOfMember1 = new TaskEntityBuilder()
-      .withOwnerId(member1.ownerId)
+    const tickedOffTaskOfMemberOne = new TaskEntityBuilder()
+      .withOwnerId(memberOne.ownerId)
       .makeTickedOff()
       .build();
-    const archivedTaskOfMember1 = new TaskEntityBuilder()
-      .withOwnerId(member1.ownerId)
+    const archivedTaskOfMemberOne = new TaskEntityBuilder()
+      .withOwnerId(memberOne.ownerId)
       .makeArchived()
       .build();
-    const discardedTaskOfMember1 = new TaskEntityBuilder()
-      .withOwnerId(member1.ownerId)
+    const discardedTaskOfMemberOne = new TaskEntityBuilder()
+      .withOwnerId(memberOne.ownerId)
       .makeDiscarded()
       .build();
-    const notedTaskOfMember2 = new TaskEntityBuilder()
-      .withOwnerId(member2.ownerId)
+    const notedTaskOfMemberTwo = new TaskEntityBuilder()
+      .withOwnerId(memberTwo.ownerId)
       .build();
-    await memberRepository.save(member1);
-    await memberRepository.save(member2);
-    await taskRepository.save(notedTaskOfMember1);
-    await taskRepository.save(tickedOffTaskOfMember1);
-    await taskRepository.save(archivedTaskOfMember1);
-    await taskRepository.save(discardedTaskOfMember1);
-    await taskRepository.save(notedTaskOfMember2);
+    const taskAssignedToMemberOne = new TaskEntityBuilder()
+      .withOwnerId(memberTwo.ownerId)
+      .withAssigneeId(memberOne.assigneeId)
+      .build();
+    const taskAssignedToMemberTwo = new TaskEntityBuilder()
+      .withOwnerId(memberOne.ownerId)
+      .withAssigneeId(memberTwo.assigneeId)
+      .build();
+    await memberRepository.save(memberOne);
+    await memberRepository.save(memberTwo);
+    await taskRepository.save(notedTaskOfMemberOne);
+    await taskRepository.save(tickedOffTaskOfMemberOne);
+    await taskRepository.save(archivedTaskOfMemberOne);
+    await taskRepository.save(discardedTaskOfMemberOne);
+    await taskRepository.save(notedTaskOfMemberTwo);
+    await taskRepository.save(taskAssignedToMemberOne);
+    await taskRepository.save(taskAssignedToMemberTwo);
 
     const result = await useCase.execute({
-      userId: member1.userId,
+      userId: memberOne.userId,
     });
     const tasks = result.value.getValue();
 
     expect(result.isRight()).toBe(true);
-    expect(tasks).toContain(notedTaskOfMember1);
-    expect(tasks).toContain(tickedOffTaskOfMember1);
-    expect(tasks).not.toContain(archivedTaskOfMember1);
-    expect(tasks).not.toContain(discardedTaskOfMember1);
-    expect(tasks).not.toContain(notedTaskOfMember2);
+    expect(tasks).toContain(notedTaskOfMemberOne);
+    expect(tasks).toContain(tickedOffTaskOfMemberOne);
+    expect(tasks).toContain(taskAssignedToMemberOne);
+    expect(tasks).toContain(taskAssignedToMemberTwo);
+    expect(tasks).not.toContain(archivedTaskOfMemberOne);
+    expect(tasks).not.toContain(discardedTaskOfMemberOne);
+    expect(tasks).not.toContain(notedTaskOfMemberTwo);
   });
 });

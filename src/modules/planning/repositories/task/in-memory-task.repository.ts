@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { MemberId } from '../../domain/member-id.entity';
 import { OwnerId } from '../../domain/owner-id.entity';
 import { TaskId } from '../../domain/task-id.entity';
 import { Task } from '../../domain/task.entity';
@@ -42,11 +43,13 @@ export class InMemoryTaskRepository extends TaskRepository {
     }
   }
 
-  public async getAllActiveTasksOfOwnerByOwnerId(
-    ownerId: OwnerId,
-  ): Promise<Task[]> {
+  public async getAllActiveTasksOfMember(memberId: MemberId): Promise<Task[]> {
     return this.toArray()
-      .filter((task) => task.ownerId.equals(ownerId))
+      .filter((task) => {
+        return (
+          task.ownerId.equals(memberId) || task.assigneeId.equals(memberId)
+        );
+      })
       .filter((task) => !task.isArchived())
       .filter((task) => !task.isDiscarded());
   }

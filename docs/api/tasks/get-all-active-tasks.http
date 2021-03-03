@@ -1,11 +1,11 @@
-### Login
+### Login as Alice
 
 POST http://localhost:{{port}}/users/login
 Content-Type: application/json
 
 {
-  "username": "{{username}}",
-  "password": "{{password}}"
+  "username": "{{username_alice}}",
+  "password": "{{password_alice}}"
 }
 
 > {%
@@ -20,7 +20,7 @@ Content-Type: application/json
 
 { "text": "{{text}}" }
 
-### Note new task
+### Tick-off a task
 
 POST http://localhost:{{port}}/tasks
 Authorization: Bearer {{access_token}}
@@ -32,12 +32,12 @@ Content-Type: application/json
   client.global.set('taskId', response.body.id);
   %}
 
-### Tick-off a task
+###
 
 POST http://localhost:{{port}}/tasks/{{taskId}}/tickoff
 Authorization: Bearer {{access_token}}
 
-### Note new task
+### Archive a task
 
 POST http://localhost:{{port}}/tasks
 Authorization: Bearer {{access_token}}
@@ -49,12 +49,12 @@ Content-Type: application/json
   client.global.set('taskId', response.body.id);
   %}
 
-### Archive a task
+###
 
 POST http://localhost:{{port}}/tasks/{{taskId}}/archive
 Authorization: Bearer {{access_token}}
 
-### Note new task
+### Discard a task
 
 POST http://localhost:{{port}}/tasks
 Authorization: Bearer {{access_token}}
@@ -66,12 +66,61 @@ Content-Type: application/json
   client.global.set('taskId', response.body.id);
   %}
 
-### Discard a task
+###
 
 POST http://localhost:{{port}}/tasks/{{taskId}}/discard
 Authorization: Bearer {{access_token}}
 
-### Get all active task of the user
+### Login as Bob
+
+POST http://localhost:{{port}}/users/login
+Content-Type: application/json
+
+{
+  "username": "{{username_bob}}",
+  "password": "{{password_bob}}"
+}
+
+> {%
+  client.global.set("access_token", response.body.access_token);
+  %}
+
+
+### Assign task to Alice
+
+POST http://localhost:{{port}}/tasks
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{ "text": "{{text}}" }
+
+> {%
+  client.global.set('taskId', response.body.id);
+  %}
+
+###
+
+POST http://localhost:{{port}}/tasks/{{taskId}}/assign
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{ "memberId": "a995c0db-3df0-4ae8-920d-d2b8b85146da" }
+
+### Get all active task of Alice
+
+POST http://localhost:{{port}}/users/login
+Content-Type: application/json
+
+{
+  "username": "{{username_alice}}",
+  "password": "{{password_alice}}"
+}
+
+> {%
+  client.global.set("access_token", response.body.access_token);
+  %}
+
+###
 
 GET http://localhost:{{port}}/tasks/active
 Authorization: Bearer {{access_token}}

@@ -97,43 +97,55 @@ describe('InMemoryTaskRepository', () => {
     expect(tasks).not.toContain(notedTaskOfMember2);
   });
 
-  it('should find all active tasks of a particular owner', async () => {
-    expect.assertions(5);
-    const member1 = new MemberEntityBuilder().build();
-    const member2 = new MemberEntityBuilder().build();
-    const notedTaskOfMember1 = new TaskEntityBuilder()
-      .withOwnerId(member1.ownerId)
+  it('should find all active tasks of a particular member', async () => {
+    expect.assertions(7);
+    const memberOne = new MemberEntityBuilder().build();
+    const memberTwo = new MemberEntityBuilder().build();
+    const notedTaskOfMemberOne = new TaskEntityBuilder()
+      .withOwnerId(memberOne.ownerId)
       .build();
-    const tickedOffTaskOfMember1 = new TaskEntityBuilder()
-      .withOwnerId(member1.ownerId)
+    const tickedOffTaskOfMemberOne = new TaskEntityBuilder()
+      .withOwnerId(memberOne.ownerId)
       .makeTickedOff()
       .build();
-    const archivedTaskOfMember1 = new TaskEntityBuilder()
-      .withOwnerId(member1.ownerId)
+    const archivedTaskOfMemberOne = new TaskEntityBuilder()
+      .withOwnerId(memberOne.ownerId)
       .makeArchived()
       .build();
-    const discardedTaskOfMember1 = new TaskEntityBuilder()
-      .withOwnerId(member1.ownerId)
+    const discardedTaskOfMemberOne = new TaskEntityBuilder()
+      .withOwnerId(memberOne.ownerId)
       .makeDiscarded()
       .build();
-    const notedTaskOfMember2 = new TaskEntityBuilder()
-      .withOwnerId(member2.ownerId)
+    const notedTaskOfMemberTwo = new TaskEntityBuilder()
+      .withOwnerId(memberTwo.ownerId)
+      .build();
+    const taskAssignedToMemberOne = new TaskEntityBuilder()
+      .withOwnerId(memberTwo.ownerId)
+      .withAssigneeId(memberOne.assigneeId)
+      .build();
+    const taskAssignedToMemberTwo = new TaskEntityBuilder()
+      .withOwnerId(memberOne.ownerId)
+      .withAssigneeId(memberTwo.assigneeId)
       .build();
     const repository = new InMemoryTaskRepository();
-    await repository.save(notedTaskOfMember1);
-    await repository.save(tickedOffTaskOfMember1);
-    await repository.save(archivedTaskOfMember1);
-    await repository.save(discardedTaskOfMember1);
-    await repository.save(notedTaskOfMember2);
+    await repository.save(notedTaskOfMemberOne);
+    await repository.save(tickedOffTaskOfMemberOne);
+    await repository.save(archivedTaskOfMemberOne);
+    await repository.save(discardedTaskOfMemberOne);
+    await repository.save(notedTaskOfMemberTwo);
+    await repository.save(taskAssignedToMemberOne);
+    await repository.save(taskAssignedToMemberTwo);
 
-    const tasks = await repository.getAllActiveTasksOfOwnerByOwnerId(
-      member1.ownerId,
+    const tasks = await repository.getAllActiveTasksOfMember(
+      memberOne.memberId,
     );
 
-    expect(tasks).toContain(notedTaskOfMember1);
-    expect(tasks).toContain(tickedOffTaskOfMember1);
-    expect(tasks).not.toContain(archivedTaskOfMember1);
-    expect(tasks).not.toContain(discardedTaskOfMember1);
-    expect(tasks).not.toContain(notedTaskOfMember2);
+    expect(tasks).toContain(notedTaskOfMemberOne);
+    expect(tasks).toContain(tickedOffTaskOfMemberOne);
+    expect(tasks).toContain(taskAssignedToMemberOne);
+    expect(tasks).toContain(taskAssignedToMemberTwo);
+    expect(tasks).not.toContain(archivedTaskOfMemberOne);
+    expect(tasks).not.toContain(discardedTaskOfMemberOne);
+    expect(tasks).not.toContain(notedTaskOfMemberTwo);
   });
 });

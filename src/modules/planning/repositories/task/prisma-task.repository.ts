@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { TaskModel } from '@prisma/client';
 import { PrismaService } from '../../../../prisma/prisma.service';
+import { MemberId } from '../../domain/member-id.entity';
 import { OwnerId } from '../../domain/owner-id.entity';
 import { TaskId } from '../../domain/task-id.entity';
 import { Task } from '../../domain/task.entity';
@@ -42,16 +44,23 @@ export class PrismaTaskRepository extends TaskRepository {
     }
   }
 
-  public async getAllActiveTasksOfOwnerByOwnerId(
-    ownerId: OwnerId,
-  ): Promise<Task[]> {
-    const taskModels = await this.prismaService.taskModel.findMany({
-      where: {
-        ownerId: ownerId.id.toString(),
-        archived: false,
-        discarded: false,
+  public async getAllActiveTasksOfMember(memberId: MemberId): Promise<Task[]> {
+    const taskModels: TaskModel[] = await this.prismaService.taskModel.findMany(
+      {
+        where: {
+          archived: false,
+          discarded: false,
+          OR: [
+            {
+              ownerId: memberId.toString(),
+            },
+            {
+              assigneeId: memberId.toString(),
+            },
+          ],
+        },
       },
-    });
+    );
     return taskModels.map((model) => TaskMapper.toDomain(model));
   }
 

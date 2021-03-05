@@ -46,8 +46,8 @@ export class GetAllArchivedTasksUsecase implements UseCase<Request, Response> {
         return left(memberNotFoundError);
       }
 
-      const tasks = await this.taskRepository.getAllArchivedTasksOfOwnerByOwnerId(
-        member.ownerId,
+      const tasks = await this.taskRepository.getAllArchivedTasksOfMember(
+        member.memberId,
       );
       this.logger.log(`Found ${tasks.length} archived tasks`);
       return right(Result.ok<Task[]>(tasks));

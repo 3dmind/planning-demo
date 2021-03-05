@@ -1,14 +1,13 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import * as request from 'supertest';
+import { TaskDto } from '../../../../src/modules/planning/dtos/task.dto';
 import { PlanningModule } from '../../../../src/modules/planning/planning.module';
-import { login } from '../../users/login/login';
+import { login, loginAsAlice, loginAsBob } from '../../users/login/login';
 import { logout } from '../../users/logout/logout';
 import { archiveTask } from '../archive-task/archive-task';
 import { discardTask } from '../discard-task/discard-task';
-import { editTask } from '../edit-task/edit-task';
 import { noteTask } from '../note-task/note-task';
-import { resumeTask } from '../resume-task/resume-task';
-import { tickOffTask } from '../tick-off-task/tick-off-task';
 import { getArchivedTasks } from './get-archived-tasks';
 
 describe('/tasks/archived (GET)', () => {
@@ -26,7 +25,7 @@ describe('/tasks/archived (GET)', () => {
     await app.close();
   });
 
-  it('member not found', async () => {
+  it(`should respond with ${HttpStatus.NOT_FOUND} if the member cannot be found`, async () => {
     const loginResponse = await login(
       app,
       'no-member-planning-demo',
@@ -38,73 +37,72 @@ describe('/tasks/archived (GET)', () => {
     return logout(app, loginResponse).expect(HttpStatus.OK);
   });
 
-  it('get archived tasks', async () => {
-    expect.assertions(6);
-    const loginResponse = await login(app).expect(HttpStatus.OK);
-    const noteTaskOneResponse = await noteTask(app, loginResponse).expect(
+  it('should respond with the archived task of a member', async () => {
+    expect.assertions(4);
+
+    let loginResponse: request.Response;
+    let noteTaskResponse: request.Response;
+
+    /*
+      Alice notes a new task.
+     */
+    loginResponse = await loginAsAlice(app).expect(HttpStatus.OK);
+    const notedTaskFromAlice = await noteTask(app, loginResponse).expect(
       HttpStatus.CREATED,
     );
 
-    const noteTaskTwoResponse = await noteTask(app, loginResponse).expect(
+    /*
+      Bob logs in
+     */
+    loginResponse = await loginAsBob(app).expect(HttpStatus.OK);
+
+    /*
+      Bob archives a task.
+     */
+    noteTaskResponse = await noteTask(app, loginResponse).expect(
       HttpStatus.CREATED,
     );
-    const tickOffTaskTwoResponse = await tickOffTask(
-      app,
-      loginResponse,
-      noteTaskTwoResponse.body.id,
-    ).expect(HttpStatus.OK);
+    await archiveTask(app, loginResponse, noteTaskResponse.body.id).expect(
+      HttpStatus.OK,
+    );
 
-    const noteTaskThreeResponse = await noteTask(app, loginResponse).expect(
+    /*
+      Bob discards a task
+     */
+    noteTaskResponse = await noteTask(app, loginResponse).expect(
       HttpStatus.CREATED,
     );
-    const tickOffTaskThreeResponse = await tickOffTask(
-      app,
-      loginResponse,
-      noteTaskThreeResponse.body.id,
-    ).expect(HttpStatus.OK);
-    const resumeTaskThreeResponse = await resumeTask(
-      app,
-      loginResponse,
-      tickOffTaskThreeResponse.body.id,
-    ).expect(HttpStatus.OK);
-
-    const noteTaskFourResponse = await noteTask(app, loginResponse).expect(
-      HttpStatus.CREATED,
+    await discardTask(app, loginResponse, noteTaskResponse.body.id).expect(
+      HttpStatus.OK,
     );
-    const editedTaskFourResponse = await editTask(
-      app,
-      loginResponse,
-      noteTaskFourResponse.body.id,
-    ).expect(HttpStatus.OK);
 
-    const noteTaskFiveResponse = await noteTask(app, loginResponse).expect(
-      HttpStatus.CREATED,
-    );
-    const archivedTaskFiveResponse = await archiveTask(
-      app,
-      loginResponse,
-      noteTaskFiveResponse.body.id,
-    ).expect(HttpStatus.OK);
-
-    const noteTaskSixResponse = await noteTask(app, loginResponse).expect(
-      HttpStatus.CREATED,
-    );
-    const discardedTaskSixResponse = await discardTask(
-      app,
-      loginResponse,
-      noteTaskSixResponse.body.id,
-    ).expect(HttpStatus.OK);
-
+    /*
+      Get all archived tasks of Bob
+     */
     const response = await getArchivedTasks(app, loginResponse).expect(
       HttpStatus.OK,
     );
-    expect(response.body).not.toContainEqual(noteTaskOneResponse.body);
-    expect(response.body).not.toContainEqual(tickOffTaskTwoResponse.body);
-    expect(response.body).not.toContainEqual(resumeTaskThreeResponse.body);
-    expect(response.body).not.toContainEqual(editedTaskFourResponse.body);
-    expect(response.body).toContainEqual(archivedTaskFiveResponse.body);
-    expect(response.body).not.toContainEqual(discardedTaskSixResponse.body);
 
+    expect(response.body).toContainEqual(
+      expect.objectContaining<Partial<TaskDto>>({
+        isArchived: true,
+      }),
+    );
+    expect(response.body).not.toContainEqual(
+      expect.objectContaining<Partial<TaskDto>>({
+        isArchived: false,
+      }),
+    );
+    expect(response.body).not.toContainEqual(
+      expect.objectContaining<Partial<TaskDto>>({
+        isDiscarded: true,
+      }),
+    );
+    expect(response.body).not.toContainEqual(notedTaskFromAlice);
+
+    /*
+      Bob logs out
+    */
     return logout(app, loginResponse).expect(HttpStatus.OK);
   });
 });

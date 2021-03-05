@@ -57,44 +57,38 @@ describe('InMemoryTaskRepository', () => {
     expect(tasks).not.toContain(discardedTask);
   });
 
-  it('should find all archived task of a particular owner', async () => {
-    expect.assertions(5);
-    const member1 = new MemberEntityBuilder().build();
-    const member2 = new MemberEntityBuilder().build();
-    const notedTaskOfMember1 = new TaskEntityBuilder()
-      .withOwnerId(member1.ownerId)
+  it('should find all archived task of a particular member', async () => {
+    expect.assertions(4);
+    const memberOne = new MemberEntityBuilder().build();
+    const memberTwo = new MemberEntityBuilder().build();
+    const notedTaskOfMemberOne = new TaskEntityBuilder()
+      .withOwnerId(memberOne.ownerId)
       .build();
-    const tickedOffTaskOfMember1 = new TaskEntityBuilder()
-      .withOwnerId(member1.ownerId)
-      .makeTickedOff()
-      .build();
-    const archivedTaskOfMember1 = new TaskEntityBuilder()
-      .withOwnerId(member1.ownerId)
+    const archivedTaskOfMemberOne = new TaskEntityBuilder()
+      .withOwnerId(memberOne.ownerId)
       .makeArchived()
       .build();
-    const discardedTaskOfMember1 = new TaskEntityBuilder()
-      .withOwnerId(member1.ownerId)
+    const discardedTaskOfMemberOne = new TaskEntityBuilder()
+      .withOwnerId(memberOne.ownerId)
       .makeDiscarded()
       .build();
-    const notedTaskOfMember2 = new TaskEntityBuilder()
-      .withOwnerId(member2.ownerId)
+    const notedTaskOfMemberTwo = new TaskEntityBuilder()
+      .withOwnerId(memberTwo.ownerId)
       .build();
     const repository = new InMemoryTaskRepository();
-    await repository.save(notedTaskOfMember1);
-    await repository.save(tickedOffTaskOfMember1);
-    await repository.save(archivedTaskOfMember1);
-    await repository.save(discardedTaskOfMember1);
-    await repository.save(notedTaskOfMember2);
+    await repository.save(notedTaskOfMemberOne);
+    await repository.save(archivedTaskOfMemberOne);
+    await repository.save(discardedTaskOfMemberOne);
+    await repository.save(notedTaskOfMemberTwo);
 
-    const tasks = await repository.getAllArchivedTasksOfOwnerByOwnerId(
-      member1.ownerId,
+    const tasks = await repository.getAllArchivedTasksOfMember(
+      memberOne.memberId,
     );
 
-    expect(tasks).toContain(archivedTaskOfMember1);
-    expect(tasks).not.toContain(notedTaskOfMember1);
-    expect(tasks).not.toContain(tickedOffTaskOfMember1);
-    expect(tasks).not.toContain(discardedTaskOfMember1);
-    expect(tasks).not.toContain(notedTaskOfMember2);
+    expect(tasks).toContain(archivedTaskOfMemberOne);
+    expect(tasks).not.toContain(notedTaskOfMemberOne);
+    expect(tasks).not.toContain(discardedTaskOfMemberOne);
+    expect(tasks).not.toContain(notedTaskOfMemberTwo);
   });
 
   it('should find all active tasks of a particular member', async () => {

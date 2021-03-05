@@ -27,6 +27,8 @@ export abstract class TaskRepository {
     ownerId: OwnerId,
   ): Promise<Task[]>;
 
+  abstract getAllArchivedTasksOfMember(memberId: MemberId): Promise<Task[]>;
+
   /**
    * @deprecated
    */

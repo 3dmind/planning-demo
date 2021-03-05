@@ -54,6 +54,15 @@ export class InMemoryTaskRepository extends TaskRepository {
       .filter((task) => !task.isDiscarded());
   }
 
+  public async getAllArchivedTasksOfMember(
+    memberId: MemberId,
+  ): Promise<Task[]> {
+    return this.toArray()
+      .filter((task) => task.ownerId.equals(memberId))
+      .filter((task) => !task.isDiscarded())
+      .filter((task) => task.isArchived());
+  }
+
   public async getArchivedTasks(): Promise<Task[]> {
     return this.toArray().filter((task) => {
       return task.isArchived() && !task.isDiscarded();

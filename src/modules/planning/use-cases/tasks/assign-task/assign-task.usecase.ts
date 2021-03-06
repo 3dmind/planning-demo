@@ -93,11 +93,7 @@ export class AssignTaskUsecase implements UseCase<Request, Response> {
         Find the task which is going to be assigned.
        */
       const taskId = taskIdResult.getValue();
-      const {
-        found: taskFound,
-        task,
-      } = await this.taskRepository.getTaskOfOwnerByTaskId(
-        owner.ownerId,
+      const { found: taskFound, task } = await this.taskRepository.getTaskById(
         taskId,
       );
       if (!taskFound) {

@@ -124,7 +124,7 @@ describe('AssignTaskUsecase', () => {
   it('should fail on any other error', async () => {
     expect.assertions(2);
     const spy = jest
-      .spyOn(taskRepository, 'getTaskOfOwnerByTaskId')
+      .spyOn(taskRepository, 'getTaskById')
       .mockImplementationOnce(() => {
         throw new Error();
       });

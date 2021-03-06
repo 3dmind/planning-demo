@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { TaskModel } from '@prisma/client';
 import { PrismaService } from '../../../../prisma/prisma.service';
 import { MemberId } from '../../domain/member-id.entity';
-import { OwnerId } from '../../domain/owner-id.entity';
 import { TaskId } from '../../domain/task-id.entity';
 import { Task } from '../../domain/task.entity';
 import { TaskMapper } from '../../mappers/task.mapper';
@@ -21,6 +20,28 @@ export class PrismaTaskRepository extends TaskRepository {
       },
     });
     return !!taskModel === true;
+  }
+
+  async save(task: Task): Promise<void> {
+    const exists = await this.exists(task.taskId);
+    const rawTaskModel = TaskMapper.toPersistence(task);
+
+    if (!exists) {
+      try {
+        await this.prismaService.taskModel.create({
+          data: rawTaskModel,
+        });
+      } catch (error) {
+        throw new Error(error.toString());
+      }
+    } else {
+      await this.prismaService.taskModel.update({
+        where: {
+          taskId: task.taskId.id.toString(),
+        },
+        data: rawTaskModel,
+      });
+    }
   }
 
   public async getTaskById(taskId: TaskId): Promise<MaybeTask> {
@@ -64,16 +85,6 @@ export class PrismaTaskRepository extends TaskRepository {
     return taskModels.map((model) => TaskMapper.toDomain(model));
   }
 
-  async getArchivedTasks(): Promise<Task[]> {
-    const taskModels = await this.prismaService.taskModel.findMany({
-      where: {
-        archived: true,
-        discarded: false,
-      },
-    });
-    return taskModels.map((model) => TaskMapper.toDomain(model));
-  }
-
   public async getAllArchivedTasksOfMember(
     memberId: MemberId,
   ): Promise<Task[]> {
@@ -87,60 +98,5 @@ export class PrismaTaskRepository extends TaskRepository {
       },
     );
     return taskModels.map((model) => TaskMapper.toDomain(model));
-  }
-
-  public async getAllArchivedTasksOfOwnerByOwnerId(
-    ownerId: OwnerId,
-  ): Promise<Task[]> {
-    const taskModels = await this.prismaService.taskModel.findMany({
-      where: {
-        ownerId: ownerId.id.toString(),
-        archived: true,
-        discarded: false,
-      },
-    });
-    return taskModels.map((model) => TaskMapper.toDomain(model));
-  }
-
-  public async getTaskOfOwnerByTaskId(
-    ownerId: OwnerId,
-    taskId: TaskId,
-  ): Promise<MaybeTask> {
-    const taskModel = await this.prismaService.taskModel.findFirst({
-      where: {
-        taskId: taskId.id.toString(),
-        ownerId: ownerId.id.toString(),
-      },
-    });
-    const found = !!taskModel === true;
-
-    if (found) {
-      const task = TaskMapper.toDomain(taskModel);
-      return { found, task };
-    } else {
-      return { found };
-    }
-  }
-
-  async save(task: Task): Promise<void> {
-    const exists = await this.exists(task.taskId);
-    const rawTaskModel = TaskMapper.toPersistence(task);
-
-    if (!exists) {
-      try {
-        await this.prismaService.taskModel.create({
-          data: rawTaskModel,
-        });
-      } catch (error) {
-        throw new Error(error.toString());
-      }
-    } else {
-      await this.prismaService.taskModel.update({
-        where: {
-          taskId: task.taskId.id.toString(),
-        },
-        data: rawTaskModel,
-      });
-    }
   }
 }

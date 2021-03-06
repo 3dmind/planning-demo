@@ -22,41 +22,6 @@ describe('InMemoryTaskRepository', () => {
     expect(maybeTask.found).toBe(true);
   });
 
-  it('should get a task of a particular owner', async () => {
-    expect.assertions(3);
-    const member1 = new MemberEntityBuilder().build();
-    const member2 = new MemberEntityBuilder().build();
-    const task1 = new TaskEntityBuilder().withOwnerId(member1.ownerId).build();
-    const task2 = new TaskEntityBuilder().withOwnerId(member2.ownerId).build();
-    const repository = new InMemoryTaskRepository();
-    await repository.save(task1);
-    await repository.save(task2);
-
-    const maybeTask = await repository.getTaskOfOwnerByTaskId(
-      member1.ownerId,
-      task1.taskId,
-    );
-
-    expect(maybeTask.found).toBe(true);
-    expect(maybeTask.task.ownerId.equals(member1.ownerId)).toBe(true);
-    expect(maybeTask.task.taskId.equals(task1.taskId)).toBe(true);
-  });
-
-  it('should find all archived tasks', async () => {
-    expect.assertions(3);
-    const repository = new InMemoryTaskRepository();
-    const archivedTask = new TaskEntityBuilder().makeArchived().build();
-    const discardedTask = new TaskEntityBuilder().makeDiscarded().build();
-    await repository.save(archivedTask);
-    await repository.save(discardedTask);
-
-    const tasks = await repository.getArchivedTasks();
-
-    expect(tasks).toHaveLength(1);
-    expect(tasks).toContain(archivedTask);
-    expect(tasks).not.toContain(discardedTask);
-  });
-
   it('should find all archived task of a particular member', async () => {
     expect.assertions(4);
     const memberOne = new MemberEntityBuilder().build();

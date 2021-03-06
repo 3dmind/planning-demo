@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { MemberId } from '../../domain/member-id.entity';
-import { OwnerId } from '../../domain/owner-id.entity';
 import { TaskId } from '../../domain/task-id.entity';
 import { Task } from '../../domain/task.entity';
 import { MaybeTask, TaskRepository } from './task.repository';
@@ -26,6 +25,10 @@ export class InMemoryTaskRepository extends TaskRepository {
 
   public async exists(taskId: TaskId): Promise<boolean> {
     return this.tasks.has(taskId.id.toString());
+  }
+
+  public async save(task: Task): Promise<void> {
+    this.tasks.set(task.taskId.id.toString(), task);
   }
 
   public async getTaskById(taskId: TaskId): Promise<MaybeTask> {
@@ -61,46 +64,6 @@ export class InMemoryTaskRepository extends TaskRepository {
       .filter((task) => task.ownerId.equals(memberId))
       .filter((task) => !task.isDiscarded())
       .filter((task) => task.isArchived());
-  }
-
-  public async getArchivedTasks(): Promise<Task[]> {
-    return this.toArray().filter((task) => {
-      return task.isArchived() && !task.isDiscarded();
-    });
-  }
-
-  public async getAllArchivedTasksOfOwnerByOwnerId(
-    ownerId: OwnerId,
-  ): Promise<Task[]> {
-    return this.toArray()
-      .filter((task) => task.ownerId.equals(ownerId))
-      .filter((task) => !task.isDiscarded())
-      .filter((task) => task.isArchived());
-  }
-
-  public async getTaskOfOwnerByTaskId(
-    ownerId: OwnerId,
-    taskId: TaskId,
-  ): Promise<MaybeTask> {
-    const task = this.toArray()
-      .filter((task) => task.ownerId.equals(ownerId))
-      .find((task) => task.taskId.equals(taskId));
-    const found = !!task === true;
-
-    if (found) {
-      return {
-        found,
-        task,
-      };
-    } else {
-      return {
-        found,
-      };
-    }
-  }
-
-  public async save(task: Task): Promise<void> {
-    this.tasks.set(task.taskId.id.toString(), task);
   }
 
   private toArray(): Task[] {

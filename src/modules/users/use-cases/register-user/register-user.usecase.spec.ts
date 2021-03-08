@@ -17,7 +17,7 @@ describe('RegisterUserUsecase', () => {
   let userRepository: UserRepository;
   let useCase: RegisterUserUsecase;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
@@ -33,8 +33,8 @@ describe('RegisterUserUsecase', () => {
     }).compile();
     module.useLogger(false);
 
-    userRepository = await module.resolve<UserRepository>(UserRepository);
-    useCase = await module.resolve<RegisterUserUsecase>(RegisterUserUsecase);
+    userRepository = module.get<UserRepository>(UserRepository);
+    useCase = module.get<RegisterUserUsecase>(RegisterUserUsecase);
   });
 
   afterAll(() => {
@@ -42,7 +42,7 @@ describe('RegisterUserUsecase', () => {
   });
 
   it('should fail if username cannot be created', async () => {
-    expect.assertions(1);
+    // Given
     const emailFixture = faker.internet.email();
     const passwordFixture = faker.internet.password(UserPassword.minLength);
     const request = {
@@ -50,13 +50,16 @@ describe('RegisterUserUsecase', () => {
       password: passwordFixture,
     } as RegisterUserDto;
 
+    // When
     const result = await useCase.execute(request);
 
+    // Then
+    expect.assertions(1);
     expect(result.isLeft()).toBe(true);
   });
 
   it('should fail if user password cannot be created', async () => {
-    expect.assertions(1);
+    // Given
     const userNameFixture = faker.internet.userName();
     const emailFixture = faker.internet.email();
     const request = {
@@ -64,13 +67,16 @@ describe('RegisterUserUsecase', () => {
       username: userNameFixture,
     } as RegisterUserDto;
 
+    // When
     const result = await useCase.execute(request);
 
+    // Then
+    expect.assertions(1);
     expect(result.isLeft()).toBe(true);
   });
 
   it('should fail if user email cannot be created', async () => {
-    expect.assertions(1);
+    // Given
     const passwordFixture = faker.internet.password(UserPassword.minLength);
     const userNameFixture = faker.internet.userName();
     const request = {
@@ -78,25 +84,31 @@ describe('RegisterUserUsecase', () => {
       password: passwordFixture,
     } as RegisterUserDto;
 
+    // When
     const result = await useCase.execute(request);
 
+    // Then
+    expect.assertions(1);
     expect(result.isLeft()).toBe(true);
   });
 
   it('should fail if user already exists', async () => {
-    expect.assertions(3);
+    // Given
     const user = new UserEntityBuilder().build();
     const emailFixture = user.email.value;
     const passwordFixture = user.password.value;
     const userNameFixture = user.username.value;
     await userRepository.save(user);
 
+    // When
     const result = await useCase.execute({
       email: emailFixture,
       password: passwordFixture,
       username: userNameFixture,
     });
 
+    // Then
+    expect.assertions(3);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(
       RegisterUserErrors.EmailAlreadyExistsError,
@@ -107,7 +119,7 @@ describe('RegisterUserUsecase', () => {
   });
 
   it('should fail if username already taken', async () => {
-    expect.assertions(3);
+    // Given
     const user = new UserEntityBuilder().build();
     const emailFixture = user.email.value;
     const passwordFixture = user.password.value;
@@ -115,12 +127,15 @@ describe('RegisterUserUsecase', () => {
     const spy = jest.spyOn(userRepository, 'exists').mockResolvedValue(false);
     await userRepository.save(user);
 
+    // When
     const result = await useCase.execute({
       email: emailFixture,
       password: passwordFixture,
       username: userNameFixture,
     });
 
+    // Then
+    expect.assertions(3);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(RegisterUserErrors.UsernameTakenError);
     expect(result.value.errorValue().message).toEqual(
@@ -131,7 +146,7 @@ describe('RegisterUserUsecase', () => {
   });
 
   it('should fail if user cannot be created', async () => {
-    expect.assertions(1);
+    // Given
     const emailFixture = faker.internet.email().toLowerCase();
     const passwordFixture = faker.internet.password(UserPassword.minLength);
     const userNameFixture = faker.internet.userName();
@@ -139,19 +154,22 @@ describe('RegisterUserUsecase', () => {
       .spyOn(User, 'create')
       .mockReturnValue(Result.fail<User>('error'));
 
+    // When
     const result = await useCase.execute({
       email: emailFixture,
       password: passwordFixture,
       username: userNameFixture,
     });
 
+    // Then
+    expect.assertions(1);
     expect(result.isLeft()).toBe(true);
 
     spy.mockRestore();
   });
 
   it('should fail on any other error', async () => {
-    expect.assertions(2);
+    // Given
     const emailFixture = faker.internet.email().toLowerCase();
     const passwordFixture = faker.internet.password(UserPassword.minLength);
     const userNameFixture = faker.internet.userName();
@@ -161,12 +179,15 @@ describe('RegisterUserUsecase', () => {
         throw new Error();
       });
 
+    // When
     const result = await useCase.execute({
       email: emailFixture,
       password: passwordFixture,
       username: userNameFixture,
     });
 
+    // Then
+    expect.assertions(2);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(AppErrors.UnexpectedError);
 
@@ -174,17 +195,20 @@ describe('RegisterUserUsecase', () => {
   });
 
   it('should succeed', async () => {
-    expect.assertions(1);
+    // Given
     const emailFixture = faker.internet.email().toLowerCase();
     const passwordFixture = faker.internet.password(UserPassword.minLength);
     const userNameFixture = faker.internet.userName();
 
+    // When
     const result = await useCase.execute({
       email: emailFixture,
       password: passwordFixture,
       username: userNameFixture,
     });
 
+    // Then
+    expect.assertions(1);
     expect(result.isRight()).toBe(true);
   });
 });

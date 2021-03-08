@@ -16,7 +16,7 @@ describe('CreateMemberUsecase', () => {
   let memberRepository: MemberRepository;
   let useCase: CreateMemberUsecase;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
@@ -32,24 +32,23 @@ describe('CreateMemberUsecase', () => {
     }).compile();
     module.useLogger(false);
 
-    userRepository = await module.resolve<UserRepository>(UserRepository);
-    memberRepository = await module.resolve<MemberRepository>(MemberRepository);
-    useCase = await module.resolve<CreateMemberUsecase>(CreateMemberUsecase);
-  });
-
-  it('should be defined', () => {
-    expect(useCase).toBeDefined();
+    userRepository = module.get<UserRepository>(UserRepository);
+    memberRepository = module.get<MemberRepository>(MemberRepository);
+    useCase = module.get<CreateMemberUsecase>(CreateMemberUsecase);
   });
 
   it('should fail if user does not exist', async () => {
-    expect.assertions(3);
+    // Given
     const idFixture = faker.random.uuid();
     const request: CreateMemberDto = {
       userId: idFixture,
     };
 
+    // When
     const result = await useCase.execute(request);
 
+    // Then
+    expect.assertions(3);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(
       CreateMemberErrors.UserDoesntExistError,
@@ -60,7 +59,7 @@ describe('CreateMemberUsecase', () => {
   });
 
   it('should fail if member already exists', async () => {
-    expect.assertions(3);
+    // Given
     const userFixture = new UserEntityBuilder().build();
     const idFixture = userFixture.id.toString();
     const memberFixture = Member.create({
@@ -72,8 +71,11 @@ describe('CreateMemberUsecase', () => {
     await userRepository.save(userFixture);
     await memberRepository.save(memberFixture);
 
+    // When
     const result = await useCase.execute(request);
 
+    // Then
+    expect.assertions(3);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(
       CreateMemberErrors.MemberAlreadyExistsError,
@@ -84,7 +86,7 @@ describe('CreateMemberUsecase', () => {
   });
 
   it('should fail on any other error', async () => {
-    expect.assertions(2);
+    // Given
     const idFixture = faker.random.uuid();
     const request: CreateMemberDto = {
       userId: idFixture,
@@ -94,8 +96,11 @@ describe('CreateMemberUsecase', () => {
       throw new Error();
     });
 
+    // When
     const result = await useCase.execute(request);
 
+    // Then
+    expect.assertions(2);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(AppErrors.UnexpectedError);
 
@@ -103,15 +108,18 @@ describe('CreateMemberUsecase', () => {
   });
 
   it('should succeed', async () => {
-    expect.assertions(1);
+    // Given
     const userFixture = new UserEntityBuilder().build();
     const request: CreateMemberDto = {
       userId: userFixture.userId.id.toString(),
     };
     await userRepository.save(userFixture);
 
+    // When
     const result = await useCase.execute(request);
 
+    // Then
+    expect.assertions(1);
     expect(result.isRight()).toBe(true);
   });
 });

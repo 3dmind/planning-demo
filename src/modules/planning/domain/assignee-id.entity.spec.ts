@@ -15,22 +15,26 @@ describe('AssigneeId', () => {
   });
 
   it('should accept existing ID', () => {
-    expect.assertions(2);
+    // Given
     const idFixture = new UniqueEntityId(uuid.v4());
 
+    // When
     const assigneeIdResult = AssigneeId.create(idFixture);
     const assigneeId = assigneeIdResult.getValue();
 
+    // Then
+    expect.assertions(2);
     expect(assigneeIdResult.isSuccess).toBe(true);
     expect(assigneeId.id.equals(idFixture)).toBe(true);
   });
 
   it('should create new ID', () => {
-    expect.assertions(2);
-
+    // When
     const assigneeIdResult = AssigneeId.create();
     const assigneeId = assigneeIdResult.getValue();
 
+    // Then
+    expect.assertions(2);
     expect(assigneeIdResult.isSuccess).toBe(true);
     expect(assigneeId.id).toBeDefined();
   });

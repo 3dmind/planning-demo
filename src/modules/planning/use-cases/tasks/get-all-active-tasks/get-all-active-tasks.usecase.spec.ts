@@ -16,7 +16,7 @@ describe('GetAllActiveTasksUsecase', () => {
   let taskRepository: TaskRepository;
   let useCase: GetAllActiveTasksUsecase;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
@@ -32,20 +32,21 @@ describe('GetAllActiveTasksUsecase', () => {
     }).compile();
     module.useLogger(false);
 
-    memberRepository = await module.resolve<MemberRepository>(MemberRepository);
-    taskRepository = await module.resolve<TaskRepository>(TaskRepository);
-    useCase = await module.resolve<GetAllActiveTasksUsecase>(
-      GetAllActiveTasksUsecase,
-    );
+    memberRepository = module.get<MemberRepository>(MemberRepository);
+    taskRepository = module.get<TaskRepository>(TaskRepository);
+    useCase = module.get<GetAllActiveTasksUsecase>(GetAllActiveTasksUsecase);
   });
 
   it('should fail if member cannot be found', async () => {
-    expect.assertions(3);
+    // Given
     const userId = UserId.create(new UniqueEntityId()).getValue();
 
+    // When
     const result = await useCase.execute({ userId });
     const error = <GetAllActiveTasksErrors.MemberNotFoundError>result.value;
 
+    // Then
+    expect.assertions(3);
     expect(result.isLeft()).toBe(true);
     expect(error).toBeInstanceOf(GetAllActiveTasksErrors.MemberNotFoundError);
     expect(error.errorValue().message).toEqual(
@@ -54,7 +55,7 @@ describe('GetAllActiveTasksUsecase', () => {
   });
 
   it('should fail on any error', async () => {
-    expect.assertions(2);
+    // Given
     const spy = jest
       .spyOn(taskRepository, 'getAllActiveTasksOfMember')
       .mockImplementationOnce(() => {
@@ -63,10 +64,13 @@ describe('GetAllActiveTasksUsecase', () => {
     const member = new MemberEntityBuilder().build();
     await memberRepository.save(member);
 
+    // When
     const result = await useCase.execute({
       userId: member.userId,
     });
 
+    // Then
+    expect.assertions(2);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(AppErrors.UnexpectedError);
 
@@ -74,7 +78,7 @@ describe('GetAllActiveTasksUsecase', () => {
   });
 
   it('should succeed', async () => {
-    expect.assertions(8);
+    // Given
     const memberOne = new MemberEntityBuilder().build();
     const memberTwo = new MemberEntityBuilder().build();
     const notedTaskOfMemberOne = new TaskEntityBuilder()
@@ -113,11 +117,14 @@ describe('GetAllActiveTasksUsecase', () => {
     await taskRepository.save(taskAssignedToMemberOne);
     await taskRepository.save(taskAssignedToMemberTwo);
 
+    // When
     const result = await useCase.execute({
       userId: memberOne.userId,
     });
     const tasks = result.value.getValue();
 
+    // Then
+    expect.assertions(8);
     expect(result.isRight()).toBe(true);
     expect(tasks).toContain(notedTaskOfMemberOne);
     expect(tasks).toContain(tickedOffTaskOfMemberOne);

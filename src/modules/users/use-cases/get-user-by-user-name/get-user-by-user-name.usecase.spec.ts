@@ -12,7 +12,7 @@ describe('GetUserByUserNameUsecase', () => {
   let userRepository: UserRepository;
   let useCase: GetUserByUserNameUsecase;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
@@ -24,32 +24,36 @@ describe('GetUserByUserNameUsecase', () => {
     }).compile();
     module.useLogger(false);
 
-    userRepository = await module.resolve<UserRepository>(UserRepository);
-    useCase = await module.resolve<GetUserByUserNameUsecase>(
-      GetUserByUserNameUsecase,
-    );
+    userRepository = module.get<UserRepository>(UserRepository);
+    useCase = module.get<GetUserByUserNameUsecase>(GetUserByUserNameUsecase);
   });
 
   it('should fail if username cannot be created', async () => {
-    expect.assertions(1);
+    // Given
     const requestFixture: GetUserByUserNameDto = {
       username: null,
     };
 
+    // When
     const result = await useCase.execute(requestFixture);
 
+    // Then
+    expect.assertions(1);
     expect(result.isLeft()).toBe(true);
   });
 
   it('should fail if user cannot be found', async () => {
-    expect.assertions(3);
+    // Given
     const usernameFixture = faker.internet.userName();
     const requestFixture: GetUserByUserNameDto = {
       username: usernameFixture,
     };
 
+    // When
     const result = await useCase.execute(requestFixture);
 
+    // Then
+    expect.assertions(3);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(
       GetUserByUserNameError.UserNotFoundError,
@@ -60,24 +64,30 @@ describe('GetUserByUserNameUsecase', () => {
   });
 
   it('should fail on any other error', async () => {
-    expect.assertions(2);
+    // Given
     const usernameFixture = faker.internet.userName();
     const requestFixture: GetUserByUserNameDto = {
       username: usernameFixture,
     };
-    const spy = jest.spyOn(userRepository, 'getUserByUsername');
-    spy.mockImplementationOnce(() => {
-      throw new Error();
-    });
+    const spy = jest
+      .spyOn(userRepository, 'getUserByUsername')
+      .mockImplementationOnce(() => {
+        throw new Error();
+      });
 
+    // When
     const result = await useCase.execute(requestFixture);
 
+    // Then
+    expect.assertions(2);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(AppErrors.UnexpectedError);
+
+    spy.mockRestore();
   });
 
   it('should succeed', async () => {
-    expect.assertions(2);
+    // Given
     const usernameFixture = faker.internet.userName();
     const user = new UserEntityBuilder({
       username: usernameFixture,
@@ -87,8 +97,11 @@ describe('GetUserByUserNameUsecase', () => {
     };
     await userRepository.save(user);
 
+    // When
     const result = await useCase.execute(requestFixture);
 
+    // Then
+    expect.assertions(2);
     expect(result.isRight()).toBe(true);
     expect(result.value.getValue()).toBe(user);
   });

@@ -20,7 +20,7 @@ describe('EditTaskUsecase', () => {
   let taskRepository: TaskRepository;
   let useCase: EditTaskUsecase;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
@@ -36,13 +36,13 @@ describe('EditTaskUsecase', () => {
     }).compile();
     module.useLogger(false);
 
-    memberRepository = await module.resolve<MemberRepository>(MemberRepository);
-    taskRepository = await module.resolve<TaskRepository>(TaskRepository);
-    useCase = await module.resolve<EditTaskUsecase>(EditTaskUsecase);
+    memberRepository = module.get<MemberRepository>(MemberRepository);
+    taskRepository = module.get<TaskRepository>(TaskRepository);
+    useCase = module.get<EditTaskUsecase>(EditTaskUsecase);
   });
 
   it('should fail if task-id cannot be created', async () => {
-    expect.assertions(2);
+    // Given
     const spy = jest
       .spyOn(TaskId, 'create')
       .mockReturnValue(Result.fail<TaskId>('error'));
@@ -51,12 +51,15 @@ describe('EditTaskUsecase', () => {
       text: faker.lorem.words(5),
     };
 
+    // When
     const result = await useCase.execute({
       dto,
       taskId: null,
       userId,
     });
 
+    // Then
+    expect.assertions(2);
     expect(result.isLeft()).toBe(true);
     expect(result.value.errorValue()).toEqual('error');
 
@@ -64,17 +67,20 @@ describe('EditTaskUsecase', () => {
   });
 
   it('should fail if new description cannot be created', async () => {
-    expect.assertions(2);
+    // Given
     const userId = UserId.create(new UniqueEntityId()).getValue();
     const taskId = faker.random.uuid();
     const dto: EditTaskDto = { text: '' };
 
+    // When
     const result = await useCase.execute({
       dto,
       taskId,
       userId,
     });
 
+    // Then
+    expect.assertions(2);
     expect(result.isLeft()).toBe(true);
     expect(result.value.errorValue()).toContain(
       'Text is not at least 2 chars.',
@@ -82,17 +88,20 @@ describe('EditTaskUsecase', () => {
   });
 
   it('should fail if member cannot be found', async () => {
-    expect.assertions(3);
+    // Given
     const userId = UserId.create(new UniqueEntityId()).getValue();
     const taskId = faker.random.uuid();
     const dto: EditTaskDto = { text: faker.lorem.words(5) };
 
+    // When
     const result = await useCase.execute({
       dto,
       taskId,
       userId,
     });
 
+    // Then
+    expect.assertions(3);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(EditTaskErrors.MemberNotFoundError);
     expect(result.value.errorValue().message).toEqual(
@@ -101,18 +110,21 @@ describe('EditTaskUsecase', () => {
   });
 
   it('should fail if a task cannot be found', async () => {
-    expect.assertions(3);
+    // Given
     const member = new MemberEntityBuilder().build();
     const taskId = faker.random.uuid();
     const dto: EditTaskDto = { text: faker.lorem.words(5) };
     await memberRepository.save(member);
 
+    // When
     const result = await useCase.execute({
       dto,
       taskId,
       userId: member.userId,
     });
 
+    // Then
+    expect.assertions(3);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(EditTaskErrors.TaskNotFoundError);
     expect(result.value.errorValue().message).toEqual(
@@ -121,24 +133,27 @@ describe('EditTaskUsecase', () => {
   });
 
   it('should fail if member is not the task owner', async () => {
-    expect.assertions(1);
+    // Given
     const dto: EditTaskDto = { text: faker.lorem.words(5) };
     const member = new MemberEntityBuilder().build();
     const task = new TaskEntityBuilder().build();
     await memberRepository.save(member);
     await taskRepository.save(task);
 
+    // When
     const result = await useCase.execute({
       dto,
       taskId: task.taskId.toString(),
       userId: member.userId,
     });
 
+    // Then
+    expect.assertions(1);
     expect(result.isLeft()).toBe(true);
   });
 
   it('should fail on any other error', async () => {
-    expect.assertions(2);
+    // Given
     const spy = jest
       .spyOn(taskRepository, 'getTaskById')
       .mockImplementationOnce(() => {
@@ -149,12 +164,15 @@ describe('EditTaskUsecase', () => {
     const dto: EditTaskDto = { text: faker.lorem.words(5) };
     await memberRepository.save(member);
 
+    // When
     const result = await useCase.execute({
       dto,
       taskId,
       userId: member.userId,
     });
 
+    // Then
+    expect.assertions(2);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(AppErrors.UnexpectedError);
 
@@ -162,13 +180,14 @@ describe('EditTaskUsecase', () => {
   });
 
   it('should succeed', async () => {
-    expect.assertions(2);
+    // Given
     const member = new MemberEntityBuilder().build();
     const task = new TaskEntityBuilder().withOwnerId(member.ownerId).build();
     const dto: EditTaskDto = { text: faker.lorem.words(5) };
     await memberRepository.save(member);
     await taskRepository.save(task);
 
+    // When
     const result = await useCase.execute({
       dto,
       taskId: task.taskId.id.toString(),
@@ -176,6 +195,8 @@ describe('EditTaskUsecase', () => {
     });
     const editedTask: Task = result.value.getValue();
 
+    // Then
+    expect.assertions(2);
     expect(result.isRight()).toBe(true);
     expect(editedTask.props.description.value).toBe(dto.text);
   });

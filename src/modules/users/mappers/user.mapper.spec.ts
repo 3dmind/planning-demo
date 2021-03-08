@@ -24,7 +24,7 @@ describe('UserMapper', () => {
   const email = UserEmail.create(emailFixture).getValue();
 
   it('should map Entity to Model', async () => {
-    expect.assertions(1);
+    // Given
     const props: UserProps = {
       createdAt: dateFixture,
       email,
@@ -34,8 +34,11 @@ describe('UserMapper', () => {
     };
     const user = User.create(props, entityId).getValue();
 
+    // When
     const model = await UserMapper.toPersistence(user);
 
+    // Then
+    expect.assertions(1);
     expect(model).toMatchObject<Prisma.BaseUserModelCreateInput>({
       baseUserId: user.userId.id.toString(),
       createdAt: user.props.createdAt,
@@ -47,7 +50,7 @@ describe('UserMapper', () => {
   });
 
   it('should map Model to Entity', () => {
-    expect.assertions(8);
+    // Given
     const mockedBaseUserModel: BaseUserModel = {
       baseUserId: idFixture,
       createdAt: dateFixture,
@@ -58,8 +61,11 @@ describe('UserMapper', () => {
       userPassword: passwordFixture,
     };
 
+    // When
     const user = UserMapper.toDomain(mockedBaseUserModel);
 
+    // Then
+    expect.assertions(8);
     expect(user).toBeDefined();
     expect(user).toBeInstanceOf(User);
     expect(user.userId.id.toValue()).toEqual(idFixture);
@@ -73,6 +79,7 @@ describe('UserMapper', () => {
   });
 
   it('should map Entity to DTO', () => {
+    // Given
     const props: UserProps = {
       createdAt: dateFixture,
       email,
@@ -82,8 +89,11 @@ describe('UserMapper', () => {
     };
     const user = User.create(props, entityId).getValue();
 
+    // When
     const userDto = UserMapper.toDto(user);
 
+    // Then
+    expect.assertions(1);
     expect(userDto).toMatchObject<UserDto>({
       createdAt: dateFixture.toISOString(),
       email: emailFixture,

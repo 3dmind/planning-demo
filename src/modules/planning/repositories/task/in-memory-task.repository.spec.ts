@@ -4,26 +4,34 @@ import { InMemoryTaskRepository } from './in-memory-task.repository';
 
 describe('InMemoryTaskRepository', () => {
   it('should save task', async () => {
-    expect.assertions(1);
+    // Given
     const repository = new InMemoryTaskRepository();
     const task = new TaskEntityBuilder().build();
 
-    await expect(repository.save(task)).resolves.not.toThrow();
+    // When
+    const promise = repository.save(task);
+
+    // Then
+    expect.assertions(1);
+    await expect(promise).resolves.not.toThrow();
   });
 
+  // Given
   it('should find task by its id', async () => {
-    expect.assertions(1);
     const task = new TaskEntityBuilder().build();
     const repository = new InMemoryTaskRepository();
     await repository.save(task);
 
+    // When
     const maybeTask = await repository.getTaskById(task.taskId);
 
+    // Then
+    expect.assertions(1);
     expect(maybeTask.found).toBe(true);
   });
 
   it('should find all archived task of a particular member', async () => {
-    expect.assertions(4);
+    // Given
     const memberOne = new MemberEntityBuilder().build();
     const memberTwo = new MemberEntityBuilder().build();
     const notedTaskOfMemberOne = new TaskEntityBuilder()
@@ -46,10 +54,13 @@ describe('InMemoryTaskRepository', () => {
     await repository.save(discardedTaskOfMemberOne);
     await repository.save(notedTaskOfMemberTwo);
 
+    // Then
     const tasks = await repository.getAllArchivedTasksOfMember(
       memberOne.memberId,
     );
 
+    // Then
+    expect.assertions(4);
     expect(tasks).toContain(archivedTaskOfMemberOne);
     expect(tasks).not.toContain(notedTaskOfMemberOne);
     expect(tasks).not.toContain(discardedTaskOfMemberOne);
@@ -57,7 +68,7 @@ describe('InMemoryTaskRepository', () => {
   });
 
   it('should find all active tasks of a particular member', async () => {
-    expect.assertions(7);
+    // Given
     const memberOne = new MemberEntityBuilder().build();
     const memberTwo = new MemberEntityBuilder().build();
     const notedTaskOfMemberOne = new TaskEntityBuilder()
@@ -95,10 +106,13 @@ describe('InMemoryTaskRepository', () => {
     await repository.save(taskAssignedToMemberOne);
     await repository.save(taskAssignedToMemberTwo);
 
+    // When
     const tasks = await repository.getAllActiveTasksOfMember(
       memberOne.memberId,
     );
 
+    // Then
+    expect.assertions(7);
     expect(tasks).toContain(notedTaskOfMemberOne);
     expect(tasks).toContain(tickedOffTaskOfMemberOne);
     expect(tasks).toContain(taskAssignedToMemberOne);

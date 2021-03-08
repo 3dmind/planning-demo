@@ -57,35 +57,41 @@ describe('AuthService', () => {
   });
 
   it('should create access token', () => {
-    expect.assertions(1);
+    // Given
     const usernameFixture = faker.internet.userName();
     const payloadFixture: JwtClaims = {
       username: usernameFixture,
     };
 
+    // When
     const accessToken = service.createAccessToken(payloadFixture);
 
+    // Then
+    expect.assertions(1);
     expect(jwtService.decode(accessToken)).toMatchObject<JwtClaims>({
       username: usernameFixture,
     });
   });
 
   it('should create refresh token', () => {
-    expect.assertions(1);
+    // Given
     const usernameFixture = faker.internet.userName();
     const payloadFixture: JwtClaims = {
       username: usernameFixture,
     };
 
+    // When
     const refreshToken = service.createRefreshToken(payloadFixture);
 
+    // Then
+    expect.assertions(1);
     expect(jwtService.decode(refreshToken)).toMatchObject<JwtClaims>({
       username: usernameFixture,
     });
   });
 
   it('should save authenticated user', async () => {
-    expect.assertions(1);
+    // Given
     const user = new UserEntityBuilder().build();
     const accessToken = service.createAccessToken({
       username: user.username.value,
@@ -95,14 +101,16 @@ describe('AuthService', () => {
     });
     user.setTokens(accessToken, refreshToken);
 
+    // When
     await service.saveAuthenticatedUser(user);
     const result = await redisCacheService.get(user.username.value);
 
+    // Then
+    expect.assertions(1);
     expect(result).toBeDefined();
   });
 
   it('should remove authenticated user', async () => {
-    expect.assertions(2);
     const username = 'tomtest';
     const user = new UserEntityBuilder({ username }).makeLoggedIn().build();
     let value;
@@ -115,22 +123,26 @@ describe('AuthService', () => {
     await service.deAuthenticateUser(user);
     value = await redisCacheService.get(username);
 
+    expect.assertions(2);
     expect(value).toBeUndefined();
   });
 
   it('should access saved tokens', async () => {
-    expect.assertions(1);
+    // Given
     const username = faker.internet.userName();
     const user = new UserEntityBuilder({ username }).build();
     await service.saveAuthenticatedUser(user);
 
+    // When
     const tokens = await service.getTokens(username);
 
+    // Then
+    expect.assertions(1);
     expect(tokens).toBeDefined();
   });
 
   it('should validate access token', async () => {
-    expect.assertions(2);
+    // Given
     const username = faker.internet.userName();
     const validAccessToken = faker.random.alphaNumeric(10);
     const invalidAccessToken = faker.random.alphaNumeric(10);
@@ -139,20 +151,26 @@ describe('AuthService', () => {
     })
       .makeLoggedIn({ accessToken: validAccessToken })
       .build();
-    let result: boolean;
     await service.saveAuthenticatedUser(user);
 
-    result = await service.validateAccessToken(username, validAccessToken);
+    // When
+    const validResult = await service.validateAccessToken(
+      username,
+      validAccessToken,
+    );
+    const invalidResult = await service.validateAccessToken(
+      username,
+      invalidAccessToken,
+    );
 
-    expect(result).toBe(true);
-
-    result = await service.validateAccessToken(username, invalidAccessToken);
-
-    expect(result).toBe(false);
+    // Then
+    expect.assertions(2);
+    expect(validResult).toBe(true);
+    expect(invalidResult).toBe(false);
   });
 
   it('should validate refresh token', async () => {
-    expect.assertions(2);
+    // Given
     const username = faker.internet.userName();
     const validRefreshToken = faker.random.alphaNumeric(10);
     const invalidRefreshToken = faker.random.alphaNumeric(10);
@@ -161,15 +179,21 @@ describe('AuthService', () => {
     })
       .makeLoggedIn({ refreshToken: validRefreshToken })
       .build();
-    let result: boolean;
     await service.saveAuthenticatedUser(user);
 
-    result = await service.validateRefreshToken(username, validRefreshToken);
+    // When
+    const validResult = await service.validateRefreshToken(
+      username,
+      validRefreshToken,
+    );
+    const invalidResult = await service.validateRefreshToken(
+      username,
+      invalidRefreshToken,
+    );
 
-    expect(result).toBe(true);
-
-    result = await service.validateRefreshToken(username, invalidRefreshToken);
-
-    expect(result).toBe(false);
+    // Then
+    expect.assertions(2);
+    expect(validResult).toBe(true);
+    expect(invalidResult).toBe(false);
   });
 });

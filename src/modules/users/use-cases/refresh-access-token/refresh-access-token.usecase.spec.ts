@@ -22,7 +22,7 @@ describe('RefreshAccessTokenUsecase', () => {
   let userRepository: UserRepository;
   let useCase: RefreshAccessTokenUsecase;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     mockedConfigService.getAccessTokenSecret.mockReturnValue(
       accessTokenSecretFixture,
     );
@@ -61,44 +61,46 @@ describe('RefreshAccessTokenUsecase', () => {
     }).compile();
     module.useLogger(false);
 
-    authService = await module.resolve<AuthService>(AuthService);
-    userRepository = await module.resolve<UserRepository>(UserRepository);
-    useCase = await module.resolve<RefreshAccessTokenUsecase>(
-      RefreshAccessTokenUsecase,
-    );
+    authService = module.get<AuthService>(AuthService);
+    userRepository = module.get<UserRepository>(UserRepository);
+    useCase = module.get<RefreshAccessTokenUsecase>(RefreshAccessTokenUsecase);
   });
 
   afterAll(() => {
     mockReset(mockedConfigService);
   });
 
-  it('should be defined', () => {
-    expect.assertions(1);
-    expect(useCase).toBeDefined();
-  });
-
   it('should fail on any other error', async () => {
-    expect.assertions(2);
+    // Given
+    const spy = jest
+      .spyOn(authService, 'createAccessToken')
+      .mockImplementationOnce(() => {
+        throw new Error();
+      });
     const user = new UserEntityBuilder().build();
-    const spy = jest.spyOn(authService, 'createAccessToken');
-    spy.mockImplementationOnce(() => {
-      throw new Error();
-    });
 
+    // When
     const result = await useCase.execute(user);
 
+    // Then
+    expect.assertions(2);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(AppErrors.UnexpectedError);
+
+    spy.mockRestore();
   });
 
   it('should succeed', async () => {
-    expect.assertions(1);
+    // Given
     const user = new UserEntityBuilder().makeLoggedIn().build();
     await authService.saveAuthenticatedUser(user);
     await userRepository.save(user);
 
+    // When
     const result = await useCase.execute(user);
 
+    // Then
+    expect.assertions(1);
     expect(result.isRight()).toBe(true);
   });
 });

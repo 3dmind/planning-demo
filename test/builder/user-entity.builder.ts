@@ -16,6 +16,7 @@ export class UserEntityBuilder {
   private refreshToken: RefreshToken;
   private username: UserName;
 
+  // TODO: Refactor to align with the other builders
   constructor(
     {
       createdAt = new Date(),

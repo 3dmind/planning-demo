@@ -50,11 +50,9 @@ describe('LoginUsecase', () => {
     }).compile();
     module.useLogger(false);
 
-    redisCacheService = await module.resolve<RedisCacheService>(
-      RedisCacheService,
-    );
-    authService = await module.resolve<AuthService>(AuthService);
-    useCase = await module.resolve<LoginUsecase>(LoginUsecase);
+    redisCacheService = module.get<RedisCacheService>(RedisCacheService);
+    authService = module.get<AuthService>(AuthService);
+    useCase = module.get<LoginUsecase>(LoginUsecase);
   });
 
   afterAll(() => {
@@ -62,7 +60,7 @@ describe('LoginUsecase', () => {
   });
 
   it('should fail on any error', async () => {
-    expect.assertions(2);
+    // Given
     const spy = jest
       .spyOn(authService, 'createAccessToken')
       .mockImplementationOnce(() => {
@@ -70,8 +68,11 @@ describe('LoginUsecase', () => {
       });
     const user = new UserEntityBuilder().build();
 
+    // When
     const result = await useCase.execute(user);
 
+    // Then
+    expect.assertions(2);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(AppErrors.UnexpectedError);
 
@@ -79,19 +80,20 @@ describe('LoginUsecase', () => {
   });
 
   it('should succeed', async () => {
-    expect.assertions(3);
+    // Given
     const user = new UserEntityBuilder().build();
 
+    // When
     const result = await useCase.execute(user);
+    const value = await redisCacheService.get(user.username.value);
 
+    // Then
+    expect.assertions(3);
     expect(result.isRight()).toBe(true);
     expect(result.value.getValue()).toMatchObject<LoginResponseDto>({
       access_token: expect.any(String),
       refresh_token: expect.any(String),
     });
-
-    const value = await redisCacheService.get(user.username.value);
-
     expect(value).toBeDefined();
   });
 });

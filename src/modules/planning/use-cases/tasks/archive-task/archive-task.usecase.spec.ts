@@ -19,7 +19,7 @@ describe('ArchiveTaskUsecase', () => {
   let taskRepository: TaskRepository;
   let useCase: ArchiveTaskUsecase;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
@@ -35,39 +35,45 @@ describe('ArchiveTaskUsecase', () => {
     }).compile();
     module.useLogger(false);
 
-    memberRepository = await module.resolve<MemberRepository>(MemberRepository);
-    taskRepository = await module.resolve<TaskRepository>(TaskRepository);
-    useCase = await module.resolve<ArchiveTaskUsecase>(ArchiveTaskUsecase);
+    memberRepository = module.get<MemberRepository>(MemberRepository);
+    taskRepository = module.get<TaskRepository>(TaskRepository);
+    useCase = module.get<ArchiveTaskUsecase>(ArchiveTaskUsecase);
   });
 
   it('should fail if task-id cannot be created', async () => {
-    expect.assertions(2);
+    // Given
     const spy = jest
       .spyOn(TaskId, 'create')
       .mockReturnValue(Result.fail<TaskId>('error'));
     const userId = UserId.create(new UniqueEntityId()).getValue();
 
+    // When
     const result = await useCase.execute({
       taskId: null,
       userId,
     });
 
+    // Then
     expect(result.isLeft()).toBe(true);
+    expect.assertions(2);
     expect(result.value.errorValue()).toEqual('error');
 
     spy.mockRestore();
   });
 
   it('should fail if member cannot be found', async () => {
-    expect.assertions(3);
+    // Given
     const userId = UserId.create(new UniqueEntityId()).getValue();
     const taskId = faker.random.uuid();
 
+    // When
     const result = await useCase.execute({
       taskId,
       userId,
     });
 
+    // Then
+    expect.assertions(3);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(ArchiveTaskErrors.MemberNotFoundError);
     expect(result.value.errorValue().message).toEqual(
@@ -76,15 +82,19 @@ describe('ArchiveTaskUsecase', () => {
   });
 
   it('should fail if a task cannot be found', async () => {
+    // Given
     const member = new MemberEntityBuilder().build();
     const taskId = faker.random.uuid();
     await memberRepository.save(member);
 
+    // When
     const result = await useCase.execute({
       taskId,
       userId: member.userId,
     });
 
+    // Then
+    expect.assertions(3);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(ArchiveTaskErrors.TaskNotFoundError);
     expect(result.value.errorValue().message).toEqual(
@@ -93,21 +103,25 @@ describe('ArchiveTaskUsecase', () => {
   });
 
   it('should fail if member is not the task owner', async () => {
-    expect.assertions(1);
+    // Given
     const member = new MemberEntityBuilder().build();
     const task = new TaskEntityBuilder().build();
     await memberRepository.save(member);
     await taskRepository.save(task);
 
+    // When
     const result = await useCase.execute({
       taskId: task.taskId.toString(),
       userId: member.userId,
     });
 
+    // Then
+    expect.assertions(1);
     expect(result.isLeft()).toBe(true);
   });
 
   it('should fail on any other error', async () => {
+    // Given
     const spy = jest
       .spyOn(taskRepository, 'getTaskById')
       .mockImplementationOnce(() => {
@@ -118,11 +132,14 @@ describe('ArchiveTaskUsecase', () => {
     await memberRepository.save(member);
     await taskRepository.save(task);
 
+    // When
     const result = await useCase.execute({
       taskId: task.taskId.id.toString(),
       userId: member.userId,
     });
 
+    // Then
+    expect.assertions(2);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(AppErrors.UnexpectedError);
 
@@ -130,17 +147,21 @@ describe('ArchiveTaskUsecase', () => {
   });
 
   it('should succeed', async () => {
+    // Given
     const member = new MemberEntityBuilder().build();
     const task = new TaskEntityBuilder().withOwnerId(member.ownerId).build();
     await memberRepository.save(member);
     await taskRepository.save(task);
 
+    // When
     const result = await useCase.execute({
       taskId: task.taskId.id.toString(),
       userId: member.userId,
     });
     const archivedTask: Task = result.value.getValue();
 
+    // Then
+    expect.assertions(2);
     expect(result.isRight()).toBe(true);
     expect(archivedTask.isArchived()).toBe(true);
   });

@@ -13,7 +13,7 @@ describe('ValidateUserUsecase', () => {
   let userRepository: UserRepository;
   let useCase: ValidateUserUsecase;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
@@ -25,12 +25,12 @@ describe('ValidateUserUsecase', () => {
     }).compile();
     module.useLogger(false);
 
-    userRepository = await module.resolve<UserRepository>(UserRepository);
-    useCase = await module.resolve<ValidateUserUsecase>(ValidateUserUsecase);
+    userRepository = module.get<UserRepository>(UserRepository);
+    useCase = module.get<ValidateUserUsecase>(ValidateUserUsecase);
   });
 
   it('should fail if username cannot be created', async () => {
-    expect.assertions(1);
+    // Given
     const usernameFixture = '';
     const passwordFixture = faker.internet.password(UserPassword.minLength);
     const request: ValidateUserDto = {
@@ -38,13 +38,16 @@ describe('ValidateUserUsecase', () => {
       password: passwordFixture,
     };
 
+    // When
     const result = await useCase.execute(request);
 
+    // Then
+    expect.assertions(1);
     expect(result.isLeft()).toBe(true);
   });
 
   it('should fail if user password cannot be created', async () => {
-    expect.assertions(1);
+    // Given
     const usernameFixture = faker.internet.userName();
     const passwordFixture = '';
     const request: ValidateUserDto = {
@@ -52,13 +55,16 @@ describe('ValidateUserUsecase', () => {
       password: passwordFixture,
     };
 
+    // When
     const result = await useCase.execute(request);
 
+    // Then
+    expect.assertions(1);
     expect(result.isLeft()).toBe(true);
   });
 
   it("should fail if user doesn't exist", async () => {
-    expect.assertions(3);
+    // Given
     const usernameFixture = faker.internet.userName();
     const passwordFixture = faker.internet.password(UserPassword.minLength);
     const request: ValidateUserDto = {
@@ -66,8 +72,11 @@ describe('ValidateUserUsecase', () => {
       password: passwordFixture,
     };
 
+    // When
     const result = await useCase.execute(request);
 
+    // Then
+    expect.assertions(3);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(
       ValidateUserErrors.UserNameDoesntExistError,
@@ -78,7 +87,7 @@ describe('ValidateUserUsecase', () => {
   });
 
   it("should fail if password doesn't match", async () => {
-    expect.assertions(3);
+    // Given
     const usernameFixture = faker.internet.userName();
     const passwordFixture = faker.internet.password(UserPassword.minLength);
     const hashedPassword = await UserPassword.create({
@@ -101,8 +110,11 @@ describe('ValidateUserUsecase', () => {
     };
     await userRepository.save(user);
 
+    // When
     const result = await useCase.execute(request);
 
+    // Then
+    expect.assertions(3);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(
       ValidateUserErrors.PasswordDoesntMatchError,
@@ -111,21 +123,24 @@ describe('ValidateUserUsecase', () => {
   });
 
   it('should fail on any other error', async () => {
-    expect.assertions(2);
+    // Given
+    const spy = jest
+      .spyOn(userRepository, 'getUserByUsername')
+      .mockImplementationOnce(() => {
+        throw new Error();
+      });
     const usernameFixture = faker.internet.userName();
     const passwordFixture = faker.internet.password(UserPassword.minLength);
     const request: ValidateUserDto = {
       username: usernameFixture,
       password: passwordFixture,
     };
-    const spy = jest
-      .spyOn(userRepository, 'getUserByUsername')
-      .mockImplementationOnce(() => {
-        throw new Error();
-      });
 
+    // When
     const result = await useCase.execute(request);
 
+    // Then
+    expect.assertions(2);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(AppErrors.UnexpectedError);
 
@@ -133,7 +148,7 @@ describe('ValidateUserUsecase', () => {
   });
 
   it('should succeed', async () => {
-    expect.assertions(2);
+    // Given
     const usernameFixture = faker.internet.userName();
     const passwordFixture = faker.internet.password(UserPassword.minLength);
     const hashedPassword = await UserPassword.create({
@@ -153,8 +168,11 @@ describe('ValidateUserUsecase', () => {
     };
     await userRepository.save(user);
 
+    // When
     const result = await useCase.execute(request);
 
+    // Then
+    expect.assertions(2);
     expect(result.isRight()).toBe(true);
     expect(result.value.getValue()).toBe(user);
   });

@@ -15,20 +15,27 @@ describe('TaskId', () => {
   });
 
   it('should accept existing ID', () => {
-    const expectedId: string = uuid.v4();
+    // Given
+    const expectedId = faker.random.uuid();
 
+    // When
     const taskIdResult = TaskId.create(new UniqueEntityId(expectedId));
     const taskId = taskIdResult.getValue();
 
+    // Then
+    expect.assertions(3);
     expect(taskIdResult.isSuccess).toBe(true);
     expect(taskId.id.toValue()).toEqual(expectedId);
     expect(taskId.toString()).toEqual(expectedId);
   });
 
   it('should create new ID', () => {
+    // When
     const taskIdResult = TaskId.create();
     const taskId = taskIdResult.getValue();
 
+    // Then
+    expect.assertions(2);
     expect(taskIdResult.isSuccess).toBe(true);
     expect(taskId.id).toBeDefined();
   });

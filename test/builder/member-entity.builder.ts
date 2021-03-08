@@ -8,6 +8,7 @@ export class MemberEntityBuilder {
   private userId: UserId;
 
   constructor() {
+    // TODO: Inline variables
     const createdAt = new Date();
     const entityId = new UniqueEntityId();
     const userId = UserId.create().getValue();

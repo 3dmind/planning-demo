@@ -15,23 +15,27 @@ describe('MemberId', () => {
   });
 
   it('should accept existing ID', () => {
-    expect.assertions(3);
+    // Given
     const expectedId = faker.random.uuid();
 
+    // When
     const memberIdResult = MemberId.create(new UniqueEntityId(expectedId));
     const memberId = memberIdResult.getValue();
 
+    // Then
+    expect.assertions(3);
     expect(memberIdResult.isSuccess).toBe(true);
     expect(memberId.id.toValue()).toEqual(expectedId);
     expect(memberId.toString()).toEqual(expectedId);
   });
 
   it('should create new ID', () => {
-    expect.assertions(2);
-
+    // When
     const memberIdResult = MemberId.create();
     const memberId = memberIdResult.getValue();
 
+    // Then
+    expect.assertions(2);
     expect(memberIdResult.isSuccess).toBe(true);
     expect(memberId.id).toBeDefined();
   });

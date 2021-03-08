@@ -15,22 +15,26 @@ describe('OwnerId', () => {
   });
 
   it('should accept existing ID', () => {
-    expect.assertions(2);
+    // Given
     const idFixture = new UniqueEntityId(uuid.v4());
 
+    // When
     const ownerIdResult = OwnerId.create(idFixture);
     const ownerId = ownerIdResult.getValue();
 
+    // Then
+    expect.assertions(2);
     expect(ownerIdResult.isSuccess).toBe(true);
     expect(ownerId.id.equals(idFixture)).toBe(true);
   });
 
   it('should create new ID', () => {
-    expect.assertions(2);
-
+    // When
     const ownerIdResult = OwnerId.create();
     const ownerId = ownerIdResult.getValue();
 
+    // Then
+    expect.assertions(2);
     expect(ownerIdResult.isSuccess).toBe(true);
     expect(ownerId.id).toBeDefined();
   });

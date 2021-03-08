@@ -18,7 +18,7 @@ describe('LocalStrategy', () => {
   let validateUserUseCase: ValidateUserUsecase;
   let strategy: LocalStrategy;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
@@ -31,31 +31,30 @@ describe('LocalStrategy', () => {
     }).compile();
     module.useLogger(false);
 
-    userRepository = await module.resolve<UserRepository>(UserRepository);
-    validateUserUseCase = await module.resolve<ValidateUserUsecase>(
-      ValidateUserUsecase,
-    );
-    strategy = await module.resolve<LocalStrategy>(LocalStrategy);
+    userRepository = module.get<UserRepository>(UserRepository);
+    validateUserUseCase = module.get<ValidateUserUsecase>(ValidateUserUsecase);
+    strategy = module.get<LocalStrategy>(LocalStrategy);
   });
 
   it('should deny access if username does not exist', async () => {
-    expect.assertions(2);
+    // Given
     const userNameDoesntExistError = new ValidateUserErrors.UserNameDoesntExistError();
     const usernameFixture = faker.internet.userName();
     const passwordFixture = faker.internet.password(UserPassword.minLength);
 
-    return strategy
-      .validate(usernameFixture, passwordFixture)
-      .catch((error) => {
-        expect(error).toBeInstanceOf(UnauthorizedException);
-        expect(error.message).toEqual(
-          userNameDoesntExistError.errorValue().message,
-        );
-      });
+    // When
+    const promise = strategy.validate(usernameFixture, passwordFixture);
+
+    // Then
+    expect.assertions(2);
+    await expect(promise).rejects.toThrow(UnauthorizedException);
+    await expect(promise).rejects.toThrow(
+      userNameDoesntExistError.errorValue().message,
+    );
   });
 
   it('should deny access if password does not match', async () => {
-    expect.assertions(2);
+    // Given
     const hashedPassword = await UserPassword.create({
       value: faker.internet.password(UserPassword.minLength),
     })
@@ -70,16 +69,19 @@ describe('LocalStrategy', () => {
     const passwordDoesntMatchError = new ValidateUserErrors.PasswordDoesntMatchError();
     await userRepository.save(user);
 
-    return strategy.validate(username, passwordFixture).catch((error) => {
-      expect(error).toBeInstanceOf(UnauthorizedException);
-      expect(error.message).toEqual(
-        passwordDoesntMatchError.errorValue().message,
-      );
-    });
+    // When
+    const promise = strategy.validate(username, passwordFixture);
+
+    // Then
+    expect.assertions(2);
+    await expect(promise).rejects.toThrow(UnauthorizedException);
+    await expect(promise).rejects.toThrow(
+      passwordDoesntMatchError.errorValue().message,
+    );
   });
 
   it('should deny access on any unexpected error', async () => {
-    expect.assertions(2);
+    // Given
     const usernameFixture = faker.internet.userName();
     const passwordFixture = faker.internet.password(UserPassword.minLength);
     const unexpectedError = new AppErrors.UnexpectedError(new Error());
@@ -89,19 +91,19 @@ describe('LocalStrategy', () => {
         throw new Error();
       });
 
-    return strategy
-      .validate(usernameFixture, passwordFixture)
-      .catch((error) => {
-        expect(error).toBeInstanceOf(InternalServerErrorException);
-        expect(error.message).toEqual(unexpectedError.errorValue().message);
-      })
-      .finally(() => {
-        spy.mockRestore();
-      });
+    // When
+    const promise = strategy.validate(usernameFixture, passwordFixture);
+
+    // Then
+    expect.assertions(2);
+    await expect(promise).rejects.toThrow(InternalServerErrorException);
+    await expect(promise).rejects.toThrow(unexpectedError.errorValue().message);
+
+    spy.mockRestore();
   });
 
   it('should deny access on any other error', async () => {
-    expect.assertions(2);
+    // Given
     const usernameFixture = faker.internet.userName();
     const passwordFixture = faker.internet.password(UserPassword.minLength);
     const failure = Result.fail<string>('Lorem ipsum');
@@ -109,19 +111,19 @@ describe('LocalStrategy', () => {
       .spyOn(validateUserUseCase, 'execute')
       .mockResolvedValueOnce(left(failure));
 
-    return strategy
-      .validate(usernameFixture, passwordFixture)
-      .catch((error) => {
-        expect(error).toBeInstanceOf(UnauthorizedException);
-        expect(error.message).toEqual(failure.errorValue());
-      })
-      .finally(() => {
-        spy.mockRestore();
-      });
+    // When
+    const promise = strategy.validate(usernameFixture, passwordFixture);
+
+    // Then
+    expect.assertions(2);
+    await expect(promise).rejects.toThrow(UnauthorizedException);
+    await expect(promise).rejects.toThrow(failure.errorValue());
+
+    spy.mockRestore();
   });
 
   it('should succeed', async () => {
-    expect.assertions(1);
+    // Given
     const usernameFixture = faker.internet.userName();
     const passwordFixture = faker.internet.password(UserPassword.minLength);
     const hashedPassword = await UserPassword.create({ value: passwordFixture })
@@ -134,8 +136,11 @@ describe('LocalStrategy', () => {
     }).build();
     await userRepository.save(user);
 
+    // When
     const result = await strategy.validate(usernameFixture, passwordFixture);
 
+    // Then
+    expect.assertions(1);
     expect(result).toBe(user);
   });
 });

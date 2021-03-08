@@ -17,13 +17,16 @@ describe('Member entity', () => {
   });
 
   it('should guard "userId" property', () => {
-    expect.assertions(4);
+    // Given
     const propsWithNull = { userId: null } as MemberProps;
     const propsWithUndefined = {} as MemberProps;
 
+    // When
     const memberResultNull = Member.create(propsWithNull);
     const memberResultUndefined = Member.create(propsWithUndefined);
 
+    // Then
+    expect.assertions(4);
     expect(memberResultNull.isFailure).toBe(true);
     expect(memberResultNull.errorValue()).toEqual(
       'userId is null or undefined',
@@ -35,12 +38,13 @@ describe('Member entity', () => {
   });
 
   it('should create new member', () => {
-    expect.assertions(6);
+    // Given
     const userIdFixture = UserId.create().getValue();
     const idFixture = faker.random.uuid();
     const entityIdFixture = new UniqueEntityId(idFixture);
     const dateFixture = new Date();
 
+    // When
     const memberResult = Member.create(
       {
         createdAt: dateFixture,
@@ -50,6 +54,8 @@ describe('Member entity', () => {
     );
     const member = memberResult.getValue();
 
+    // Then
+    expect.assertions(6);
     expect(memberResult.isSuccess).toBe(true);
     expect(member.memberId.id.equals(entityIdFixture)).toBe(true);
     expect(member.ownerId.id.equals(entityIdFixture)).toBe(true);

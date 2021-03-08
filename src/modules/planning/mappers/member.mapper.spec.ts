@@ -6,12 +6,15 @@ import { MemberMapper } from './member.mapper';
 
 describe('MemberMapper', () => {
   it('should map Entity to Model', () => {
-    expect.assertions(1);
+    // Given
     const userId = UserId.create().getValue();
     const member = Member.create({ userId }).getValue();
 
+    // When
     const memberModel = MemberMapper.toPersistence(member);
 
+    // Then
+    expect.assertions(1);
     expect(memberModel).toMatchObject<Prisma.MemberModelCreateInput>({
       createdAt: expect.any(Date),
       memberId: expect.any(String),
@@ -24,7 +27,7 @@ describe('MemberMapper', () => {
   });
 
   it('should map Model to Entity', () => {
-    expect.assertions(2);
+    // Given
     const mockedUserId = faker.random.uuid();
     const mockedMemberId = faker.random.uuid();
     const mockedDate = new Date();
@@ -35,8 +38,11 @@ describe('MemberMapper', () => {
       updatedAt: mockedDate,
     };
 
+    // When
     const member = MemberMapper.toDomain(mockedMemberModel);
 
+    // Then
+    expect.assertions(2);
     expect(member).toBeDefined();
     expect(member).toBeInstanceOf(Member);
   });

@@ -24,7 +24,7 @@ describe('LogoutUsecase', () => {
   let userRepository: UserRepository;
   let useCase: LogoutUsecase;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     mockedApiConfigService.getAccessTokenSecret.mockReturnValue(
       accessTokenSecretFixture,
     );
@@ -53,32 +53,30 @@ describe('LogoutUsecase', () => {
     }).compile();
     module.useLogger(false);
 
-    authService = await module.resolve<AuthService>(AuthService);
-    redisCacheService = await module.resolve<RedisCacheService>(
-      RedisCacheService,
-    );
-    userRepository = await module.resolve<UserRepository>(UserRepository);
-    useCase = await module.resolve<LogoutUsecase>(LogoutUsecase);
+    authService = module.get<AuthService>(AuthService);
+    redisCacheService = module.get<RedisCacheService>(RedisCacheService);
+    userRepository = module.get<UserRepository>(UserRepository);
+    useCase = module.get<LogoutUsecase>(LogoutUsecase);
   });
 
   afterAll(() => {
     mockReset(mockedApiConfigService);
   });
 
-  it('should be defined', () => {
-    expect(useCase).toBeDefined();
-  });
-
   it('should fail on any other error', async () => {
-    expect.assertions(2);
+    // Given
     const user = new UserEntityBuilder().makeLoggedIn().build();
-    const spy = jest.spyOn(authService, 'deAuthenticateUser');
-    spy.mockImplementationOnce(() => {
-      throw new Error();
-    });
+    const spy = jest
+      .spyOn(authService, 'deAuthenticateUser')
+      .mockImplementationOnce(() => {
+        throw new Error();
+      });
 
+    // When
     const result = await useCase.execute(user);
 
+    // Then
+    expect.assertions(2);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(AppErrors.UnexpectedError);
 
@@ -86,19 +84,21 @@ describe('LogoutUsecase', () => {
   });
 
   it('should succeed', async () => {
-    expect.assertions(3);
+    // Given
     const username = faker.internet.userName();
     const user = new UserEntityBuilder({ username }).makeLoggedIn().build();
     await userRepository.save(user);
     await authService.saveAuthenticatedUser(user);
 
-    let value = await redisCacheService.get(username);
-    expect(value).toBeDefined();
-
+    // When
+    const valueBeforeLogout = await redisCacheService.get(username);
     const result = await useCase.execute(user);
-    expect(result.isRight()).toBe(true);
+    const valueAfterLockout = await redisCacheService.get(username);
 
-    value = await redisCacheService.get(username);
-    expect(value).toBeUndefined();
+    // Then
+    expect.assertions(3);
+    expect(valueBeforeLogout).toBeDefined();
+    expect(result.isRight()).toBe(true);
+    expect(valueAfterLockout).toBeUndefined();
   });
 });

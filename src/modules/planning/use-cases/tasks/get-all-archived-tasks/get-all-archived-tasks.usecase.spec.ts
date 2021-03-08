@@ -16,7 +16,7 @@ describe('GetAllArchivedTasksUsecase', () => {
   let taskRepository: TaskRepository;
   let useCase: GetAllArchivedTasksUsecase;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
@@ -32,20 +32,23 @@ describe('GetAllArchivedTasksUsecase', () => {
     }).compile();
     module.useLogger(false);
 
-    memberRepository = await module.resolve<MemberRepository>(MemberRepository);
-    taskRepository = await module.resolve<TaskRepository>(TaskRepository);
-    useCase = await module.resolve<GetAllArchivedTasksUsecase>(
+    memberRepository = module.get<MemberRepository>(MemberRepository);
+    taskRepository = module.get<TaskRepository>(TaskRepository);
+    useCase = module.get<GetAllArchivedTasksUsecase>(
       GetAllArchivedTasksUsecase,
     );
   });
 
   it('should fail if member cannot be found', async () => {
-    expect.assertions(3);
+    // Given
     const userId = UserId.create(new UniqueEntityId()).getValue();
 
+    // When
     const result = await useCase.execute({ userId });
     const error = <GetAllArchivedTasksErrors.MemberNotFoundError>result.value;
 
+    // Then
+    expect.assertions(3);
     expect(result.isLeft()).toBe(true);
     expect(error).toBeInstanceOf(GetAllArchivedTasksErrors.MemberNotFoundError);
     expect(error.errorValue().message).toEqual(
@@ -54,7 +57,7 @@ describe('GetAllArchivedTasksUsecase', () => {
   });
 
   it('should fail on any error', async () => {
-    expect.assertions(2);
+    // Given
     const spy = jest
       .spyOn(taskRepository, 'getAllArchivedTasksOfMember')
       .mockImplementationOnce(() => {
@@ -63,10 +66,13 @@ describe('GetAllArchivedTasksUsecase', () => {
     const member = new MemberEntityBuilder().build();
     await memberRepository.save(member);
 
+    // When
     const result = await useCase.execute({
       userId: member.userId,
     });
 
+    // Then
+    expect.assertions(2);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(AppErrors.UnexpectedError);
 
@@ -74,7 +80,7 @@ describe('GetAllArchivedTasksUsecase', () => {
   });
 
   it('should succeed', async () => {
-    expect.assertions(6);
+    // Given
     const memberOne = new MemberEntityBuilder().build();
     const memberTwo = new MemberEntityBuilder().build();
     const notedTaskOfMemberOne = new TaskEntityBuilder()
@@ -103,11 +109,14 @@ describe('GetAllArchivedTasksUsecase', () => {
     await taskRepository.save(discardedTaskOfMemberOne);
     await taskRepository.save(notedTaskOfMemberTwo);
 
+    // When
     const result = await useCase.execute({
       userId: memberOne.userId,
     });
     const tasks = result.value.getValue();
 
+    // Then
+    expect.assertions(6);
     expect(result.isRight()).toBe(true);
     expect(tasks).toContain(archivedTaskOfMemberOne);
     expect(tasks).not.toContain(notedTaskOfMemberOne);

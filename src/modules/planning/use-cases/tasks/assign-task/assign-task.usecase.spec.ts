@@ -17,7 +17,7 @@ describe('AssignTaskUsecase', () => {
   let taskRepository: TaskRepository;
   let useCase: AssignTaskUsecase;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
@@ -33,23 +33,26 @@ describe('AssignTaskUsecase', () => {
     }).compile();
     module.useLogger(false);
 
-    memberRepository = await module.resolve<MemberRepository>(MemberRepository);
-    taskRepository = await module.resolve<TaskRepository>(TaskRepository);
-    useCase = await module.resolve<AssignTaskUsecase>(AssignTaskUsecase);
+    memberRepository = module.get<MemberRepository>(MemberRepository);
+    taskRepository = module.get<TaskRepository>(TaskRepository);
+    useCase = module.get<AssignTaskUsecase>(AssignTaskUsecase);
   });
 
   it('should fail if an associated member cannot be found', async () => {
-    expect.assertions(3);
+    // Given
     const memberId = faker.random.uuid();
     const taskId = faker.random.uuid();
     const userId = UserId.create(new UniqueEntityId()).getValue();
 
+    // When
     const result = await useCase.execute({
       memberId,
       taskId,
       userId,
     });
 
+    // Then
+    expect.assertions(3);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(
       AssignTaskErrors.MemberNotFoundByUserIdError,
@@ -60,18 +63,21 @@ describe('AssignTaskUsecase', () => {
   });
 
   it('should fail if member cannot be found', async () => {
-    expect.assertions(3);
+    // Given
     const taskId = faker.random.uuid();
     const memberId = faker.random.uuid();
     const taskOwner = new MemberEntityBuilder().build();
     await memberRepository.save(taskOwner);
 
+    // When
     const result = await useCase.execute({
       memberId,
       userId: taskOwner.userId,
       taskId,
     });
 
+    // Then
+    expect.assertions(3);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(AssignTaskErrors.MemberNotFoundError);
     expect(result.value.errorValue().message).toEqual(
@@ -80,19 +86,22 @@ describe('AssignTaskUsecase', () => {
   });
 
   it('should fail if task cannot be found', async () => {
-    expect.assertions(3);
+    // Given
     const taskId = faker.random.uuid();
     const taskOwner = new MemberEntityBuilder().build();
     const member = new MemberEntityBuilder().build();
     await memberRepository.save(taskOwner);
     await memberRepository.save(member);
 
+    // When
     const result = await useCase.execute({
       memberId: member.memberId.toString(),
       userId: taskOwner.userId,
       taskId,
     });
 
+    // Then
+    expect.assertions(3);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(AssignTaskErrors.TaskNotFoundError);
     expect(result.value.errorValue().message).toEqual(
@@ -101,7 +110,7 @@ describe('AssignTaskUsecase', () => {
   });
 
   it('should fail if the task is already assigned to the member', async () => {
-    expect.assertions(1);
+    // Given
     const member = new MemberEntityBuilder().build();
     const owner = new MemberEntityBuilder().build();
     const task = new TaskEntityBuilder()
@@ -112,17 +121,20 @@ describe('AssignTaskUsecase', () => {
     await memberRepository.save(member);
     await taskRepository.save(task);
 
+    // When
     const result = await useCase.execute({
       memberId: member.memberId.toString(),
       taskId: task.taskId.id.toString(),
       userId: owner.userId,
     });
 
+    // Then
+    expect.assertions(1);
     expect(result.isLeft()).toBe(true);
   });
 
   it('should fail on any other error', async () => {
-    expect.assertions(2);
+    // Given
     const spy = jest
       .spyOn(taskRepository, 'getTaskById')
       .mockImplementationOnce(() => {
@@ -135,12 +147,15 @@ describe('AssignTaskUsecase', () => {
     await memberRepository.save(member);
     await taskRepository.save(task);
 
+    // When
     const result = await useCase.execute({
       memberId: member.memberId.toString(),
       userId: taskOwner.userId,
       taskId: task.taskId.id.toString(),
     });
 
+    // Then
+    expect.assertions(2);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(AppErrors.UnexpectedError);
 
@@ -148,7 +163,7 @@ describe('AssignTaskUsecase', () => {
   });
 
   it('should succeed', async () => {
-    expect.assertions(1);
+    // Given
     const taskOwner = new MemberEntityBuilder().build();
     const member = new MemberEntityBuilder().build();
     const task = new TaskEntityBuilder().withOwnerId(taskOwner.ownerId).build();
@@ -156,12 +171,15 @@ describe('AssignTaskUsecase', () => {
     await memberRepository.save(member);
     await taskRepository.save(task);
 
+    // When
     const result = await useCase.execute({
       memberId: member.memberId.toString(),
       userId: taskOwner.userId,
       taskId: task.taskId.id.toString(),
     });
 
+    // Then
+    expect.assertions(1);
     expect(result.isRight()).toBe(true);
   });
 });

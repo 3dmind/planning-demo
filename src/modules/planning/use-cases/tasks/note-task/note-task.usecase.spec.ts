@@ -18,7 +18,7 @@ describe('NoteTaskUsecase', () => {
   let taskRepository: TaskRepository;
   let useCase: NoteTaskUsecase;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
@@ -34,36 +34,40 @@ describe('NoteTaskUsecase', () => {
     }).compile();
     module.useLogger(false);
 
-    memberRepository = await module.resolve<MemberRepository>(MemberRepository);
-    taskRepository = await module.resolve<TaskRepository>(TaskRepository);
-    useCase = await module.resolve<NoteTaskUsecase>(NoteTaskUsecase);
+    memberRepository = module.get<MemberRepository>(MemberRepository);
+    taskRepository = module.get<TaskRepository>(TaskRepository);
+    useCase = module.get<NoteTaskUsecase>(NoteTaskUsecase);
   });
 
   it('should fail if Description cannot be created', async () => {
-    expect.assertions(1);
+    // Given
+    const dto: NoteTaskDto = { text: faker.lorem.words(0) };
     const userId = UserId.create(new UniqueEntityId()).getValue();
-    const text = faker.lorem.words(0);
-    const dto: NoteTaskDto = { text };
 
+    // When
     const result = await useCase.execute({
       dto,
       userId,
     });
 
+    // Then
+    expect.assertions(1);
     expect(result.isLeft()).toBe(true);
   });
 
   it('should fail if member cannot be found', async () => {
-    expect.assertions(3);
+    // Given
+    const dto: NoteTaskDto = { text: faker.lorem.words(5) };
     const userId = UserId.create(new UniqueEntityId()).getValue();
-    const text = faker.lorem.words(5);
-    const dto: NoteTaskDto = { text };
 
+    // When
     const result = await useCase.execute({
       dto,
       userId,
     });
 
+    // Then
+    expect.assertions(3);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(NoteTaskErrors.MemberNotFoundError);
     expect(result.value.errorValue().message).toEqual(
@@ -72,42 +76,46 @@ describe('NoteTaskUsecase', () => {
   });
 
   it('should fail if Task cannot be noted', async () => {
-    expect.assertions(1);
+    // Given
     const spy = jest
       .spyOn(Task, 'note')
       .mockReturnValue(Result.fail<Task>('error'));
+    const dto: NoteTaskDto = { text: faker.lorem.words(5) };
     const member = new MemberEntityBuilder().build();
-    const text = faker.lorem.words(5);
-    const dto: NoteTaskDto = { text };
     await memberRepository.save(member);
 
+    // When
     const result = await useCase.execute({
       dto,
       userId: member.userId,
     });
 
+    // Then
+    expect.assertions(1);
     expect(result.isLeft()).toBe(true);
 
     spy.mockRestore();
   });
 
   it('should fail on any other error', async () => {
-    expect.assertions(2);
+    // Given
     const spy = jest
       .spyOn(taskRepository, 'save')
       .mockImplementationOnce(() => {
         throw new Error();
       });
+    const dto: NoteTaskDto = { text: faker.lorem.words(5) };
     const member = new MemberEntityBuilder().build();
-    const text = faker.lorem.words(5);
-    const dto: NoteTaskDto = { text };
     await memberRepository.save(member);
 
+    // When
     const result = await useCase.execute({
       dto,
       userId: member.userId,
     });
 
+    // Then
+    expect.assertions(2);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(AppErrors.UnexpectedError);
 
@@ -115,18 +123,20 @@ describe('NoteTaskUsecase', () => {
   });
 
   it('should succeed', async () => {
-    expect.assertions(2);
+    // Given
+    const dto: NoteTaskDto = { text: faker.lorem.words(5) };
     const member = new MemberEntityBuilder().build();
-    const text = faker.lorem.words(5);
-    const dto: NoteTaskDto = { text };
     await memberRepository.save(member);
 
+    // When
     const result = await useCase.execute({
       dto,
       userId: member.userId,
     });
     const task: Task = result.value.getValue();
 
+    // Then
+    expect.assertions(2);
     expect(result.isRight()).toBe(true);
     expect(task).toBeDefined();
   });

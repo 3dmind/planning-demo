@@ -37,19 +37,18 @@ describe('DomainEventPublisherService', () => {
     );
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
-
   it('should publish domain events', () => {
-    expect.assertions(1);
+    // Given
     const entityId = new UniqueEntityId();
     const entityMock = new EntityMock(null, entityId);
     const listenerSpy = jest.fn();
     eventEmitter.on(DomainEventMock.name, listenerSpy);
 
+    // When
     service.publish(entityMock);
 
+    // Then
+    expect.assertions(1);
     expect(listenerSpy).toHaveBeenCalledTimes(1);
   });
 });

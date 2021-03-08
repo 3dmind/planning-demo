@@ -14,7 +14,7 @@ describe('RedisCacheService', () => {
       providers: [RedisCacheService],
     }).compile();
 
-    cache = await module.resolve(CACHE_MANAGER);
+    cache = module.get(CACHE_MANAGER);
     service = module.get<RedisCacheService>(RedisCacheService);
   });
 
@@ -23,20 +23,23 @@ describe('RedisCacheService', () => {
   });
 
   it('should store value', () => {
-    expect.assertions(1);
+    // Given
     const keyFixture = faker.lorem.word(6);
     const valueFixture = faker.lorem.word(12);
     const ttlFixture = 5;
 
+    // When
     const result = service.set(keyFixture, valueFixture, {
       ttl: ttlFixture,
     });
 
+    // Then
+    expect.assertions(1);
     expect(result).resolves.toBe(valueFixture);
   });
 
   it('should read value', async () => {
-    expect.assertions(1);
+    // Given
     const keyFixture = faker.lorem.word(6);
     const valueFixture = faker.lorem.word(12);
     const ttlFixture = 5;
@@ -44,13 +47,16 @@ describe('RedisCacheService', () => {
       ttl: ttlFixture,
     });
 
+    // When
     const result = await service.get(keyFixture);
 
+    // Then
+    expect.assertions(1);
     expect(result).toEqual(valueFixture);
   });
 
   it('should delete value', () => {
-    expect.assertions(2);
+    // Given
     const keyFixture = faker.lorem.word(6);
     const valueFixture = faker.lorem.word(12);
     const ttlFixture = 10;
@@ -58,12 +64,13 @@ describe('RedisCacheService', () => {
       ttl: ttlFixture,
     });
 
+    // When
     const delResult = service.del(keyFixture);
-
-    expect(delResult).resolves.toBeUndefined();
-
     const getResult = service.get(keyFixture);
 
+    // Then
+    expect.assertions(2);
+    expect(delResult).resolves.toBeUndefined();
     expect(getResult).resolves.toBeUndefined();
   });
 });

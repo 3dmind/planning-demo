@@ -32,41 +32,49 @@ describe('User', () => {
   const email = UserEmail.create(emailFixture).getValue();
 
   it('should guard "username" property', () => {
-    expect.assertions(1);
+    // Given
     const props = { username: null } as UserProps;
 
+    // When
     const userResult = User.create(props, entityId);
 
+    // Then
+    expect.assertions(1);
     expect(userResult.isFailure).toBe(true);
   });
 
   it('should guard "password" property', () => {
-    expect.assertions(1);
+    // Given
     const props = {
       username,
       password: null,
     } as UserProps;
 
+    // When
     const userResult = User.create(props, entityId);
 
+    expect.assertions(1);
     expect(userResult.isFailure).toBe(true);
   });
 
   it('should guard "email" property', () => {
-    expect.assertions(1);
+    // Given
     const props = {
       username,
       password,
       email: null,
     } as UserProps;
 
+    // When
     const userResult = User.create(props, entityId);
 
+    // Then
+    expect.assertions(1);
     expect(userResult.isFailure).toBe(true);
   });
 
   it('should guard "isEmailVerified" property', () => {
-    expect.assertions(1);
+    // Given
     const props = {
       username,
       password,
@@ -74,13 +82,16 @@ describe('User', () => {
       isEmailVerified: null,
     } as UserProps;
 
+    // When
     const userResult = User.create(props, entityId);
 
+    // Then
+    expect.assertions(1);
     expect(userResult.isFailure).toBe(true);
   });
 
   it('should guard "createdAt" property', () => {
-    expect.assertions(1);
+    // Given
     const props = {
       username,
       password,
@@ -89,13 +100,16 @@ describe('User', () => {
       createdAt: null,
     } as UserProps;
 
+    // When
     const userResult = User.create(props, entityId);
 
+    // Then
+    expect.assertions(1);
     expect(userResult.isFailure).toBe(true);
   });
 
   it('should create', () => {
-    expect.assertions(7);
+    // Given
     const props: UserProps = {
       username,
       password,
@@ -104,9 +118,12 @@ describe('User', () => {
       createdAt: new Date(),
     };
 
+    // When
     const userResult = User.create(props, entityId);
     const user = userResult.getValue();
 
+    // Then
+    expect.assertions(7);
     expect(userResult.isSuccess).toBe(true);
     expect(user.userId).toBeInstanceOf(UserId);
     expect(user.userId.id.equals(entityId)).toBe(true);
@@ -117,14 +134,16 @@ describe('User', () => {
   });
 
   it('should determine if user is logged in', () => {
+    // Given
     const accessTokenFixture = faker.random.alphaNumeric(20);
     const refreshTokenFixture = faker.random.alphaNumeric(20);
     const user = new UserEntityBuilder().build();
 
-    expect(user.isLoggedIn()).toBe(false);
-
+    // When
     user.setTokens(accessTokenFixture, refreshTokenFixture);
 
+    // Then
+    expect.assertions(1);
     expect(user.isLoggedIn()).toBe(true);
   });
 });

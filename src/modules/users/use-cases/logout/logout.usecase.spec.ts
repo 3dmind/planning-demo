@@ -7,6 +7,7 @@ import { UserEntityBuilder } from '../../../../../test/builder/user-entity.build
 import { ApiConfigService } from '../../../../api-config/api-config.service';
 import { RedisCacheService } from '../../../../redis-cache/redis-cache.service';
 import { AppErrors } from '../../../../shared/core';
+import { UserName } from '../../domain/user-name.valueobject';
 import { InMemoryUserRepository } from '../../repositories/user/in-memory-user.repository';
 import { UserRepository } from '../../repositories/user/user.repository';
 import { AuthService } from '../../services/auth.service';
@@ -85,15 +86,19 @@ describe('LogoutUsecase', () => {
 
   it('should succeed', async () => {
     // Given
-    const username = faker.internet.userName();
-    const user = new UserEntityBuilder({ username }).makeLoggedIn().build();
+    const userNameFixture = faker.internet.userName();
+    const userName = UserName.create(userNameFixture).getValue();
+    const user = new UserEntityBuilder()
+      .withUserName(userName)
+      .makeLoggedIn()
+      .build();
     await userRepository.save(user);
     await authService.saveAuthenticatedUser(user);
 
     // When
-    const valueBeforeLogout = await redisCacheService.get(username);
+    const valueBeforeLogout = await redisCacheService.get(userNameFixture);
     const result = await useCase.execute(user);
-    const valueAfterLockout = await redisCacheService.get(username);
+    const valueAfterLockout = await redisCacheService.get(userNameFixture);
 
     // Then
     expect.assertions(3);

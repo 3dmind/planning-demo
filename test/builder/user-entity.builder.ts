@@ -8,47 +8,59 @@ import { UniqueEntityId } from '../../src/shared/domain';
 
 export class UserEntityBuilder {
   private accessToken: AccessToken;
-  private readonly createdAt: Date;
-  private readonly id: UniqueEntityId;
+  private createdAt: Date;
+  private id: UniqueEntityId;
   private email: UserEmail;
   private isEmailVerified: boolean;
   private password: UserPassword;
   private refreshToken: RefreshToken;
   private username: UserName;
 
-  // TODO: Refactor to align with the other builders
-  constructor(
-    {
-      createdAt = new Date(),
-      email = faker.internet.email(),
-      password = faker.internet.password(UserPassword.minLength),
-      passwordIsHashed = false,
-      username = faker.internet.userName(),
-      isEmailVerified = false,
-    }: {
-      createdAt?: Date;
-      email?: string;
-      password?: string;
-      passwordIsHashed?: boolean;
-      username?: string;
-      isEmailVerified?: boolean;
-    } = {},
-    id: string = faker.random.uuid(),
-  ) {
+  constructor() {
+    const username = faker.internet.userName();
+    const password = faker.internet.password(UserPassword.minLength);
+    const email = faker.internet.email();
+    const entityId = new UniqueEntityId();
+
     this.accessToken = '';
-    this.createdAt = createdAt;
+    this.createdAt = new Date();
     this.email = UserEmail.create(email).getValue();
-    this.id = new UniqueEntityId(id);
-    this.isEmailVerified = isEmailVerified;
+    this.id = entityId;
+    this.isEmailVerified = false;
     this.password = UserPassword.create({
       value: password,
-      hashed: passwordIsHashed,
+      hashed: false,
     }).getValue();
     this.refreshToken = '';
     this.username = UserName.create(username).getValue();
   }
 
-  makeEmailVerified(): UserEntityBuilder {
+  withCreationDate(createdAt: Date): UserEntityBuilder {
+    this.createdAt = createdAt;
+    return this;
+  }
+
+  withId(id: UniqueEntityId): UserEntityBuilder {
+    this.id = id;
+    return this;
+  }
+
+  withUserName(userName: UserName): UserEntityBuilder {
+    this.username = userName;
+    return this;
+  }
+
+  withPassword(userPassword: UserPassword): UserEntityBuilder {
+    this.password = userPassword;
+    return this;
+  }
+
+  withEmail(userEmail: UserEmail): UserEntityBuilder {
+    this.email = userEmail;
+    return this;
+  }
+
+  withVerifiedEmail(): UserEntityBuilder {
     this.isEmailVerified = true;
     return this;
   }

@@ -8,6 +8,7 @@ import { UserEntityBuilder } from '../../../../test/builder/user-entity.builder'
 import { ApiConfigService } from '../../../api-config/api-config.service';
 import { RedisCacheService } from '../../../redis-cache/redis-cache.service';
 import { JwtClaims } from '../domain/jwt-claims.interface';
+import { UserName } from '../domain/user-name.valueobject';
 import { AuthService } from './auth.service';
 
 describe('AuthService', () => {
@@ -111,55 +112,72 @@ describe('AuthService', () => {
   });
 
   it('should remove authenticated user', async () => {
-    const username = 'tomtest';
-    const user = new UserEntityBuilder({ username }).makeLoggedIn().build();
-    let value;
+    // Given
+    const userNameFixture = 'tomtest';
+    const userName = UserName.create(userNameFixture).getValue();
+    const user = new UserEntityBuilder()
+      .withUserName(userName)
+      .makeLoggedIn()
+      .build();
 
+    // When
     await service.saveAuthenticatedUser(user);
-    value = await redisCacheService.get(username);
-
-    expect(value).toBeDefined();
-
+    const valueBefore = await redisCacheService.get(userNameFixture);
     await service.deAuthenticateUser(user);
-    value = await redisCacheService.get(username);
+    const valueAfter = await redisCacheService.get(userNameFixture);
 
+    // Then
     expect.assertions(2);
-    expect(value).toBeUndefined();
+    expect(valueBefore).toBeDefined();
+    expect(valueAfter).toBeUndefined();
   });
 
   it('should access saved tokens', async () => {
     // Given
-    const username = faker.internet.userName();
-    const user = new UserEntityBuilder({ username }).build();
+    const userNameFixture = faker.internet.userName();
+    const userName = UserName.create(userNameFixture).getValue();
+    const accessToken = faker.random.alphaNumeric(10);
+    const refreshToken = faker.random.alphaNumeric(10);
+    const user = new UserEntityBuilder()
+      .withUserName(userName)
+      .makeLoggedIn({
+        accessToken,
+        refreshToken,
+      })
+      .build();
     await service.saveAuthenticatedUser(user);
 
     // When
-    const tokens = await service.getTokens(username);
+    const tokens = await service.getTokens(userNameFixture);
 
     // Then
-    expect.assertions(1);
-    expect(tokens).toBeDefined();
+    expect.assertions(2);
+    expect(tokens).not.toBeNull();
+    expect(tokens).toMatchObject({
+      accessToken: expect.stringMatching(accessToken),
+      refreshToken: expect.stringMatching(refreshToken),
+    });
   });
 
   it('should validate access token', async () => {
     // Given
-    const username = faker.internet.userName();
+    const userNameFixture = faker.internet.userName();
+    const userName = UserName.create(userNameFixture).getValue();
     const validAccessToken = faker.random.alphaNumeric(10);
     const invalidAccessToken = faker.random.alphaNumeric(10);
-    const user = new UserEntityBuilder({
-      username,
-    })
+    const user = new UserEntityBuilder()
+      .withUserName(userName)
       .makeLoggedIn({ accessToken: validAccessToken })
       .build();
     await service.saveAuthenticatedUser(user);
 
     // When
     const validResult = await service.validateAccessToken(
-      username,
+      userNameFixture,
       validAccessToken,
     );
     const invalidResult = await service.validateAccessToken(
-      username,
+      userNameFixture,
       invalidAccessToken,
     );
 
@@ -171,23 +189,23 @@ describe('AuthService', () => {
 
   it('should validate refresh token', async () => {
     // Given
-    const username = faker.internet.userName();
+    const userNameFixture = faker.internet.userName();
+    const userName = UserName.create(userNameFixture).getValue();
     const validRefreshToken = faker.random.alphaNumeric(10);
     const invalidRefreshToken = faker.random.alphaNumeric(10);
-    const user = new UserEntityBuilder({
-      username,
-    })
+    const user = new UserEntityBuilder()
+      .withUserName(userName)
       .makeLoggedIn({ refreshToken: validRefreshToken })
       .build();
     await service.saveAuthenticatedUser(user);
 
     // When
     const validResult = await service.validateRefreshToken(
-      username,
+      userNameFixture,
       validRefreshToken,
     );
     const invalidResult = await service.validateRefreshToken(
-      username,
+      userNameFixture,
       invalidRefreshToken,
     );
 

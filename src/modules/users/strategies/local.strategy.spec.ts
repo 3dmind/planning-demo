@@ -6,6 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
 import { UserEntityBuilder } from '../../../../test/builder/user-entity.builder';
 import { AppErrors, left, Result } from '../../../shared/core';
+import { UserName } from '../domain/user-name.valueobject';
 import { UserPassword } from '../domain/user-password.valueobject';
 import { InMemoryUserRepository } from '../repositories/user/in-memory-user.repository';
 import { UserRepository } from '../repositories/user/user.repository';
@@ -55,22 +56,29 @@ describe('LocalStrategy', () => {
 
   it('should deny access if password does not match', async () => {
     // Given
-    const hashedPassword = await UserPassword.create({
-      value: faker.internet.password(UserPassword.minLength),
-    })
-      .getValue()
-      .getHashedValue();
-    const user = new UserEntityBuilder({
-      passwordIsHashed: true,
-      password: hashedPassword,
-    }).build();
-    const username = user.username.value;
-    const passwordFixture = faker.internet.password(UserPassword.minLength);
     const passwordDoesntMatchError = new ValidateUserErrors.PasswordDoesntMatchError();
+    const notMatchingPasswordFixture = faker.internet.password(
+      UserPassword.minLength,
+    );
+    const userNameFixture = faker.internet.userName();
+    const userPasswordFixture = faker.internet.password(UserPassword.minLength);
+    const hashedPasswordFixture = await UserPassword.hash(userPasswordFixture);
+    const userPassword = UserPassword.create({
+      value: hashedPasswordFixture,
+      hashed: true,
+    }).getValue();
+    const userName = UserName.create(userNameFixture).getValue();
+    const user = new UserEntityBuilder()
+      .withUserName(userName)
+      .withPassword(userPassword)
+      .build();
     await userRepository.save(user);
 
     // When
-    const promise = strategy.validate(username, passwordFixture);
+    const promise = strategy.validate(
+      userNameFixture,
+      notMatchingPasswordFixture,
+    );
 
     // Then
     expect.assertions(2);
@@ -124,20 +132,22 @@ describe('LocalStrategy', () => {
 
   it('should succeed', async () => {
     // Given
-    const usernameFixture = faker.internet.userName();
+    const userNameFixture = faker.internet.userName();
+    const userName = UserName.create(userNameFixture).getValue();
     const passwordFixture = faker.internet.password(UserPassword.minLength);
-    const hashedPassword = await UserPassword.create({ value: passwordFixture })
-      .getValue()
-      .getHashedValue();
-    const user = new UserEntityBuilder({
-      username: usernameFixture,
-      password: hashedPassword,
-      passwordIsHashed: true,
-    }).build();
+    const hashedPasswordFixture = await UserPassword.hash(passwordFixture);
+    const userPassword = UserPassword.create({
+      value: hashedPasswordFixture,
+      hashed: true,
+    }).getValue();
+    const user = new UserEntityBuilder()
+      .withUserName(userName)
+      .withPassword(userPassword)
+      .build();
     await userRepository.save(user);
 
     // When
-    const result = await strategy.validate(usernameFixture, passwordFixture);
+    const result = await strategy.validate(userNameFixture, passwordFixture);
 
     // Then
     expect.assertions(1);

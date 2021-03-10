@@ -20,6 +20,10 @@ export class UserPassword extends ValueObject<UserPasswordProps> {
     return this.props.value;
   }
 
+  public static async hash(plainTextPassword: string): Promise<string> {
+    return bcrypt.hash(plainTextPassword, SALT_ROUNDS);
+  }
+
   public static create(props: UserPasswordProps): Result<UserPassword> {
     const nullGuardResult = Guard.againstNullOrUndefined(
       props.value,

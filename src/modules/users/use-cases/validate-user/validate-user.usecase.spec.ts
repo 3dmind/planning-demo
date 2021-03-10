@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
 import { UserEntityBuilder } from '../../../../../test/builder/user-entity.builder';
 import { AppErrors } from '../../../../shared/core';
+import { UserName } from '../../domain/user-name.valueobject';
 import { UserPassword } from '../../domain/user-password.valueobject';
 import { InMemoryUserRepository } from '../../repositories/user/in-memory-user.repository';
 import { UserRepository } from '../../repositories/user/user.repository';
@@ -13,7 +14,7 @@ describe('ValidateUserUsecase', () => {
   let userRepository: UserRepository;
   let useCase: ValidateUserUsecase;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
@@ -88,24 +89,23 @@ describe('ValidateUserUsecase', () => {
 
   it("should fail if password doesn't match", async () => {
     // Given
-    const usernameFixture = faker.internet.userName();
-    const passwordFixture = faker.internet.password(UserPassword.minLength);
-    const hashedPassword = await UserPassword.create({
-      value: passwordFixture,
-      hashed: false,
-    })
-      .getValue()
-      .getHashedValue();
+    const plainTextPassword = faker.internet.password(UserPassword.minLength);
+    const hashedPassword = await UserPassword.hash(plainTextPassword);
+    const userPassword = UserPassword.create({
+      value: hashedPassword,
+      hashed: true,
+    }).getValue();
+    const userNameFixture = faker.internet.userName();
+    const userName = UserName.create(userNameFixture).getValue();
+    const user = new UserEntityBuilder()
+      .withUserName(userName)
+      .withPassword(userPassword)
+      .build();
     const missMatchingPasswordFixture = faker.internet.password(
       UserPassword.minLength,
     );
-    const user = new UserEntityBuilder({
-      username: usernameFixture,
-      password: hashedPassword,
-      passwordIsHashed: true,
-    }).build();
     const request: ValidateUserDto = {
-      username: usernameFixture,
+      username: userNameFixture,
       password: missMatchingPasswordFixture,
     };
     await userRepository.save(user);
@@ -149,22 +149,21 @@ describe('ValidateUserUsecase', () => {
 
   it('should succeed', async () => {
     // Given
-    const usernameFixture = faker.internet.userName();
-    const passwordFixture = faker.internet.password(UserPassword.minLength);
-    const hashedPassword = await UserPassword.create({
-      value: passwordFixture,
-      hashed: false,
-    })
-      .getValue()
-      .getHashedValue();
-    const user = new UserEntityBuilder({
-      username: usernameFixture,
-      password: hashedPassword,
-      passwordIsHashed: true,
-    }).build();
+    const userNameFixture = faker.internet.userName();
+    const userName = UserName.create(userNameFixture).getValue();
+    const plainTextPassword = faker.internet.password(UserPassword.minLength);
+    const hashedPassword = await UserPassword.hash(plainTextPassword);
+    const userPassword = UserPassword.create({
+      value: hashedPassword,
+      hashed: true,
+    }).getValue();
+    const user = new UserEntityBuilder()
+      .withUserName(userName)
+      .withPassword(userPassword)
+      .build();
     const request: ValidateUserDto = {
-      username: usernameFixture,
-      password: passwordFixture,
+      username: userNameFixture,
+      password: plainTextPassword,
     };
     await userRepository.save(user);
 

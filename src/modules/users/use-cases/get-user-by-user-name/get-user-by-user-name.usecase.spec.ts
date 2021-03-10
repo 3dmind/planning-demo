@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
 import { UserEntityBuilder } from '../../../../../test/builder/user-entity.builder';
 import { AppErrors } from '../../../../shared/core';
+import { UserName } from '../../domain/user-name.valueobject';
 import { InMemoryUserRepository } from '../../repositories/user/in-memory-user.repository';
 import { UserRepository } from '../../repositories/user/user.repository';
 import { GetUserByUserNameDto } from './get-user-by-user-name.dto';
@@ -88,12 +89,11 @@ describe('GetUserByUserNameUsecase', () => {
 
   it('should succeed', async () => {
     // Given
-    const usernameFixture = faker.internet.userName();
-    const user = new UserEntityBuilder({
-      username: usernameFixture,
-    }).build();
+    const userNameFixture = faker.internet.userName();
+    const userName = UserName.create(userNameFixture).getValue();
+    const user = new UserEntityBuilder().withUserName(userName).build();
     const requestFixture: GetUserByUserNameDto = {
-      username: usernameFixture,
+      username: userNameFixture,
     };
     await userRepository.save(user);
 

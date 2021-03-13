@@ -9,9 +9,7 @@ export class DomainEventPublisherService {
   constructor(private readonly eventEmitter: EventEmitter2) {}
 
   public publish(entity: AggregateRoot<unknown>): void {
-    const domainEventCollection = entity.getDomainEvents();
-    const domainEvents = domainEventCollection.toArray();
-    domainEventCollection.clear();
+    const domainEvents = entity.pullDomainEvents();
     try {
       for (const domainEvent of domainEvents) {
         const domainEventClass = Reflect.getPrototypeOf(domainEvent);

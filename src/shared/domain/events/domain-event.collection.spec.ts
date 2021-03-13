@@ -2,15 +2,6 @@ import { DomainEventCollection } from './domain-event.collection';
 import { DomainEvent } from './domain-event.interface';
 
 describe('DomainEventCollection', () => {
-  it('should be defined', () => {
-    // When
-    const domainEventCollection = new DomainEventCollection();
-
-    // Then
-    expect.assertions(1);
-    expect(domainEventCollection).toBeDefined();
-  });
-
   it('should add domain events', () => {
     // Given
     const event = {} as DomainEvent;

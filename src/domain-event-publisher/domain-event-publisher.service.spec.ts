@@ -8,9 +8,15 @@ describe('DomainEventPublisherService', () => {
     readonly occurredOn: Date;
     readonly entity: EntityMock;
 
+    public static eventName = DomainEventMock.name;
+
     constructor(entity: EntityMock) {
       this.occurredOn = new Date();
       this.entity = entity;
+    }
+
+    get eventName(): string {
+      return DomainEventMock.eventName;
     }
   }
 
@@ -42,7 +48,7 @@ describe('DomainEventPublisherService', () => {
     const entityId = new UniqueEntityId();
     const entityMock = new EntityMock(null, entityId);
     const listenerSpy = jest.fn();
-    eventEmitter.on(DomainEventMock.name, listenerSpy);
+    eventEmitter.on(DomainEventMock.eventName, listenerSpy);
 
     // When
     service.publish(entityMock);

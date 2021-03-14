@@ -2,8 +2,8 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import * as faker from 'faker';
 import * as request from 'supertest';
+import { AppModule } from '../../../../src/app/app.module';
 import { UserPassword } from '../../../../src/modules/users/domain/user-password.valueobject';
-import { UsersModule } from '../../../../src/modules/users/users.module';
 import { UsersApi } from '../users-api.enum';
 
 describe('/users (POST)', () => {
@@ -11,7 +11,7 @@ describe('/users (POST)', () => {
 
   beforeAll(async () => {
     const moduleFixture = await Test.createTestingModule({
-      imports: [UsersModule],
+      imports: [AppModule],
     }).compile();
 
     app = await moduleFixture.createNestApplication().init();

@@ -1,7 +1,7 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import * as request from 'supertest';
-import { UsersModule } from '../../../../src/modules/users/users.module';
+import { AppModule } from '../../../../src/app/app.module';
 import { auth } from '../../../auth';
 import { login } from '../login/login';
 import { logout } from '../logout/logout';
@@ -12,7 +12,7 @@ describe('/users/me (GET)', () => {
 
   beforeAll(async () => {
     const moduleFixture = await Test.createTestingModule({
-      imports: [UsersModule],
+      imports: [AppModule],
     }).compile();
 
     app = await moduleFixture.createNestApplication().init();

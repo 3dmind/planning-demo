@@ -1,7 +1,7 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import * as faker from 'faker';
-import { PlanningModule } from '../../../../src/modules/planning/planning.module';
+import { AppModule } from '../../../../src/app/app.module';
 import { login } from '../../users/login/login';
 import { logout } from '../../users/logout/logout';
 import { noteTask } from '../note-task/note-task';
@@ -12,7 +12,7 @@ describe('/tasks/:id/assign (e2e)', () => {
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
-      imports: [PlanningModule],
+      imports: [AppModule],
     }).compile();
 
     app = await module.createNestApplication().init();

@@ -1,6 +1,6 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { UsersModule } from '../../../../src/modules/users/users.module';
+import { AppModule } from '../../../../src/app/app.module';
 import { login } from '../login/login';
 import { logout } from './logout';
 
@@ -9,7 +9,7 @@ describe('/users/logout (POST)', () => {
 
   beforeAll(async () => {
     const moduleFixture = await Test.createTestingModule({
-      imports: [UsersModule],
+      imports: [AppModule],
     }).compile();
 
     app = await moduleFixture.createNestApplication().init();

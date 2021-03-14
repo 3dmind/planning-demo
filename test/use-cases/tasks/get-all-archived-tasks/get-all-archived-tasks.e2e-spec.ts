@@ -1,8 +1,8 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import * as request from 'supertest';
+import { AppModule } from '../../../../src/app/app.module';
 import { TaskDto } from '../../../../src/modules/planning/dtos/task.dto';
-import { PlanningModule } from '../../../../src/modules/planning/planning.module';
 import { login, loginAsAlice, loginAsBob } from '../../users/login/login';
 import { logout } from '../../users/logout/logout';
 import { archiveTask } from '../archive-task/archive-task';
@@ -15,7 +15,7 @@ describe('/tasks/archived (GET)', () => {
 
   beforeAll(async () => {
     const moduleFixture = await Test.createTestingModule({
-      imports: [PlanningModule],
+      imports: [AppModule],
     }).compile();
 
     app = await moduleFixture.createNestApplication().init();

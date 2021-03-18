@@ -40,3 +40,6 @@ lerna-debug.log*
 .env
 !.env.template
 /docs/api/http-client.private.env.json
+
+# SonarQube
+/.scannerwork

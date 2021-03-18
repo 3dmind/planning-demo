@@ -50,7 +50,7 @@ export class NoteTaskUsecase implements UseCase<Request, Response> {
       );
       if (!found) {
         const memberNotFoundError = new NoteTaskErrors.MemberNotFoundError(
-          userId.id.toString(),
+          userId,
         );
         this.logger.debug(memberNotFoundError.errorValue().message);
         return left(memberNotFoundError);

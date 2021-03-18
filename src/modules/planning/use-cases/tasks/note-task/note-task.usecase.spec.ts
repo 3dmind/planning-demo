@@ -71,7 +71,7 @@ describe('NoteTaskUsecase', () => {
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(NoteTaskErrors.MemberNotFoundError);
     expect(result.value.errorValue().message).toEqual(
-      `Could not find member associated with the user id {${userId.id}}.`,
+      `Could not find member associated with the user id {${userId}}.`,
     );
   });
 

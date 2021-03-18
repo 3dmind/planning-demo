@@ -14,28 +14,47 @@ describe('AssigneeId', () => {
     uuid.mockRestore();
   });
 
-  it('should accept existing ID', () => {
-    // Given
-    const idFixture = new UniqueEntityId(uuid.v4());
-
+  it('should create new entity id', () => {
     // When
-    const assigneeIdResult = AssigneeId.create(idFixture);
-    const assigneeId = assigneeIdResult.getValue();
+    const result = AssigneeId.create();
+    const assigneeId = result.getValue();
 
     // Then
-    expect.assertions(2);
-    expect(assigneeIdResult.isSuccess).toBe(true);
-    expect(assigneeId.id.equals(idFixture)).toBe(true);
+    expect.assertions(5);
+    expect(result.isSuccess).toBe(true);
+    expect(assigneeId).toBeDefined();
+    expect(assigneeId).toBeInstanceOf(AssigneeId);
+    expect(assigneeId.id).toBeDefined();
+    expect(assigneeId.id.toValue()).toEqual(expect.any(String));
   });
 
-  it('should create new ID', () => {
+  it('should create new entity id from existing id', () => {
+    // Given
+    const idFixture = faker.random.uuid();
+    const entityId = new UniqueEntityId(idFixture);
+
     // When
-    const assigneeIdResult = AssigneeId.create();
-    const assigneeId = assigneeIdResult.getValue();
+    const result = AssigneeId.create(entityId);
+    const assigneeId = result.getValue();
 
     // Then
-    expect.assertions(2);
-    expect(assigneeIdResult.isSuccess).toBe(true);
-    expect(assigneeId.id).toBeDefined();
+    expect.assertions(4);
+    expect(result.isSuccess).toBe(true);
+    expect(assigneeId).toBeDefined();
+    expect(assigneeId).toBeInstanceOf(AssigneeId);
+    expect(assigneeId.id.toValue()).toEqual(idFixture);
+  });
+
+  it('should implement toString() method', () => {
+    // Given
+    const idFixture = faker.random.uuid();
+    const entityId = new UniqueEntityId(idFixture);
+
+    // When
+    const assigneeId = AssigneeId.create(entityId).getValue();
+
+    // Then
+    expect.assertions(1);
+    expect(assigneeId.toString()).toEqual(idFixture);
   });
 });

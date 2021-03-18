@@ -20,7 +20,7 @@ export class UserMapper {
     }
 
     return {
-      baseUserId: user.userId.id.toString(),
+      baseUserId: user.userId.toString(),
       createdAt: user.createdAt,
       isEmailVerified: user.isEmailVerified,
       userEmail: user.email.value,

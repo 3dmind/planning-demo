@@ -53,7 +53,7 @@ export class DiscardTaskUsecase implements UseCase<Request, Response> {
       } = await this.memberRepository.getMemberByUserId(request.userId.id);
       if (!memberFound) {
         const memberNotFoundError = new DiscardTaskErrors.MemberNotFoundError(
-          request.userId.id.toString(),
+          request.userId,
         );
         this.logger.debug(memberNotFoundError.errorValue().message);
         return left(memberNotFoundError);

@@ -50,7 +50,7 @@ describe('GetAllActiveTasksUsecase', () => {
     expect(result.isLeft()).toBe(true);
     expect(error).toBeInstanceOf(GetAllActiveTasksErrors.MemberNotFoundError);
     expect(error.errorValue().message).toEqual(
-      `Could not find member associated with the user id {${userId.id}}.`,
+      `Could not find member associated with the user id {${userId}}.`,
     );
   });
 

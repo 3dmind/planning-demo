@@ -33,7 +33,7 @@ describe('CreateMemberUsecase', () => {
     // Given
     const userId = UserId.create().getValue();
     const request: CreateMemberDto = {
-      userId: userId.id.toString(),
+      userId: userId.toString(),
     };
     const member = new MemberEntityBuilder().withUserId(userId).build();
     await memberRepository.save(member);
@@ -48,7 +48,7 @@ describe('CreateMemberUsecase', () => {
       CreateMemberErrors.MemberAlreadyExistsError,
     );
     expect(result.value.errorValue().message).toEqual(
-      `A member for user id ${userId.id} already exists.`,
+      `A member for user id ${userId} already exists.`,
     );
   });
 

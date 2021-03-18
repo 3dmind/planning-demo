@@ -53,7 +53,7 @@ export class ResumeTaskUsecase implements UseCase<Request, Response> {
       } = await this.memberRepository.getMemberByUserId(request.userId.id);
       if (!memberFound) {
         const memberNotFoundError = new ResumeTaskErrors.MemberNotFoundError(
-          request.userId.id.toString(),
+          request.userId,
         );
         this.logger.debug(memberNotFoundError.errorValue().message);
         return left(memberNotFoundError);

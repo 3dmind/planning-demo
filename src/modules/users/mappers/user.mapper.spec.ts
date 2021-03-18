@@ -40,7 +40,7 @@ describe('UserMapper', () => {
     // Then
     expect.assertions(1);
     expect(model).toMatchObject<Prisma.BaseUserModelCreateInput>({
-      baseUserId: user.userId.id.toString(),
+      baseUserId: user.userId.toString(),
       createdAt: user.props.createdAt,
       isEmailVerified: user.props.isEmailVerified,
       userEmail: user.props.email.value,

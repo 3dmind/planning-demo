@@ -39,7 +39,7 @@ export class GetAllActiveTasksUsecase implements UseCase<Request, Response> {
       );
       if (!found) {
         const memberNotFoundError = new GetAllActiveTasksErrors.MemberNotFoundError(
-          request.userId.id.toString(),
+          request.userId,
         );
         this.logger.debug(memberNotFoundError.errorValue().message);
         return left(memberNotFoundError);

@@ -14,7 +14,7 @@ export class AfterUserRegisteredSubscriber {
     const { user } = event;
     try {
       await this.createMemberUsecase.execute({
-        userId: user.userId.id.toString(),
+        userId: user.userId.toString(),
       });
       this.logger.log(
         'Successfully executed CreateMember use case after user registered',

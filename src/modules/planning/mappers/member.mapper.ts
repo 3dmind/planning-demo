@@ -7,10 +7,10 @@ export class MemberMapper {
   public static toPersistence(member: Member): Prisma.MemberModelCreateInput {
     return {
       createdAt: member.createdAt,
-      memberId: member.memberId.id.toString(),
+      memberId: member.memberId.toString(),
       baseUserModel: {
         connect: {
-          baseUserId: member.userId.id.toString(),
+          baseUserId: member.userId.toString(),
         },
       },
     };

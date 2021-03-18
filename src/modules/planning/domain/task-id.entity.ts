@@ -14,7 +14,7 @@ export class TaskId extends Entity<any> {
     return Result.ok<TaskId>(new TaskId(id));
   }
 
-  toString(): string {
+  public toString(): string {
     return this._id.toString();
   }
 }

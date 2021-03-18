@@ -40,7 +40,7 @@ export class GetAllArchivedTasksUsecase implements UseCase<Request, Response> {
       );
       if (!found) {
         const memberNotFoundError = new GetAllArchivedTasksErrors.MemberNotFoundError(
-          request.userId.id.toString(),
+          request.userId,
         );
         this.logger.debug(memberNotFoundError.errorValue().message);
         return left(memberNotFoundError);

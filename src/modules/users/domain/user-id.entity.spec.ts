@@ -1,11 +1,11 @@
 import * as faker from 'faker';
 import * as uuid from 'uuid';
 import { UniqueEntityId } from '../../../shared/domain';
-import { OwnerId } from './owner-id.entity';
+import { UserId } from './user-id.entity';
 
 jest.mock('uuid');
 
-describe('OwnerId', () => {
+describe('UserId', () => {
   beforeAll(() => {
     uuid.v4.mockReturnValue(faker.random.uuid());
   });
@@ -16,16 +16,16 @@ describe('OwnerId', () => {
 
   it('should create new entity id', () => {
     // When
-    const result = OwnerId.create();
-    const ownerId = result.getValue();
+    const result = UserId.create();
+    const userId = result.getValue();
 
     // Then
     expect.assertions(5);
     expect(result.isSuccess).toBe(true);
-    expect(ownerId).toBeDefined();
-    expect(ownerId).toBeInstanceOf(OwnerId);
-    expect(ownerId.id).toBeDefined();
-    expect(ownerId.id.toValue()).toEqual(expect.any(String));
+    expect(userId).toBeDefined();
+    expect(userId).toBeInstanceOf(UserId);
+    expect(userId.id).toBeDefined();
+    expect(userId.id.toValue()).toEqual(expect.any(String));
   });
 
   it('should create new entity id from existing id', () => {
@@ -34,15 +34,15 @@ describe('OwnerId', () => {
     const entityId = new UniqueEntityId(idFixture);
 
     // When
-    const result = OwnerId.create(entityId);
-    const ownerId = result.getValue();
+    const result = UserId.create(entityId);
+    const userId = result.getValue();
 
     // Then
     expect.assertions(4);
     expect(result.isSuccess).toBe(true);
-    expect(ownerId).toBeDefined();
-    expect(ownerId).toBeInstanceOf(OwnerId);
-    expect(ownerId.id.toValue()).toEqual(idFixture);
+    expect(userId).toBeDefined();
+    expect(userId).toBeInstanceOf(UserId);
+    expect(userId.id.toValue()).toEqual(idFixture);
   });
 
   it('should implement toString() method', () => {
@@ -51,10 +51,10 @@ describe('OwnerId', () => {
     const entityId = new UniqueEntityId(idFixture);
 
     // When
-    const ownerId = OwnerId.create(entityId).getValue();
+    const userId = UserId.create(entityId).getValue();
 
     // Then
     expect.assertions(1);
-    expect(ownerId.toString()).toEqual(idFixture);
+    expect(userId.toString()).toEqual(idFixture);
   });
 });

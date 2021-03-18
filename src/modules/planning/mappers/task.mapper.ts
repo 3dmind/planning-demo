@@ -23,12 +23,12 @@ export class TaskMapper {
       tickedOffAt: taskSnapshot.tickedOffAt,
       ownerModel: {
         connect: {
-          memberId: taskSnapshot.ownerId.id.toString(),
+          memberId: taskSnapshot.ownerId.toString(),
         },
       },
       assigneeModel: {
         connect: {
-          memberId: taskSnapshot.assigneeId.id.toString(),
+          memberId: taskSnapshot.assigneeId.toString(),
         },
       },
     };

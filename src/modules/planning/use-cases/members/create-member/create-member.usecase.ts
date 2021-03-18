@@ -39,7 +39,7 @@ export class CreateMemberUsecase implements UseCase<CreateMemberDto, Response> {
       } = await this.memberRepository.getMemberByUserId(userId.id);
       if (memberFound) {
         const memberAlreadyExistsError = new CreateMemberErrors.MemberAlreadyExistsError(
-          userId.id.toString(),
+          userId,
         );
         this.logger.debug(memberAlreadyExistsError.errorValue().message);
         return left(memberAlreadyExistsError);

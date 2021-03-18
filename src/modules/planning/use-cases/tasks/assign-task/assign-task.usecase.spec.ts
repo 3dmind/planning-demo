@@ -58,7 +58,7 @@ describe('AssignTaskUsecase', () => {
       AssignTaskErrors.MemberNotFoundByUserIdError,
     );
     expect(result.value.errorValue().message).toEqual(
-      `Could not find member associated with the user id {${userId.id}}.`,
+      `Could not find member associated with the user id {${userId}}.`,
     );
   });
 

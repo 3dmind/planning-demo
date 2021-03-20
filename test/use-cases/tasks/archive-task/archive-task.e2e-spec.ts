@@ -60,8 +60,7 @@ describe('/tasks/:id/archive (POST)', () => {
     return logout(app, loginResponse).expect(HttpStatus.OK);
   });
 
-  it(`should respond with ${HttpStatus.OK} if the task was archived`, async () => {
-    expect.assertions(1);
+  it(`should respond with ${HttpStatus.OK} if the task was successfully archived`, async () => {
     const loginResponse = await login(app).expect(HttpStatus.OK);
     const noteTaskResponse = await noteTask(app, loginResponse).expect(
       HttpStatus.CREATED,
@@ -72,6 +71,8 @@ describe('/tasks/:id/archive (POST)', () => {
       loginResponse,
       noteTaskResponse.body.id,
     );
+
+    expect.assertions(1);
     expect(response.body).toMatchObject<Partial<TaskDto>>({
       archivedAt: expect.any(String),
       isArchived: true,

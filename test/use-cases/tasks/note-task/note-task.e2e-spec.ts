@@ -22,34 +22,32 @@ describe('/tasks (POST)', () => {
     await app.close();
   });
 
-  it('missing text', async () => {
-    expect.assertions(1);
+  it(`should respond with ${HttpStatus.UNPROCESSABLE_ENTITY} if the description is missing`, async () => {
     const loginResponse = await login(app).expect(HttpStatus.OK);
 
     const response = await noteTask(app, loginResponse, null).expect(
       HttpStatus.UNPROCESSABLE_ENTITY,
     );
 
+    expect.assertions(1);
     expect(response.body.message).toEqual('text is null or undefined');
 
     return logout(app, loginResponse).expect(HttpStatus.OK);
   });
 
-  it('invalid text', async () => {
-    expect.assertions(1);
+  it(`should respond with ${HttpStatus.UNPROCESSABLE_ENTITY} if the description is invalid`, async () => {
     const loginResponse = await login(app).expect(HttpStatus.OK);
-
     const response = await noteTask(app, loginResponse, '').expect(
       HttpStatus.UNPROCESSABLE_ENTITY,
     );
 
+    expect.assertions(1);
     expect(response.body.message).toEqual('Text is not at least 2 chars.');
 
     return logout(app, loginResponse).expect(HttpStatus.OK);
   });
 
-  it('note new task', async () => {
-    expect.assertions(1);
+  it(`should respond with ${HttpStatus.CREATED} if the task was successfully noted`, async () => {
     const text = faker.lorem.words(5);
     const loginResponse = await login(app).expect(HttpStatus.OK);
 
@@ -57,6 +55,7 @@ describe('/tasks (POST)', () => {
       HttpStatus.CREATED,
     );
 
+    expect.assertions(1);
     expect(response.body).toMatchObject<TaskDto>({
       archivedAt: null,
       createdAt: expect.any(String),

@@ -7,7 +7,7 @@ import { logout } from '../../users/logout/logout';
 import { noteTask } from '../note-task/note-task';
 import { assignTask } from './assign-task';
 
-describe('/tasks/:id/assign (e2e)', () => {
+describe('/tasks/:id/assign (POST)', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
@@ -22,7 +22,7 @@ describe('/tasks/:id/assign (e2e)', () => {
     await app.close();
   });
 
-  it('no member found for user', async () => {
+  it(`should respond with ${HttpStatus.NOT_FOUND} if the member cannot be found`, async () => {
     const taskId = faker.random.uuid();
     const memberId = faker.random.uuid();
     const loginResponse = await login(
@@ -38,19 +38,7 @@ describe('/tasks/:id/assign (e2e)', () => {
     return logout(app, loginResponse).expect(HttpStatus.OK);
   });
 
-  it('member not found', async () => {
-    const taskId = faker.random.uuid();
-    const memberId = faker.random.uuid();
-    const loginResponse = await login(app).expect(HttpStatus.OK);
-
-    await assignTask(app, loginResponse, taskId, memberId).expect(
-      HttpStatus.NOT_FOUND,
-    );
-
-    return logout(app, loginResponse).expect(HttpStatus.OK);
-  });
-
-  it('task not found', async () => {
+  it(`should respond with ${HttpStatus.NOT_FOUND} if the task cannot be found`, async () => {
     const taskId = faker.random.uuid();
     const memberId = 'a995c0db-3df0-4ae8-920d-d2b8b85146da';
     const loginResponse = await login(app).expect(HttpStatus.OK);
@@ -62,26 +50,7 @@ describe('/tasks/:id/assign (e2e)', () => {
     return logout(app, loginResponse).expect(HttpStatus.OK);
   });
 
-  it('assign task to member', async () => {
-    const memberId = '878e77d6-39ba-4367-ae0f-1e5c32d59b84';
-    const loginResponse = await login(app, 'alice', 'alice1234').expect(
-      HttpStatus.OK,
-    );
-    const noteTaskResponse = await noteTask(app, loginResponse).expect(
-      HttpStatus.CREATED,
-    );
-
-    await assignTask(
-      app,
-      loginResponse,
-      noteTaskResponse.body.id,
-      memberId,
-    ).expect(HttpStatus.OK);
-
-    return logout(app, loginResponse).expect(HttpStatus.OK);
-  });
-
-  it('task is already assigned to member', async () => {
+  it(`should respond with ${HttpStatus.UNPROCESSABLE_ENTITY} if the task is already assigned to member`, async () => {
     const memberId = '878e77d6-39ba-4367-ae0f-1e5c32d59b84';
     const loginResponse = await login(app, 'alice', 'alice1234').expect(
       HttpStatus.OK,
@@ -102,6 +71,25 @@ describe('/tasks/:id/assign (e2e)', () => {
       noteTaskResponse.body.id,
       memberId,
     ).expect(HttpStatus.UNPROCESSABLE_ENTITY);
+
+    return logout(app, loginResponse).expect(HttpStatus.OK);
+  });
+
+  it(`should respond with ${HttpStatus.OK} if the task was successfully assign`, async () => {
+    const memberId = '878e77d6-39ba-4367-ae0f-1e5c32d59b84';
+    const loginResponse = await login(app, 'alice', 'alice1234').expect(
+      HttpStatus.OK,
+    );
+    const noteTaskResponse = await noteTask(app, loginResponse).expect(
+      HttpStatus.CREATED,
+    );
+
+    await assignTask(
+      app,
+      loginResponse,
+      noteTaskResponse.body.id,
+      memberId,
+    ).expect(HttpStatus.OK);
 
     return logout(app, loginResponse).expect(HttpStatus.OK);
   });

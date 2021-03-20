@@ -1,11 +1,9 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import * as request from 'supertest';
 import { AppModule } from '../../../../src/app/app.module';
-import { auth } from '../../../auth';
 import { login } from '../login/login';
 import { logout } from '../logout/logout';
-import { UsersApi } from '../users-api.enum';
+import { getUserByUserName } from './get-user-by-user-name';
 
 describe('/users/me (GET)', () => {
   let app: INestApplication;
@@ -22,14 +20,14 @@ describe('/users/me (GET)', () => {
     await app.close();
   });
 
-  it('/users/me (GET)', async () => {
+  it(`should respond with ${HttpStatus.OK} if the user was found`, async () => {
+    expect.assertions(1);
+
     const loginResponse = await login(app).expect(HttpStatus.OK);
 
-    const response = await request(app.getHttpServer())
-      .get(UsersApi.USERS_ME)
-      .auth(...auth(loginResponse))
-      .expect(HttpStatus.OK);
-
+    const response = await getUserByUserName(app, loginResponse).expect(
+      HttpStatus.OK,
+    );
     expect(response.body).toMatchObject({
       createdAt: expect.any(String),
       email: 'e2e@planning.demo',

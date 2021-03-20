@@ -19,7 +19,7 @@ describe('/users/logout (POST)', () => {
     await app.close();
   });
 
-  it('/users/logout (POST)', async () => {
+  it(`should respond with ${HttpStatus.OK} if the logout was successful`, async () => {
     const loginResponse = await login(app).expect(HttpStatus.OK);
 
     return logout(app, loginResponse).expect(HttpStatus.OK);

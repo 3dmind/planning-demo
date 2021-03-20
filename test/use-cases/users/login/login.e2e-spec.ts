@@ -1,8 +1,7 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import * as request from 'supertest';
 import { AppModule } from '../../../../src/app/app.module';
-import { UsersApi } from '../users-api.enum';
+import { login } from './login';
 
 describe('/users/login (POST)', () => {
   let app: INestApplication;
@@ -19,45 +18,42 @@ describe('/users/login (POST)', () => {
     await app.close();
   });
 
-  it('no credentials', async () => {
-    return request(app.getHttpServer())
-      .post(UsersApi.USERS_LOGIN)
-      .send({})
-      .expect(HttpStatus.UNAUTHORIZED);
+  it(`should respond with ${HttpStatus.UNAUTHORIZED} if no credentials are provided`, async () => {
+    return login(app, '', '').expect(HttpStatus.UNAUTHORIZED);
   });
 
-  it('wrong username', async () => {
-    const response = await request(app.getHttpServer())
-      .post(UsersApi.USERS_LOGIN)
-      .send({
-        username: 'wrong-username',
-        password: 'e2e-planning-demo',
-      })
-      .expect(HttpStatus.UNAUTHORIZED);
+  it(`should respond with ${HttpStatus.UNAUTHORIZED} if the username is incorrect`, async () => {
+    expect.assertions(1);
+
+    const response = await login(
+      app,
+      'wrong-username',
+      'e2e-planning-demo',
+    ).expect(HttpStatus.UNAUTHORIZED);
 
     expect(response.body.message).toEqual('Username or password incorrect.');
   });
 
-  it('wrong password', async () => {
-    const response = await request(app.getHttpServer())
-      .post(UsersApi.USERS_LOGIN)
-      .send({
-        username: 'e2e-planning-demo',
-        password: 'wrong-password',
-      })
-      .expect(HttpStatus.UNAUTHORIZED);
+  it(`should respond with ${HttpStatus.UNAUTHORIZED} if the password does not match`, async () => {
+    expect.assertions(1);
+
+    const response = await login(
+      app,
+      'e2e-planning-demo',
+      'wrong password',
+    ).expect(HttpStatus.UNAUTHORIZED);
 
     expect(response.body.message).toEqual('Password doesnt match.');
   });
 
-  it('correct credentials', async () => {
-    const response = await request(app.getHttpServer())
-      .post(UsersApi.USERS_LOGIN)
-      .send({
-        username: 'e2e-planning-demo',
-        password: 'e2e-planning-demo',
-      })
-      .expect(HttpStatus.OK);
+  it(`should respond with ${HttpStatus.OK} if the correct credentials are provided`, async () => {
+    expect.assertions(1);
+
+    const response = await login(
+      app,
+      'e2e-planning-demo',
+      'e2e-planning-demo',
+    ).expect(HttpStatus.OK);
 
     expect(response.body).toMatchObject({
       access_token: expect.any(String),

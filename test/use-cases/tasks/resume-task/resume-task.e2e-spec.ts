@@ -63,8 +63,7 @@ describe('/tasks/:id/resume (POST)', () => {
     return logout(app, loginResponse).expect(HttpStatus.OK);
   });
 
-  it(`should respond with ${HttpStatus.OK} if the task was resume`, async () => {
-    expect.assertions(2);
+  it(`should respond with ${HttpStatus.OK} if the task was successfully resumed`, async () => {
     const loginResponse = await login(app).expect(HttpStatus.OK);
     const noteTaskResponse = await noteTask(app, loginResponse).expect(
       HttpStatus.CREATED,
@@ -75,17 +74,19 @@ describe('/tasks/:id/resume (POST)', () => {
       loginResponse,
       noteTaskResponse.body.id,
     ).expect(HttpStatus.OK);
-    expect(tickOffTaskResponse.body).toMatchObject<Partial<TaskDto>>({
-      tickedOffAt: expect.any(String),
-      isTickedOff: true,
-    });
 
-    const response = await resumeTask(
+    const resumeTaskResponse = await resumeTask(
       app,
       loginResponse,
       noteTaskResponse.body.id,
     ).expect(HttpStatus.OK);
-    expect(response.body).toMatchObject<Partial<TaskDto>>({
+
+    expect.assertions(2);
+    expect(tickOffTaskResponse.body).toMatchObject<Partial<TaskDto>>({
+      tickedOffAt: expect.any(String),
+      isTickedOff: true,
+    });
+    expect(resumeTaskResponse.body).toMatchObject<Partial<TaskDto>>({
       resumedAt: expect.any(String),
       isTickedOff: false,
     });

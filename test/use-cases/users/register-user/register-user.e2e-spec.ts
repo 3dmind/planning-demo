@@ -1,10 +1,10 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import * as faker from 'faker';
-import * as request from 'supertest';
 import { AppModule } from '../../../../src/app/app.module';
 import { UserPassword } from '../../../../src/modules/users/domain/user-password.valueobject';
-import { UsersApi } from '../users-api.enum';
+import { RegisterUserDto } from '../../../../src/modules/users/use-cases/register-user/register-user.dto';
+import { registerUser } from './register-user';
 
 describe('/users (POST)', () => {
   let app: INestApplication;
@@ -21,69 +21,62 @@ describe('/users (POST)', () => {
     await app.close();
   });
 
-  it('email already exists', async () => {
-    const response = await request(app.getHttpServer())
-      .post(UsersApi.USERS)
-      .send({
-        username: 'e2e-planning-demo',
-        email: 'e2e@planning.demo',
-        password: 'e2e-planning-demo',
-      })
-      .expect(HttpStatus.CONFLICT);
+  it(`should respond with ${HttpStatus.CONFLICT} if the email address already exists`, async () => {
+    const dto: RegisterUserDto = {
+      username: 'e2e-planning-demo',
+      email: 'e2e@planning.demo',
+      password: 'e2e-planning-demo',
+    };
 
+    const response = await registerUser(app, dto).expect(HttpStatus.CONFLICT);
+
+    expect.assertions(1);
     expect(response.body.message).toEqual(
       'The email e2e@planning.demo associated for this account already exists.',
     );
   });
 
-  it('username taken', async () => {
-    const response = await request(app.getHttpServer())
-      .post(UsersApi.USERS)
-      .send({
-        username: 'e2e-planning-demo',
-        email: faker.internet.email(),
-        password: 'e2e-planning-demo',
-      })
-      .expect(HttpStatus.CONFLICT);
+  it(`should respond with ${HttpStatus.CONFLICT} if the username is taken`, async () => {
+    const dto: RegisterUserDto = {
+      username: 'e2e-planning-demo',
+      email: faker.internet.email(),
+      password: 'e2e-planning-demo',
+    };
 
+    const response = await registerUser(app, dto).expect(HttpStatus.CONFLICT);
+
+    expect.assertions(1);
     expect(response.body.message).toEqual(
       'The username e2e-planning-demo was already taken.',
     );
   });
 
-  it('password to short', async () => {
-    const response = await request(app.getHttpServer())
-      .post(UsersApi.USERS)
-      .send({
-        username: faker.internet.userName(),
-        email: faker.internet.email(),
-        password: faker.internet.password(UserPassword.minLength - 1),
-      })
-      .expect(HttpStatus.UNPROCESSABLE_ENTITY);
+  it(`should respond with ${HttpStatus.UNPROCESSABLE_ENTITY} if the password is to short`, async () => {
+    const dto: RegisterUserDto = {
+      username: faker.internet.userName(),
+      email: faker.internet.email(),
+      password: faker.internet.password(UserPassword.minLength - 1),
+    };
 
+    const response = await registerUser(app, dto).expect(
+      HttpStatus.UNPROCESSABLE_ENTITY,
+    );
+
+    expect.assertions(1);
     expect(response.body.message).toEqual('Text is not at least 6 chars.');
   });
 
-  it('register new user', async () => {
+  it(`should respond with ${HttpStatus.CREATED} if the new user was successfully registered`, async () => {
     const username = faker.internet.userName();
     const email = faker.internet.email();
     const password = faker.internet.password(UserPassword.minLength);
 
-    await request(app.getHttpServer())
-      .post(UsersApi.USERS)
-      .send({
-        username,
-        email,
-        password,
-      })
-      .expect(HttpStatus.CREATED);
+    const dto = {
+      username,
+      email,
+      password,
+    };
 
-    return request(app.getHttpServer())
-      .post(UsersApi.USERS_LOGIN)
-      .send({
-        username,
-        password,
-      })
-      .expect(HttpStatus.OK);
+    return registerUser(app, dto).expect(HttpStatus.CREATED);
   });
 });

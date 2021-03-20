@@ -60,8 +60,7 @@ describe('/tasks/:id/tickoff (POST)', () => {
     return logout(app, loginResponse).expect(HttpStatus.OK);
   });
 
-  it(`should respond with ${HttpStatus.OK} if the task was ticked-off`, async () => {
-    expect.assertions(1);
+  it(`should respond with ${HttpStatus.OK} if the task was successfully ticked-off`, async () => {
     const loginResponse = await login(app).expect(HttpStatus.OK);
     const noteTaskResponse = await noteTask(app, loginResponse).expect(
       HttpStatus.CREATED,
@@ -73,6 +72,7 @@ describe('/tasks/:id/tickoff (POST)', () => {
       noteTaskResponse.body.id,
     ).expect(HttpStatus.OK);
 
+    expect.assertions(1);
     expect(response.body).toMatchObject<Partial<TaskDto>>({
       tickedOffAt: expect.any(String),
       isTickedOff: true,

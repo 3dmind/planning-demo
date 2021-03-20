@@ -61,7 +61,6 @@ describe('/tasks/:id/discard (POST)', () => {
   });
 
   it(`should respond with ${HttpStatus.OK} if the task was discarded`, async () => {
-    expect.assertions(1);
     const loginResponse = await login(app).expect(HttpStatus.OK);
     const noteTaskResponse = await noteTask(app, loginResponse).expect(
       HttpStatus.CREATED,
@@ -72,6 +71,8 @@ describe('/tasks/:id/discard (POST)', () => {
       loginResponse,
       noteTaskResponse.body.id,
     ).expect(HttpStatus.OK);
+
+    expect.assertions(1);
     expect(response.body).toMatchObject<Partial<TaskDto>>({
       discardedAt: expect.any(String),
       isDiscarded: true,

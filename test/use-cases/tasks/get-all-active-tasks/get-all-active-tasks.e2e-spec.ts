@@ -39,7 +39,6 @@ describe('/tasks/active (GET)', () => {
   });
 
   it('should respond with the active tasks of a member', async () => {
-    // expect.assertions(4);
     let loginResponse: request.Response;
     let noteTaskResponse: request.Response;
 
@@ -95,6 +94,7 @@ describe('/tasks/active (GET)', () => {
       HttpStatus.OK,
     );
 
+    expect.assertions(3);
     expect(response.body).toContainEqual(assignedTaskResponse.body);
     expect(response.body).toContainEqual(
       expect.objectContaining<Partial<TaskDto>>({

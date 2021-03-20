@@ -62,7 +62,6 @@ describe('/tasks/:id/edit (POST)', () => {
   });
 
   it(`should respond with ${HttpStatus.OK} if the task description was edited`, async () => {
-    expect.assertions(1);
     const noteTaskText = faker.lorem.words(5);
     const editTaskText = faker.lorem.words(5);
     const loginResponse = await login(app).expect(HttpStatus.OK);
@@ -78,6 +77,8 @@ describe('/tasks/:id/edit (POST)', () => {
       noteTaskResponse.body.id,
       editTaskText,
     ).expect(HttpStatus.OK);
+
+    expect.assertions(1);
     expect(editTaskResponse.body).toMatchObject<Partial<TaskDto>>({
       editedAt: expect.any(String),
       description: editTaskText,

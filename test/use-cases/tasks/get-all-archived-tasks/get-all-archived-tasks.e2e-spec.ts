@@ -38,8 +38,6 @@ describe('/tasks/archived (GET)', () => {
   });
 
   it('should respond with the archived task of a member', async () => {
-    expect.assertions(4);
-
     let loginResponse: request.Response;
     let noteTaskResponse: request.Response;
 
@@ -83,6 +81,7 @@ describe('/tasks/archived (GET)', () => {
       HttpStatus.OK,
     );
 
+    expect.assertions(4);
     expect(response.body).toContainEqual(
       expect.objectContaining<Partial<TaskDto>>({
         isArchived: true,

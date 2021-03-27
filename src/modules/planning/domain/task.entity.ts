@@ -3,7 +3,7 @@ import { Entity, UniqueEntityId } from '../../../shared/domain';
 import { AssigneeId } from './assignee-id.entity';
 import { Description } from './description.valueobject';
 import { OwnerId } from './owner-id.entity';
-import { MemberIsNotAssignedToTask } from './specifications/member-is-not-assigned-to-task';
+import { MemberHasNotYetBeenAssigned } from './specifications/member-has-not-yet-been-assigned';
 import { MemberMustBeTaskAssignee } from './specifications/member-must-be-task-assignee';
 import { MemberMustBeTaskOwner } from './specifications/member-must-be-task-owner';
 import { TaskId } from './task-id.entity';
@@ -15,7 +15,7 @@ export class Task extends Entity<TaskProps> {
   private readonly memberMustBeTaskAssignee = new MemberMustBeTaskAssignee(
     this,
   );
-  private readonly memberIsNotAssignedToTask = new MemberIsNotAssignedToTask(
+  private readonly memberHasNotYetBeenAssigned = new MemberHasNotYetBeenAssigned(
     this,
   );
 
@@ -162,7 +162,7 @@ export class Task extends Entity<TaskProps> {
       return Result.fail('Task is only assignable by task owner.');
     }
 
-    if (!this.memberIsNotAssignedToTask.satisfiedBy(assigneeId)) {
+    if (!this.memberHasNotYetBeenAssigned.satisfiedBy(assigneeId)) {
       return Result.fail('Member is assigned already.');
     }
 

@@ -2,7 +2,7 @@ import { Specification } from '../../../../shared/core';
 import { AssigneeId } from '../assignee-id.entity';
 import { Task } from '../task.entity';
 
-export class MemberIsNotAssignedToTask implements Specification<AssigneeId> {
+export class MemberHasNotYetBeenAssigned implements Specification<AssigneeId> {
   private readonly task: Task;
 
   constructor(task: Task) {

@@ -43,7 +43,7 @@ export class InMemoryMemberRepository extends MemberRepository {
   }
 
   public async getMemberByUserId(id: UniqueEntityId): Promise<MaybeMember> {
-    const member = this.toArray().find((member) => member.userId.id.equals(id));
+    const member = this.toArray().find((m) => m.userId.id.equals(id));
     const found = !!member === true;
 
     if (found) {

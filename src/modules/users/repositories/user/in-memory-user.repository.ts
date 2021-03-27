@@ -29,7 +29,7 @@ export class InMemoryUserRepository extends UserRepository {
   }
 
   public async getUserByUsername(userName: UserName): Promise<MaybeUser> {
-    const user = this.toArray().find((user) => user.username.equals(userName));
+    const user = this.toArray().find((u) => u.username.equals(userName));
     const found = !!user === true;
 
     if (found) {
@@ -45,7 +45,7 @@ export class InMemoryUserRepository extends UserRepository {
   }
 
   public async getUserByUserId(id: UniqueEntityId): Promise<MaybeUser> {
-    const user = this.toArray().find((user) => user.userId.id.equals(id));
+    const user = this.toArray().find((u) => u.userId.id.equals(id));
     const found = !!user === true;
 
     if (found) {

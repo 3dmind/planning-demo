@@ -98,12 +98,7 @@ export class UsersController {
 
     if (result.isLeft()) {
       const error = result.value;
-      switch (Reflect.getPrototypeOf(error).constructor) {
-        case AppErrors.UnexpectedError:
-          throw new InternalServerErrorException(error.errorValue().message);
-        default:
-          throw new UnprocessableEntityException(error.errorValue());
-      }
+      throw new InternalServerErrorException(error.errorValue().message);
     }
   }
 

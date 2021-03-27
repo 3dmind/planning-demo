@@ -40,8 +40,8 @@ export class LoginUsecase implements UseCase<User, Response> {
       this.logger.log('User successfully logged in');
       return right(
         Result.ok<LoginResponseDto>({
-          access_token: accessToken,
-          refresh_token: refreshToken,
+          accessToken: accessToken,
+          refreshToken: refreshToken,
         }),
       );
     } catch (error) {

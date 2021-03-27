@@ -9,13 +9,13 @@ Content-Type: application/json
 }
 
 > {%
-  client.global.set("access_token", response.body.access_token);
+  client.global.set("accessToken", response.body.accessToken);
   %}
 
 ### Note new task
 
 POST http://localhost:{{port}}/tasks
-Authorization: Bearer {{access_token}}
+Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 { "text": "{{text}}" }
@@ -23,7 +23,7 @@ Content-Type: application/json
 ### Tick-off a task
 
 POST http://localhost:{{port}}/tasks
-Authorization: Bearer {{access_token}}
+Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 { "text": "{{text}}" }
@@ -35,12 +35,12 @@ Content-Type: application/json
 ###
 
 POST http://localhost:{{port}}/tasks/{{taskId}}/tickoff
-Authorization: Bearer {{access_token}}
+Authorization: Bearer {{accessToken}}
 
 ### Archive a task
 
 POST http://localhost:{{port}}/tasks
-Authorization: Bearer {{access_token}}
+Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 { "text": "{{text}}" }
@@ -52,12 +52,12 @@ Content-Type: application/json
 ###
 
 POST http://localhost:{{port}}/tasks/{{taskId}}/archive
-Authorization: Bearer {{access_token}}
+Authorization: Bearer {{accessToken}}
 
 ### Discard a task
 
 POST http://localhost:{{port}}/tasks
-Authorization: Bearer {{access_token}}
+Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 { "text": "{{text}}" }
@@ -69,7 +69,7 @@ Content-Type: application/json
 ###
 
 POST http://localhost:{{port}}/tasks/{{taskId}}/discard
-Authorization: Bearer {{access_token}}
+Authorization: Bearer {{accessToken}}
 
 ### Login as Bob
 
@@ -82,14 +82,14 @@ Content-Type: application/json
 }
 
 > {%
-  client.global.set("access_token", response.body.access_token);
+  client.global.set("accessToken", response.body.accessToken);
   %}
 
 
 ### Assign task to Alice
 
 POST http://localhost:{{port}}/tasks
-Authorization: Bearer {{access_token}}
+Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 { "text": "{{text}}" }
@@ -101,7 +101,7 @@ Content-Type: application/json
 ###
 
 POST http://localhost:{{port}}/tasks/{{taskId}}/assign
-Authorization: Bearer {{access_token}}
+Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 { "memberId": "a995c0db-3df0-4ae8-920d-d2b8b85146da" }
@@ -117,10 +117,10 @@ Content-Type: application/json
 }
 
 > {%
-  client.global.set("access_token", response.body.access_token);
+  client.global.set("accessToken", response.body.accessToken);
   %}
 
 ###
 
 GET http://localhost:{{port}}/tasks/active
-Authorization: Bearer {{access_token}}
+Authorization: Bearer {{accessToken}}

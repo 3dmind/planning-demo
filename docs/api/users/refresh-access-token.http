@@ -9,7 +9,7 @@ Content-Type: application/json
 }
 
 > {%
-  client.global.set("refresh_token", response.body.refresh_token);
+  client.global.set("refreshToken", response.body.refreshToken);
   %}
 
 ### Refresh access token
@@ -18,5 +18,5 @@ POST http://localhost:{{port}}/users/refresh
 Content-Type: application/json
 
 {
-  "refresh_token": "{{refresh_token}}"
+  "refreshToken": "{{refreshToken}}"
 }

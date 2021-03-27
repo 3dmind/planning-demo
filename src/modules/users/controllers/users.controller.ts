@@ -91,8 +91,8 @@ export class UsersController {
     if (result.isRight()) {
       const accessToken: AccessToken = result.value.getValue();
       return {
-        access_token: accessToken,
-        refresh_token: refreshTokenDto.refresh_token,
+        accessToken: accessToken,
+        refreshToken: refreshTokenDto.refreshToken,
       };
     }
 

@@ -17,7 +17,7 @@ import { MaybeMember, MemberRepository } from './member.repository';
  */
 @Injectable()
 export class InMemoryMemberRepository extends MemberRepository {
-  private members = new Map<string, Member>();
+  private readonly members = new Map<string, Member>();
 
   constructor() {
     super();

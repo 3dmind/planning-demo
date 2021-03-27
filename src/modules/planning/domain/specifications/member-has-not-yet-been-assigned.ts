@@ -3,11 +3,7 @@ import { AssigneeId } from '../assignee-id.entity';
 import { Task } from '../task.entity';
 
 export class MemberHasNotYetBeenAssigned implements Specification<AssigneeId> {
-  private readonly task: Task;
-
-  constructor(task: Task) {
-    this.task = task;
-  }
+  constructor(private readonly task: Task) {}
 
   public satisfiedBy(assigneeId: AssigneeId): boolean {
     return !this.task.assigneeId.equals(assigneeId);

@@ -27,19 +27,19 @@ xdescribe('/users/refresh (POST)', () => {
     const response = await request(app.getHttpServer())
       .post(UsersApi.USERS_REFRESH)
       .send({
-        refresh_token: loginResponse.body.refresh_token,
+        refreshToken: loginResponse.body.refreshToken,
       })
       .expect(HttpStatus.OK);
 
     expect(response.body).toMatchObject({
-      access_token: expect.any(String),
-      refresh_token: expect.any(String),
+      accessToken: expect.any(String),
+      refreshToken: expect.any(String),
     });
-    expect(response.body.access_token).not.toStrictEqual(
-      loginResponse.body.access_token,
+    expect(response.body.accessToken).not.toStrictEqual(
+      loginResponse.body.accessToken,
     );
-    expect(response.body.refresh_token).toStrictEqual(
-      loginResponse.body.refresh_token,
+    expect(response.body.refreshToken).toStrictEqual(
+      loginResponse.body.refreshToken,
     );
 
     await logout(app, loginResponse).expect(HttpStatus.OK);

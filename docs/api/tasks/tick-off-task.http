@@ -9,13 +9,13 @@ Content-Type: application/json
 }
 
 > {%
-  client.global.set("access_token", response.body.access_token);
+  client.global.set("accessToken", response.body.accessToken);
   %}
 
 ### Note a new task
 
 POST http://localhost:{{port}}/tasks
-Authorization: Bearer {{access_token}}
+Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
@@ -29,4 +29,4 @@ Content-Type: application/json
 ### Tick-off the created task
 
 POST http://localhost:{{port}}/tasks/{{taskId}}/tickoff
-Authorization: Bearer {{access_token}}
+Authorization: Bearer {{accessToken}}

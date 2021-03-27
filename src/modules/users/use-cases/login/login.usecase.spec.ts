@@ -91,8 +91,8 @@ describe('LoginUsecase', () => {
     expect.assertions(3);
     expect(result.isRight()).toBe(true);
     expect(result.value.getValue()).toMatchObject<LoginResponseDto>({
-      access_token: expect.any(String),
-      refresh_token: expect.any(String),
+      accessToken: expect.any(String),
+      refreshToken: expect.any(String),
     });
     expect(value).toBeDefined();
   });

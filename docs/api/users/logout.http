@@ -9,10 +9,10 @@ Content-Type: application/json
 }
 
 > {%
-  client.global.set("access_token", response.body.access_token);
+  client.global.set("accessToken", response.body.accessToken);
   %}
 
 ### Logout
 
 POST http://localhost:{{port}}/users/logout
-Authorization: Bearer {{access_token}}
+Authorization: Bearer {{accessToken}}

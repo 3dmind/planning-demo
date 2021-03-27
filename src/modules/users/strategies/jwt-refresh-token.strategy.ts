@@ -22,7 +22,7 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(
   Strategy,
   'JwtRefreshToken',
 ) {
-  public static extractor = ExtractJwt.fromBodyField('refresh_token');
+  public static extractor = ExtractJwt.fromBodyField('refreshToken');
 
   constructor(
     private readonly apiConfigService: ApiConfigService,

@@ -56,8 +56,8 @@ describe('/users/login (POST)', () => {
     ).expect(HttpStatus.OK);
 
     expect(response.body).toMatchObject({
-      access_token: expect.any(String),
-      refresh_token: expect.any(String),
+      accessToken: expect.any(String),
+      refreshToken: expect.any(String),
     });
   });
 });

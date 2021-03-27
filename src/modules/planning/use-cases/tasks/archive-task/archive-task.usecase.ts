@@ -33,7 +33,7 @@ export class ArchiveTaskUsecase implements UseCase<Request, Response> {
   private readonly logger = new Logger(ArchiveTaskUsecase.name);
 
   constructor(
-    private memberRepository: MemberRepository,
+    private readonly memberRepository: MemberRepository,
     private readonly taskRepository: TaskRepository,
   ) {}
 

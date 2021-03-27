@@ -17,7 +17,7 @@ import { MaybeTask, TaskRepository } from './task.repository';
  */
 @Injectable()
 export class InMemoryTaskRepository extends TaskRepository {
-  private tasks = new Map<string, Task>();
+  private readonly tasks = new Map<string, Task>();
 
   constructor() {
     super();

@@ -10,6 +10,6 @@ export function tickOffTask(
   taskId: string,
 ): request.Test {
   return request(app.getHttpServer())
-    .post(urlcat(TasksApi.TASKS_TICK_OFF, { id: taskId }))
+    .put(urlcat(TasksApi.TASKS_TICK_OFF, { id: taskId }))
     .auth(...auth(loginResponse));
 }

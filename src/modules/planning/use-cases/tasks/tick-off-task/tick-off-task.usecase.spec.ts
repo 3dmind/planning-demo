@@ -146,6 +146,36 @@ describe('TickOffTaskUsecase', () => {
     spy.mockRestore();
   });
 
+  it('should not tick-off a task which is already ticked-off', async () => {
+    // Given
+    const member = new MemberEntityBuilder().build();
+    const task = new TaskEntityBuilder()
+      .withAssigneeId(member.assigneeId)
+      .makeTickedOff()
+      .build();
+    await memberRepository.save(member);
+    await taskRepository.save(task);
+    const saveSpy = jest.spyOn(taskRepository, 'save');
+    const tickOffSpy = jest.spyOn(task, 'tickOff');
+
+    // When
+    const result = await useCase.execute({
+      taskId: task.taskId.id.toString(),
+      userId: member.userId,
+    });
+    const tickedOffTask: Task = result.value.getValue();
+
+    // Then
+    expect.assertions(4);
+    expect(result.isRight()).toBe(true);
+    expect(tickedOffTask.isTickedOff()).toBe(true);
+    expect(tickOffSpy).not.toHaveBeenCalled();
+    expect(saveSpy).not.toHaveBeenCalled();
+
+    tickOffSpy.mockRestore();
+    saveSpy.mockRestore();
+  });
+
   it('should succeed', async () => {
     // Given
     const member = new MemberEntityBuilder().build();

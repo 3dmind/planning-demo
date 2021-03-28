@@ -34,7 +34,7 @@ describe('/tasks/archived (GET)', () => {
 
     await getArchivedTasks(app, loginResponse).expect(HttpStatus.NOT_FOUND);
 
-    return logout(app, loginResponse).expect(HttpStatus.OK);
+    return logout(app, loginResponse).expect(HttpStatus.NO_CONTENT);
   });
 
   it('should respond with the archived task of a member', async () => {
@@ -102,6 +102,6 @@ describe('/tasks/archived (GET)', () => {
     /*
       Bob logs out
     */
-    return logout(app, loginResponse).expect(HttpStatus.OK);
+    return logout(app, loginResponse).expect(HttpStatus.NO_CONTENT);
   });
 });

@@ -35,6 +35,6 @@ describe('/users/me (GET)', () => {
       username: 'e2e-planning-demo',
     });
 
-    await logout(app, loginResponse).expect(HttpStatus.OK);
+    await logout(app, loginResponse).expect(HttpStatus.NO_CONTENT);
   });
 });

@@ -104,7 +104,7 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Post('/logout')
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async logout(@GetUser() user: User): Promise<void> {
     const result = await this.logoutUsecase.execute(user);
     if (result.isLeft()) {

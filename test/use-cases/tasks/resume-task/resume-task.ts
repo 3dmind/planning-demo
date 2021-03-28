@@ -10,6 +10,6 @@ export function resumeTask(
   taskId: string,
 ): request.Test {
   return request(app.getHttpServer())
-    .post(urlcat(TasksApi.TASKS_RESUME, { id: taskId }))
+    .put(urlcat(TasksApi.TASKS_RESUME, { id: taskId }))
     .auth(...auth(loginResponse));
 }

@@ -71,12 +71,17 @@ export class ResumeTaskUsecase implements UseCase<Request, Response> {
         return left(taskNotFoundError);
       }
 
+      if (!task.isTickedOff()) {
+        this.logger.log('Task is already resumed.');
+        return right(Result.ok(task));
+      }
+
       const result = task.resume(member.assigneeId);
       if (result.isFailure) {
         return left(result);
       } else {
         await this.taskRepository.save(task);
-        this.logger.log('Task successfully resumed');
+        this.logger.log('Task successfully resumed.');
         return right(Result.ok(task));
       }
     } catch (error) {

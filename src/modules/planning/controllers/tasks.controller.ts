@@ -115,8 +115,7 @@ export class TasksController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post(':id/resume')
-  @HttpCode(HttpStatus.OK)
+  @Put(':id/resume')
   async resumeTask(
     @GetUser('userId') userId: UserId,
     @Param('id') id: string,

@@ -38,7 +38,7 @@ export class TickOffTaskUsecase implements UseCase<Request, Response> {
   ) {}
 
   async execute(request: Request): Promise<Response> {
-    this.logger.log('Ticking off task...');
+    this.logger.log('Ticking-off task...');
 
     const taskIdResult = TaskId.create(new UniqueEntityId(request.taskId));
     if (taskIdResult.isFailure) {
@@ -71,12 +71,17 @@ export class TickOffTaskUsecase implements UseCase<Request, Response> {
         return left(taskNotFoundError);
       }
 
+      if (task.isTickedOff()) {
+        this.logger.debug('Task is already ticked-off.');
+        return right(Result.ok(task));
+      }
+
       const result = task.tickOff(member.assigneeId);
       if (result.isFailure) {
         return left(result);
       } else {
         await this.taskRepository.save(task);
-        this.logger.log('Task successfully ticked off');
+        this.logger.log('Task successfully ticked-off.');
         return right(Result.ok(task));
       }
     } catch (error) {

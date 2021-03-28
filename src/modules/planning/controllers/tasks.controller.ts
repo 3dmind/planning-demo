@@ -8,6 +8,7 @@ import {
   NotFoundException,
   Param,
   Post,
+  Put,
   UnprocessableEntityException,
   UseGuards,
 } from '@nestjs/common';
@@ -83,8 +84,7 @@ export class TasksController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post(':id/tickoff')
-  @HttpCode(HttpStatus.OK)
+  @Put(':id/tickoff')
   async tickOffTask(
     @GetUser('userId') userId: UserId,
     @Param('id') id: string,

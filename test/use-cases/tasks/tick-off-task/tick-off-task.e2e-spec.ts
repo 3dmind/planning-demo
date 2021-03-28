@@ -8,7 +8,7 @@ import { logout } from '../../users/logout/logout';
 import { noteTask } from '../note-task/note-task';
 import { tickOffTask } from './tick-off-task';
 
-describe('/tasks/:id/tickoff (POST)', () => {
+describe('/tasks/:id/tickoff (PUT)', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
@@ -33,7 +33,7 @@ describe('/tasks/:id/tickoff (POST)', () => {
 
     await tickOffTask(app, loginResponse, taskId).expect(HttpStatus.NOT_FOUND);
 
-    return logout(app, loginResponse).expect(HttpStatus.OK);
+    return logout(app, loginResponse).expect(HttpStatus.NO_CONTENT);
   });
 
   it(`should respond with ${HttpStatus.NOT_FOUND} if the task cannot be found`, async () => {
@@ -42,7 +42,7 @@ describe('/tasks/:id/tickoff (POST)', () => {
 
     await tickOffTask(app, loginResponse, taskId).expect(HttpStatus.NOT_FOUND);
 
-    return logout(app, loginResponse).expect(HttpStatus.OK);
+    return logout(app, loginResponse).expect(HttpStatus.NO_CONTENT);
   });
 
   it(`should respond with ${HttpStatus.UNPROCESSABLE_ENTITY} if the member is not the assignee`, async () => {
@@ -57,7 +57,7 @@ describe('/tasks/:id/tickoff (POST)', () => {
       HttpStatus.UNPROCESSABLE_ENTITY,
     );
 
-    return logout(app, loginResponse).expect(HttpStatus.OK);
+    return logout(app, loginResponse).expect(HttpStatus.NO_CONTENT);
   });
 
   it(`should respond with ${HttpStatus.OK} if the task was successfully ticked-off`, async () => {
@@ -78,6 +78,6 @@ describe('/tasks/:id/tickoff (POST)', () => {
       isTickedOff: true,
     });
 
-    return logout(app, loginResponse).expect(HttpStatus.OK);
+    return logout(app, loginResponse).expect(HttpStatus.NO_CONTENT);
   });
 });

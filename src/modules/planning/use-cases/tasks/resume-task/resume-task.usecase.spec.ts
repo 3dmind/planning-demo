@@ -146,6 +146,36 @@ describe('ResumeTaskUsecase', () => {
     spy.mockRestore();
   });
 
+  it('should not resume a task which is not ticked-off', async () => {
+    // Given
+    const member = new MemberEntityBuilder().build();
+    const task = new TaskEntityBuilder()
+      .withAssigneeId(member.assigneeId)
+      .makeResumed()
+      .build();
+    await memberRepository.save(member);
+    await taskRepository.save(task);
+    const saveSpy = jest.spyOn(taskRepository, 'save');
+    const resumeSpy = jest.spyOn(task, 'resume');
+
+    // When
+    const result = await useCase.execute({
+      taskId: task.taskId.toString(),
+      userId: member.userId,
+    });
+    const resumedTask: Task = result.value.getValue();
+
+    // Then
+    expect.assertions(4);
+    expect(result.isRight()).toBe(true);
+    expect(resumedTask.isTickedOff()).toBe(false);
+    expect(resumeSpy).not.toHaveBeenCalled();
+    expect(saveSpy).not.toHaveBeenCalled();
+
+    resumeSpy.mockRestore();
+    saveSpy.mockRestore();
+  });
+
   it('should succeed', async () => {
     // Given
     const member = new MemberEntityBuilder().build();
@@ -158,7 +188,7 @@ describe('ResumeTaskUsecase', () => {
 
     // When
     const result = await useCase.execute({
-      taskId: task.taskId.id.toString(),
+      taskId: task.taskId.toString(),
       userId: member.userId,
     });
     const resumedTask: Task = result.value.getValue();

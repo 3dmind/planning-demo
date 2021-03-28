@@ -35,7 +35,7 @@ describe('/tasks/active (GET)', () => {
 
     await getActiveTasks(app, loginResponse).expect(HttpStatus.NOT_FOUND);
 
-    return logout(app, loginResponse).expect(HttpStatus.OK);
+    return logout(app, loginResponse).expect(HttpStatus.NO_CONTENT);
   });
 
   it('should respond with the active tasks of a member', async () => {
@@ -55,7 +55,7 @@ describe('/tasks/active (GET)', () => {
       noteTaskResponse.body.id,
       '878e77d6-39ba-4367-ae0f-1e5c32d59b84',
     ).expect(HttpStatus.OK);
-    await logout(app, loginResponse).expect(HttpStatus.OK);
+    await logout(app, loginResponse).expect(HttpStatus.NO_CONTENT);
 
     /*
       Bob logs in
@@ -112,6 +112,6 @@ describe('/tasks/active (GET)', () => {
     /*
       Bob logs out
      */
-    return logout(app, loginResponse).expect(HttpStatus.OK);
+    return logout(app, loginResponse).expect(HttpStatus.NO_CONTENT);
   });
 });

@@ -32,7 +32,7 @@ describe('/tasks (POST)', () => {
     expect.assertions(1);
     expect(response.body.message).toEqual('text is null or undefined');
 
-    return logout(app, loginResponse).expect(HttpStatus.OK);
+    return logout(app, loginResponse).expect(HttpStatus.NO_CONTENT);
   });
 
   it(`should respond with ${HttpStatus.UNPROCESSABLE_ENTITY} if the description is invalid`, async () => {
@@ -44,7 +44,7 @@ describe('/tasks (POST)', () => {
     expect.assertions(1);
     expect(response.body.message).toEqual('Text is not at least 2 chars.');
 
-    return logout(app, loginResponse).expect(HttpStatus.OK);
+    return logout(app, loginResponse).expect(HttpStatus.NO_CONTENT);
   });
 
   it(`should respond with ${HttpStatus.CREATED} if the task was successfully noted`, async () => {
@@ -70,6 +70,6 @@ describe('/tasks (POST)', () => {
       tickedOffAt: null,
     });
 
-    return logout(app, loginResponse).expect(HttpStatus.OK);
+    return logout(app, loginResponse).expect(HttpStatus.NO_CONTENT);
   });
 });

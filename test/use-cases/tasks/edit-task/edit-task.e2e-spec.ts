@@ -34,7 +34,7 @@ describe('/tasks/:id/edit (POST)', () => {
 
     await editTask(app, loginResponse, taskId).expect(HttpStatus.NOT_FOUND);
 
-    return logout(app, loginResponse).expect(HttpStatus.OK);
+    return logout(app, loginResponse).expect(HttpStatus.NO_CONTENT);
   });
 
   it(`should respond with ${HttpStatus.NOT_FOUND} if the task cannot be found`, async () => {
@@ -43,7 +43,7 @@ describe('/tasks/:id/edit (POST)', () => {
 
     await editTask(app, loginResponse, taskId).expect(HttpStatus.NOT_FOUND);
 
-    return logout(app, loginResponse).expect(HttpStatus.OK);
+    return logout(app, loginResponse).expect(HttpStatus.NO_CONTENT);
   });
 
   it(`should respond with ${HttpStatus.UNPROCESSABLE_ENTITY} if the member is not the task owner`, async () => {
@@ -58,7 +58,7 @@ describe('/tasks/:id/edit (POST)', () => {
       HttpStatus.UNPROCESSABLE_ENTITY,
     );
 
-    return logout(app, loginResponse).expect(HttpStatus.OK);
+    return logout(app, loginResponse).expect(HttpStatus.NO_CONTENT);
   });
 
   it(`should respond with ${HttpStatus.OK} if the task description was edited`, async () => {
@@ -84,6 +84,6 @@ describe('/tasks/:id/edit (POST)', () => {
       description: editTaskText,
     });
 
-    return logout(app, loginResponse).expect(HttpStatus.OK);
+    return logout(app, loginResponse).expect(HttpStatus.NO_CONTENT);
   });
 });

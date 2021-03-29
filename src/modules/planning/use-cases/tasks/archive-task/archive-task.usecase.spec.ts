@@ -146,6 +146,36 @@ describe('ArchiveTaskUsecase', () => {
     spy.mockRestore();
   });
 
+  it('should not archive a task which is already archived', async () => {
+    // Given
+    const member = new MemberEntityBuilder().build();
+    const task = new TaskEntityBuilder()
+      .withOwnerId(member.ownerId)
+      .makeArchived()
+      .build();
+    await memberRepository.save(member);
+    await taskRepository.save(task);
+    const saveSpy = jest.spyOn(taskRepository, 'save');
+    const archiveSpy = jest.spyOn(task, 'archive');
+
+    // When
+    const result = await useCase.execute({
+      taskId: task.taskId.toString(),
+      userId: member.userId,
+    });
+    const archivedTask: Task = result.value.getValue();
+
+    // Then
+    expect.assertions(4);
+    expect(result.isRight()).toBe(true);
+    expect(archivedTask.isArchived()).toBe(true);
+    expect(archiveSpy).not.toHaveBeenCalled();
+    expect(saveSpy).not.toHaveBeenCalled();
+
+    archiveSpy.mockRestore();
+    saveSpy.mockRestore();
+  });
+
   it('should succeed', async () => {
     // Given
     const member = new MemberEntityBuilder().build();

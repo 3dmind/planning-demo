@@ -178,8 +178,7 @@ export class TasksController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post(':id/archive')
-  @HttpCode(HttpStatus.OK)
+  @Put(':id/archive')
   async archiveTask(
     @GetUser('userId') userId: UserId,
     @Param('id') id: string,

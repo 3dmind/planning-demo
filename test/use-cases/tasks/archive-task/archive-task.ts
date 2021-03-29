@@ -10,6 +10,6 @@ export function archiveTask(
   taskId: string,
 ): request.Test {
   return request(app.getHttpServer())
-    .post(urlcat(TasksApi.TASKS_ARCHIVE, { id: taskId }))
+    .put(urlcat(TasksApi.TASKS_ARCHIVE, { id: taskId }))
     .auth(...auth(loginResponse));
 }

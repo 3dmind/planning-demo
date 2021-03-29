@@ -71,12 +71,17 @@ export class ArchiveTaskUsecase implements UseCase<Request, Response> {
         return left(taskNotFoundError);
       }
 
+      if (task.isArchived()) {
+        this.logger.debug('Task is already archived.');
+        return right(Result.ok(task));
+      }
+
       const result = task.archive(member.ownerId);
       if (result.isFailure) {
         return left(result);
       } else {
         await this.taskRepository.save(task);
-        this.logger.log('Task successfully archived');
+        this.logger.log('Task successfully archived.');
         return right(Result.ok<Task>(task));
       }
     } catch (error) {

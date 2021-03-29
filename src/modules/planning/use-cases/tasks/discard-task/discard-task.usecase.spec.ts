@@ -145,6 +145,36 @@ describe('DiscardTaskUsecase', () => {
     spy.mockRestore();
   });
 
+  it('should not discard a task which is already discarded', async () => {
+    // Given
+    const member = new MemberEntityBuilder().build();
+    const task = new TaskEntityBuilder()
+      .withOwnerId(member.ownerId)
+      .makeDiscarded()
+      .build();
+    await memberRepository.save(member);
+    await taskRepository.save(task);
+    const saveSpy = jest.spyOn(taskRepository, 'save');
+    const discardSpy = jest.spyOn(task, 'discard');
+
+    // When
+    const result = await useCase.execute({
+      taskId: task.taskId.id.toString(),
+      userId: member.userId,
+    });
+    const discardedTask: Task = result.value.getValue();
+
+    // Then
+    expect.assertions(4);
+    expect(result.isRight()).toBe(true);
+    expect(discardedTask.isDiscarded()).toBe(true);
+    expect(discardSpy).not.toHaveBeenCalled();
+    expect(saveSpy).not.toHaveBeenCalled();
+
+    discardSpy.mockRestore();
+    saveSpy.mockRestore();
+  });
+
   it('should succeed', async () => {
     // Given
     const member = new MemberEntityBuilder().build();

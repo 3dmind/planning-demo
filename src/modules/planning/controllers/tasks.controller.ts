@@ -208,7 +208,7 @@ export class TasksController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post(':id/discard')
+  @Put(':id/discard')
   @HttpCode(HttpStatus.OK)
   async discardTask(
     @GetUser('userId') userId: UserId,

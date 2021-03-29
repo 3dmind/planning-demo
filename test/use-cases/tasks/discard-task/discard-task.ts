@@ -10,6 +10,6 @@ export function discardTask(
   taskId: string,
 ): request.Test {
   return request(app.getHttpServer())
-    .post(urlcat(TasksApi.TASKS_DISCARD, { id: taskId }))
+    .put(urlcat(TasksApi.TASKS_DISCARD, { id: taskId }))
     .auth(...auth(loginResponse));
 }

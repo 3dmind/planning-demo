@@ -71,12 +71,18 @@ export class DiscardTaskUsecase implements UseCase<Request, Response> {
         return left(taskNotFoundError);
       }
 
+      if (task.isDiscarded()) {
+        this.logger.debug('Task is already discarded.');
+        return right(Result.ok(task));
+      }
+
       const result = task.discard(member.ownerId);
       if (result.isFailure) {
         return left(result);
       } else {
         await this.taskRepository.save(task);
-        this.logger.log('Task successfully discarded');
+        0;
+        this.logger.log('Task successfully discarded.');
         return right(Result.ok<Task>(task));
       }
     } catch (error) {

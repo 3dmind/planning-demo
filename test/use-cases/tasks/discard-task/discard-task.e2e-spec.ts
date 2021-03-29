@@ -8,7 +8,7 @@ import { logout } from '../../users/logout/logout';
 import { noteTask } from '../note-task/note-task';
 import { discardTask } from './discard-task';
 
-describe('/tasks/:id/discard (POST)', () => {
+describe('/tasks/:id/discard (PUT)', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
@@ -33,7 +33,7 @@ describe('/tasks/:id/discard (POST)', () => {
 
     await discardTask(app, loginResponse, taskId).expect(HttpStatus.NOT_FOUND);
 
-    return logout(app, loginResponse).expect(HttpStatus.OK);
+    return logout(app, loginResponse).expect(HttpStatus.NO_CONTENT);
   });
 
   it(`should respond with ${HttpStatus.NOT_FOUND} if the task cannot be found`, async () => {
@@ -42,7 +42,7 @@ describe('/tasks/:id/discard (POST)', () => {
 
     await discardTask(app, loginResponse, taskId).expect(HttpStatus.NOT_FOUND);
 
-    return logout(app, loginResponse).expect(HttpStatus.OK);
+    return logout(app, loginResponse).expect(HttpStatus.NO_CONTENT);
   });
 
   it(`should respond with ${HttpStatus.UNPROCESSABLE_ENTITY} if the member is not the task owner`, async () => {
@@ -57,7 +57,7 @@ describe('/tasks/:id/discard (POST)', () => {
       HttpStatus.UNPROCESSABLE_ENTITY,
     );
 
-    return logout(app, loginResponse).expect(HttpStatus.OK);
+    return logout(app, loginResponse).expect(HttpStatus.NO_CONTENT);
   });
 
   it(`should respond with ${HttpStatus.OK} if the task was discarded`, async () => {
@@ -78,6 +78,6 @@ describe('/tasks/:id/discard (POST)', () => {
       isDiscarded: true,
     });
 
-    return logout(app, loginResponse).expect(HttpStatus.OK);
+    return logout(app, loginResponse).expect(HttpStatus.NO_CONTENT);
   });
 });

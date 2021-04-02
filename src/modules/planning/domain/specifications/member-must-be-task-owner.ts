@@ -5,7 +5,7 @@ import { Task } from '../task.entity';
 export class MemberMustBeTaskOwner implements Specification<OwnerId> {
   constructor(private readonly task: Task) {}
 
-  satisfiedBy(ownerId: OwnerId): boolean {
+  public satisfiedBy(ownerId: OwnerId): boolean {
     return this.task.ownerId.equals(ownerId);
   }
 }

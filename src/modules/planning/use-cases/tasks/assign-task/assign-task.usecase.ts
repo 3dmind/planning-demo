@@ -107,11 +107,18 @@ export class AssignTaskUsecase implements UseCase<Request, Response> {
       /*
         Assign the task.
        */
+      if (task.assigneeId.equals(member.assigneeId)) {
+        this.logger.debug('Task already assigned to member.');
+        return right(Result.ok(task));
+      }
+
       const result = task.assign(owner.ownerId, member.assigneeId);
       if (result.isFailure) {
+        this.logger.debug(result.errorValue());
         return left(result);
       } else {
         await this.taskRepository.save(task);
+        this.logger.debug('Task successfully assigned.');
         return right(Result.ok(task));
       }
     } catch (error) {

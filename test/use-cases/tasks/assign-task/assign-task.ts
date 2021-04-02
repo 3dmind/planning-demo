@@ -11,7 +11,7 @@ export function assignTask(
   memberId: string,
 ): request.Test {
   return request(app.getHttpServer())
-    .post(urlcat(TasksApi.TASKS_ASSIGN, { id: taskId }))
+    .put(urlcat(TasksApi.TASKS_ASSIGN, { id: taskId }))
     .auth(...auth(loginResponse))
     .send({
       memberId,

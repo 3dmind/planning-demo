@@ -288,7 +288,7 @@ export class TasksController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post(':id/assign')
+  @Put(':id/assign')
   @HttpCode(HttpStatus.OK)
   async assign(
     @GetUser('userId') userId: UserId,

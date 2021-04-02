@@ -7,7 +7,7 @@ import { logout } from '../../users/logout/logout';
 import { noteTask } from '../note-task/note-task';
 import { assignTask } from './assign-task';
 
-describe('/tasks/:id/assign (POST)', () => {
+describe('/tasks/:id/assign (PUT)', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
@@ -35,7 +35,7 @@ describe('/tasks/:id/assign (POST)', () => {
       HttpStatus.NOT_FOUND,
     );
 
-    return logout(app, loginResponse).expect(HttpStatus.OK);
+    return logout(app, loginResponse).expect(HttpStatus.NO_CONTENT);
   });
 
   it(`should respond with ${HttpStatus.NOT_FOUND} if the task cannot be found`, async () => {
@@ -47,10 +47,10 @@ describe('/tasks/:id/assign (POST)', () => {
       HttpStatus.NOT_FOUND,
     );
 
-    return logout(app, loginResponse).expect(HttpStatus.OK);
+    return logout(app, loginResponse).expect(HttpStatus.NO_CONTENT);
   });
 
-  it(`should respond with ${HttpStatus.UNPROCESSABLE_ENTITY} if the task is already assigned to member`, async () => {
+  it(`should respond with ${HttpStatus.OK} if the task is already assigned to member`, async () => {
     const memberId = '878e77d6-39ba-4367-ae0f-1e5c32d59b84';
     const loginResponse = await login(app, 'alice', 'alice1234').expect(
       HttpStatus.OK,
@@ -70,9 +70,9 @@ describe('/tasks/:id/assign (POST)', () => {
       loginResponse,
       noteTaskResponse.body.id,
       memberId,
-    ).expect(HttpStatus.UNPROCESSABLE_ENTITY);
+    ).expect(HttpStatus.OK);
 
-    return logout(app, loginResponse).expect(HttpStatus.OK);
+    return logout(app, loginResponse).expect(HttpStatus.NO_CONTENT);
   });
 
   it(`should respond with ${HttpStatus.OK} if the task was successfully assign`, async () => {
@@ -91,6 +91,6 @@ describe('/tasks/:id/assign (POST)', () => {
       memberId,
     ).expect(HttpStatus.OK);
 
-    return logout(app, loginResponse).expect(HttpStatus.OK);
+    return logout(app, loginResponse).expect(HttpStatus.NO_CONTENT);
   });
 });

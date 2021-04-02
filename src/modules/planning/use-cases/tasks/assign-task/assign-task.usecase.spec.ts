@@ -109,23 +109,22 @@ describe('AssignTaskUsecase', () => {
     );
   });
 
-  it('should fail if the task is already assigned to the member', async () => {
+  it('should fail if the assigner is not the task owner', async () => {
     // Given
+    const user = new MemberEntityBuilder().build();
     const member = new MemberEntityBuilder().build();
     const owner = new MemberEntityBuilder().build();
-    const task = new TaskEntityBuilder()
-      .withOwnerId(owner.ownerId)
-      .withAssigneeId(member.assigneeId)
-      .build();
-    await memberRepository.save(owner);
+    const task = new TaskEntityBuilder().withOwnerId(owner.ownerId).build();
+    await memberRepository.save(user);
     await memberRepository.save(member);
+    await memberRepository.save(owner);
     await taskRepository.save(task);
 
     // When
     const result = await useCase.execute({
       memberId: member.memberId.toString(),
-      taskId: task.taskId.id.toString(),
-      userId: owner.userId,
+      taskId: task.taskId.toString(),
+      userId: user.userId,
     });
 
     // Then
@@ -151,7 +150,7 @@ describe('AssignTaskUsecase', () => {
     const result = await useCase.execute({
       memberId: member.memberId.toString(),
       userId: taskOwner.userId,
-      taskId: task.taskId.id.toString(),
+      taskId: task.taskId.toString(),
     });
 
     // Then
@@ -160,6 +159,37 @@ describe('AssignTaskUsecase', () => {
     expect(result.value).toBeInstanceOf(AppErrors.UnexpectedError);
 
     spy.mockRestore();
+  });
+
+  it('should not assign a task which is already assigned to the member', async () => {
+    // Given
+    const owner = new MemberEntityBuilder().build();
+    const member = new MemberEntityBuilder().build();
+    const task = new TaskEntityBuilder()
+      .withOwnerId(owner.ownerId)
+      .withAssigneeId(member.assigneeId)
+      .build();
+    await memberRepository.save(owner);
+    await memberRepository.save(member);
+    await taskRepository.save(task);
+    const saveSpy = jest.spyOn(taskRepository, 'save');
+    const assignSpy = jest.spyOn(task, 'assign');
+
+    // When
+    const result = await useCase.execute({
+      memberId: member.memberId.toString(),
+      taskId: task.taskId.toString(),
+      userId: owner.userId,
+    });
+
+    // Then
+    expect.assertions(3);
+    expect(result.isRight()).toBe(true);
+    expect(assignSpy).not.toHaveBeenCalled();
+    expect(saveSpy).not.toHaveBeenCalled();
+
+    assignSpy.mockRestore();
+    saveSpy.mockRestore();
   });
 
   it('should succeed', async () => {
@@ -175,7 +205,7 @@ describe('AssignTaskUsecase', () => {
     const result = await useCase.execute({
       memberId: member.memberId.toString(),
       userId: taskOwner.userId,
-      taskId: task.taskId.id.toString(),
+      taskId: task.taskId.toString(),
     });
 
     // Then

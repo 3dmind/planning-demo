@@ -40,6 +40,7 @@ import { TickOffTasksErrors } from '../use-cases/tasks/tick-off-task/tick-off-ta
 import { TickOffTaskUsecase } from '../use-cases/tasks/tick-off-task/tick-off-task.usecase';
 
 @Controller('tasks')
+@UseGuards(JwtAuthGuard)
 export class TasksController {
   constructor(
     private readonly archivedTasksUseCase: ArchiveTaskUsecase,
@@ -53,7 +54,6 @@ export class TasksController {
     private readonly tickOffTaskUseCase: TickOffTaskUsecase,
   ) {}
 
-  @UseGuards(JwtAuthGuard)
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async noteTask(
@@ -83,7 +83,6 @@ export class TasksController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
   @Put(':id/tickoff')
   async tickOffTask(
     @GetUser('userId') userId: UserId,
@@ -114,7 +113,6 @@ export class TasksController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
   @Put(':id/resume')
   async resumeTask(
     @GetUser('userId') userId: UserId,
@@ -144,7 +142,6 @@ export class TasksController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
   @Put(':id/edit')
   async editTask(
     @GetUser('userId') userId: UserId,
@@ -176,7 +173,6 @@ export class TasksController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
   @Put(':id/archive')
   async archiveTask(
     @GetUser('userId') userId: UserId,
@@ -206,9 +202,7 @@ export class TasksController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
   @Put(':id/discard')
-  @HttpCode(HttpStatus.OK)
   async discardTask(
     @GetUser('userId') userId: UserId,
     @Param('id') id: string,
@@ -237,7 +231,6 @@ export class TasksController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('/active')
   async getActiveTasks(@GetUser('userId') userId: UserId): Promise<TaskDto[]> {
     const result = await this.getAllActiveTasksUseCase.execute({ userId });
@@ -260,7 +253,6 @@ export class TasksController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('/archived')
   async getArchivedTasks(
     @GetUser('userId') userId: UserId,
@@ -286,9 +278,7 @@ export class TasksController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
   @Put(':id/assign')
-  @HttpCode(HttpStatus.OK)
   async assign(
     @GetUser('userId') userId: UserId,
     @Param('id') id: string,

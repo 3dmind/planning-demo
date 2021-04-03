@@ -179,6 +179,34 @@ describe('EditTaskUsecase', () => {
     spy.mockRestore();
   });
 
+  it('should edit description if the task already has this description', async () => {
+    // Given
+    const text = faker.lorem.words(5);
+    const member = new MemberEntityBuilder().build();
+    const task = new TaskEntityBuilder()
+      .withDescription(text)
+      .withOwnerId(member.ownerId)
+      .build();
+    const dto: EditTaskDto = { text };
+    await memberRepository.save(member);
+    await taskRepository.save(task);
+    const saveSpy = jest.spyOn(taskRepository, 'save');
+    const editSpy = jest.spyOn(task, 'edit');
+
+    // When
+    const result = await useCase.execute({
+      dto,
+      userId: member.userId,
+      taskId: task.taskId.toString(),
+    });
+
+    // Then
+    expect.assertions(3);
+    expect(result.isRight()).toBe(true);
+    expect(editSpy).not.toHaveBeenCalled();
+    expect(saveSpy).not.toHaveBeenCalled();
+  });
+
   it('should succeed', async () => {
     // Given
     const member = new MemberEntityBuilder().build();

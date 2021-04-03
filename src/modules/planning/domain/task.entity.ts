@@ -35,6 +35,10 @@ export class Task extends Entity<TaskProps> {
     return this.props.assigneeId;
   }
 
+  get description(): Description {
+    return this.props.description;
+  }
+
   public static create(props: TaskProps, id?: UniqueEntityId): Result<Task> {
     const nullGuard = Guard.againstNullOrUndefinedBulk([
       {
@@ -99,8 +103,8 @@ export class Task extends Entity<TaskProps> {
     return new TaskSnapshot(this.props, this.taskId);
   }
 
-  public tickOff(id: AssigneeId): Result<Task> {
-    if (!this.memberMustBeTaskAssignee.satisfiedBy(id)) {
+  public tickOff(assigneeId: AssigneeId): Result<void> {
+    if (!this.memberMustBeTaskAssignee.satisfiedBy(assigneeId)) {
       return Result.fail('Only the assigned member can tick-off the task.');
     }
     this.props.tickedOff = true;
@@ -112,8 +116,8 @@ export class Task extends Entity<TaskProps> {
     return this.props.tickedOff;
   }
 
-  public resume(id: AssigneeId): Result<Task> {
-    if (!this.memberMustBeTaskAssignee.satisfiedBy(id)) {
+  public resume(assigneeId: AssigneeId): Result<void> {
+    if (!this.memberMustBeTaskAssignee.satisfiedBy(assigneeId)) {
       return Result.fail('Only the assigned member can resume the task.');
     }
     this.props.tickedOff = false;
@@ -121,7 +125,7 @@ export class Task extends Entity<TaskProps> {
     return Result.ok();
   }
 
-  public archive(ownerId: OwnerId): Result<Task> {
+  public archive(ownerId: OwnerId): Result<void> {
     if (!this.memberMustBeTaskOwner.satisfiedBy(ownerId)) {
       return Result.fail('Only the owner can archive the task.');
     }
@@ -134,7 +138,7 @@ export class Task extends Entity<TaskProps> {
     return this.props.archived;
   }
 
-  public edit(newDescription: Description, ownerId: OwnerId): Result<Task> {
+  public edit(newDescription: Description, ownerId: OwnerId): Result<void> {
     if (!this.memberMustBeTaskOwner.satisfiedBy(ownerId)) {
       return Result.fail('Only the task owner can edit the description.');
     }
@@ -144,7 +148,7 @@ export class Task extends Entity<TaskProps> {
     return Result.ok();
   }
 
-  public discard(ownerId: OwnerId): Result<Task> {
+  public discard(ownerId: OwnerId): Result<void> {
     if (!this.memberMustBeTaskOwner.satisfiedBy(ownerId)) {
       return Result.fail('Only the owner can discard the task.');
     }
@@ -157,7 +161,7 @@ export class Task extends Entity<TaskProps> {
     return this.props.discarded;
   }
 
-  public assign(ownerId: OwnerId, assigneeId: AssigneeId): Result<Task> {
+  public assign(ownerId: OwnerId, assigneeId: AssigneeId): Result<void> {
     if (!this.memberMustBeTaskOwner.satisfiedBy(ownerId)) {
       return Result.fail('Task is only assignable by task owner.');
     }

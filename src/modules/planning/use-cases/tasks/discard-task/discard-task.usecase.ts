@@ -81,7 +81,6 @@ export class DiscardTaskUsecase implements UseCase<Request, Response> {
         return left(result);
       } else {
         await this.taskRepository.save(task);
-        0;
         this.logger.log('Task successfully discarded.');
         return right(Result.ok<Task>(task));
       }

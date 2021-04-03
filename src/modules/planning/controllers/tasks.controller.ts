@@ -145,8 +145,7 @@ export class TasksController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post(':id/edit')
-  @HttpCode(HttpStatus.OK)
+  @Put(':id/edit')
   async editTask(
     @GetUser('userId') userId: UserId,
     @Param('id') id: string,

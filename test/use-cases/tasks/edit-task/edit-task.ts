@@ -12,7 +12,7 @@ export function editTask(
   text: string = faker.lorem.words(5),
 ): request.Test {
   return request(app.getHttpServer())
-    .post(urlcat(TasksApi.TASKS_EDIT, { id: taskId }))
+    .put(urlcat(TasksApi.TASKS_EDIT, { id: taskId }))
     .auth(...auth(loginResponse))
     .send({
       text,

@@ -76,13 +76,19 @@ export class EditTaskUsecase implements UseCase<Request, Response> {
         return left(taskNotFoundError);
       }
 
-      const result = task.edit(descriptionResult.getValue(), member.ownerId);
+      const newDescription = descriptionResult.getValue();
+      if (task.description.equals(newDescription)) {
+        this.logger.debug('Task already has this description.');
+        return right(Result.ok(task));
+      }
+
+      const result = task.edit(newDescription, member.ownerId);
       if (result.isFailure) {
         this.logger.debug(result.errorValue());
         return left(result);
       } else {
         await this.taskRepository.save(task);
-        this.logger.log('Task successfully edited');
+        this.logger.log('Task successfully edited.');
         return right(Result.ok<Task>(task));
       }
     } catch (error) {

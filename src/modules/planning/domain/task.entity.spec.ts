@@ -177,12 +177,13 @@ describe('Task', () => {
     const task = taskResult.getValue();
 
     // Then
-    expect.assertions(5);
+    expect.assertions(6);
     expect(taskResult.isSuccess).toBe(true);
     expect(task.taskId).toBeInstanceOf(TaskId);
     expect(task.taskId.id.equals(entityId)).toBe(true);
     expect(task.ownerId.equals(ownerId)).toBe(true);
     expect(task.assigneeId.equals(assigneeId)).toBe(true);
+    expect(task.description.equals(description)).toBe(true);
   });
 
   it('should create snapshot', () => {

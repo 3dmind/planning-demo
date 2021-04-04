@@ -52,7 +52,7 @@ export class Guard {
   }
 
   public static againstNullOrUndefined(
-    argument: any,
+    argument: unknown,
     argumentName: string,
   ): GuardResult {
     if (argument === null || argument === undefined) {
@@ -80,7 +80,7 @@ export class Guard {
   }
 
   public static isOneOf(
-    value: any,
+    value: unknown,
     validValues: any[],
     argumentName: string,
   ): GuardResult {

@@ -22,7 +22,7 @@ describe('User', () => {
 
   const idFixture = faker.random.uuid();
   const userNameFixture = faker.internet.userName();
-  const passwordFixture = faker.internet.password(UserPassword.minLength);
+  const passwordFixture = faker.internet.password(UserPassword.MIN_LENGTH);
   const emailFixture = faker.internet.email();
   const entityId = new UniqueEntityId(idFixture);
   const username = UserName.create(userNameFixture).getValue();

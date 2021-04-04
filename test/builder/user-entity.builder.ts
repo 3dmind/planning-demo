@@ -18,7 +18,7 @@ export class UserEntityBuilder {
 
   constructor() {
     const username = faker.internet.userName();
-    const password = faker.internet.password(UserPassword.minLength);
+    const password = faker.internet.password(UserPassword.MIN_LENGTH);
     const email = faker.internet.email();
     const entityId = new UniqueEntityId();
 

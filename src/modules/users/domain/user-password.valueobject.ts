@@ -10,7 +10,7 @@ interface UserPasswordProps {
 const SALT_ROUNDS = 10;
 
 export class UserPassword extends ValueObject<UserPasswordProps> {
-  public static minLength = 6;
+  public static readonly MIN_LENGTH = 6;
 
   private constructor(props: UserPasswordProps) {
     super(props);
@@ -34,7 +34,7 @@ export class UserPassword extends ValueObject<UserPasswordProps> {
     }
 
     if (!props.hashed) {
-      const minGuardResult = Guard.againstAtLeast(this.minLength, props.value);
+      const minGuardResult = Guard.againstAtLeast(this.MIN_LENGTH, props.value);
       if (!minGuardResult.succeeded) {
         return Result.fail<UserPassword>(minGuardResult.message);
       }

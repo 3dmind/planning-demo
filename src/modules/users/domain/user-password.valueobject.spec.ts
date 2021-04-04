@@ -16,7 +16,7 @@ describe('UserPassword', () => {
 
   it('should be guarded against to short passwords', () => {
     // Given
-    const password = faker.internet.password(UserPassword.minLength - 1);
+    const password = faker.internet.password(UserPassword.MIN_LENGTH - 1);
 
     // When
     const userPasswordResult = UserPassword.create({
@@ -31,7 +31,7 @@ describe('UserPassword', () => {
 
   it('should be created', () => {
     // Given
-    const passwordFixture = faker.internet.password(UserPassword.minLength);
+    const passwordFixture = faker.internet.password(UserPassword.MIN_LENGTH);
 
     // When
     const userPasswordResult = UserPassword.create({

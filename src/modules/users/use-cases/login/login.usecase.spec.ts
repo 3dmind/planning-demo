@@ -1,10 +1,10 @@
-import { CacheModule } from '@nestjs/common';
+import { CACHE_MANAGER, CacheModule } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Cache } from 'cache-manager';
 import { mock, mockReset } from 'jest-mock-extended';
 import { UserEntityBuilder } from '../../../../../test/builder/user-entity.builder';
 import { ApiConfigService } from '../../../../api-config/api-config.service';
-import { RedisCacheService } from '../../../../redis-cache/redis-cache.service';
 import { AppErrors } from '../../../../shared/core';
 import { AuthService } from '../../services/auth.service';
 import { LoginResponseDto } from './login-response.dto';
@@ -18,7 +18,7 @@ describe('LoginUsecase', () => {
   const refreshTokenSecretFixture = 'defaultrefreshtokensecret';
   const refreshTokenTtlFixture = 10; // seconds
 
-  let redisCacheService: RedisCacheService;
+  let cacheManager: Cache;
   let authService: AuthService;
   let useCase: LoginUsecase;
 
@@ -42,7 +42,6 @@ describe('LoginUsecase', () => {
       providers: [
         { provide: 'JWT_MODULE_OPTIONS', useValue: {} },
         { provide: ApiConfigService, useValue: mockedConfigService },
-        RedisCacheService,
         JwtService,
         AuthService,
         LoginUsecase,
@@ -50,7 +49,7 @@ describe('LoginUsecase', () => {
     }).compile();
     module.useLogger(false);
 
-    redisCacheService = module.get<RedisCacheService>(RedisCacheService);
+    cacheManager = module.get<Cache>(CACHE_MANAGER);
     authService = module.get<AuthService>(AuthService);
     useCase = module.get<LoginUsecase>(LoginUsecase);
   });
@@ -85,7 +84,7 @@ describe('LoginUsecase', () => {
 
     // When
     const result = await useCase.execute(user);
-    const value = await redisCacheService.get(user.username.value);
+    const value = await cacheManager.get(user.username.value);
 
     // Then
     expect.assertions(3);

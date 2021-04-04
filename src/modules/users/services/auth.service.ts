@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { Cache } from 'cache-manager';
 import { ApiConfigService } from '../../../api-config/api-config.service';
-import { RedisCacheService } from '../../../redis-cache/redis-cache.service';
 import { AccessToken, RefreshToken } from '../domain/jwt';
 import { JwtClaims } from '../domain/jwt-claims.interface';
 import { User } from '../domain/user.entity';
@@ -20,9 +20,9 @@ export class AuthService {
   private readonly refreshTokenTtl: number;
 
   constructor(
+    @Inject(CACHE_MANAGER) private readonly cacheManger: Cache,
     private readonly apiConfigService: ApiConfigService,
     private readonly jwtService: JwtService,
-    private readonly redisCacheService: RedisCacheService,
   ) {
     this.accessTokenSecret = this.apiConfigService.getAccessTokenSecret();
     this.accessTokenTtl = this.apiConfigService.getAccessTokenTtl();
@@ -51,18 +51,18 @@ export class AuthService {
         accessToken: user.accessToken,
         refreshToken: user.refreshToken,
       });
-      await this.redisCacheService.set(user.username.value, value, {
+      await this.cacheManger.set(user.username.value, value, {
         ttl: this.refreshTokenTtl,
       });
     }
   }
 
   public async deAuthenticateUser(user: User): Promise<void> {
-    await this.redisCacheService.del(user.username.value);
+    await this.cacheManger.del(user.username.value);
   }
 
   public async getTokens(username: string): Promise<Tokens> {
-    const value = await this.redisCacheService.get<string>(username);
+    const value = await this.cacheManger.get<string>(username);
     if (!!value) {
       return JSON.parse(value);
     } else {
@@ -74,7 +74,7 @@ export class AuthService {
     username: string,
     accessToken: AccessToken,
   ): Promise<boolean> {
-    const savedTokens = await this.redisCacheService.get<string>(username);
+    const savedTokens = await this.cacheManger.get<string>(username);
     if (!!savedTokens === false) {
       return false;
     }
@@ -87,7 +87,7 @@ export class AuthService {
     username: string,
     refreshToken: RefreshToken,
   ): Promise<boolean> {
-    const savedTokens = await this.redisCacheService.get<string>(username);
+    const savedTokens = await this.cacheManger.get<string>(username);
     if (!!savedTokens === false) {
       return false;
     }

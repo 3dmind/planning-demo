@@ -1,12 +1,12 @@
-import { CacheModule } from '@nestjs/common';
+import { CACHE_MANAGER, CacheModule } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { JWT_MODULE_OPTIONS } from '@nestjs/jwt/dist/jwt.constants';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Cache } from 'cache-manager';
 import * as faker from 'faker';
 import { mock, mockReset } from 'jest-mock-extended';
 import { UserEntityBuilder } from '../../../../test/builder/user-entity.builder';
 import { ApiConfigService } from '../../../api-config/api-config.service';
-import { RedisCacheService } from '../../../redis-cache/redis-cache.service';
 import { JwtClaims } from '../domain/jwt-claims.interface';
 import { UserName } from '../domain/user-name.valueobject';
 import { AuthService } from './auth.service';
@@ -19,7 +19,7 @@ describe('AuthService', () => {
   const refreshTokenTtlFixture = 10; // seconds
 
   let jwtService: JwtService;
-  let redisCacheService: RedisCacheService;
+  let cacheManager: Cache;
   let service: AuthService;
 
   beforeAll(async () => {
@@ -42,14 +42,13 @@ describe('AuthService', () => {
       providers: [
         { provide: JWT_MODULE_OPTIONS, useValue: {} },
         { provide: ApiConfigService, useValue: mockedApiConfigService },
-        RedisCacheService,
         JwtService,
         AuthService,
       ],
     }).compile();
 
     jwtService = module.get<JwtService>(JwtService);
-    redisCacheService = module.get<RedisCacheService>(RedisCacheService);
+    cacheManager = module.get<Cache>(CACHE_MANAGER);
     service = module.get<AuthService>(AuthService);
   });
 
@@ -104,7 +103,7 @@ describe('AuthService', () => {
 
     // When
     await service.saveAuthenticatedUser(user);
-    const result = await redisCacheService.get(user.username.value);
+    const result = await cacheManager.get(user.username.value);
 
     // Then
     expect.assertions(1);
@@ -122,9 +121,9 @@ describe('AuthService', () => {
 
     // When
     await service.saveAuthenticatedUser(user);
-    const valueBefore = await redisCacheService.get(userNameFixture);
+    const valueBefore = await cacheManager.get(userNameFixture);
     await service.deAuthenticateUser(user);
-    const valueAfter = await redisCacheService.get(userNameFixture);
+    const valueAfter = await cacheManager.get(userNameFixture);
 
     // Then
     expect.assertions(2);

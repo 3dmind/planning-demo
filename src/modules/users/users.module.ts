@@ -1,10 +1,11 @@
-import { Logger, Module } from '@nestjs/common';
+import { CacheModule, Logger, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
+import * as redisStore from 'cache-manager-redis-store';
 import { ApiConfigModule } from '../../api-config/api-config.module';
+import { ApiConfigService } from '../../api-config/api-config.service';
 import { DomainEventPublisherModule } from '../../domain-event-publisher/domain-event-publisher.module';
 import { PrismaModule } from '../../prisma/prisma.module';
-import { RedisCacheModule } from '../../redis-cache/redis-cache.module';
 import { UsersController } from './controllers/users.controller';
 import { UserRepositoryProvider } from './repositories/providers';
 import { AuthService } from './services/auth.service';
@@ -21,11 +22,19 @@ import { ValidateUserUsecase } from './use-cases/validate-user/validate-user.use
 @Module({
   imports: [
     ApiConfigModule,
+    CacheModule.registerAsync({
+      imports: [ApiConfigModule],
+      inject: [ApiConfigService],
+      useFactory: async (apiConfigService: ApiConfigService) => ({
+        store: redisStore,
+        host: apiConfigService.getRedisHost(),
+        port: apiConfigService.getRedisPort(),
+      }),
+    }),
     DomainEventPublisherModule,
     JwtModule.register({}),
     PassportModule,
     PrismaModule,
-    RedisCacheModule,
   ],
   controllers: [UsersController],
   providers: [

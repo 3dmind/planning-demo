@@ -1,11 +1,11 @@
-import { CacheModule } from '@nestjs/common';
+import { CACHE_MANAGER, CacheModule } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Cache } from 'cache-manager';
 import * as faker from 'faker';
 import { mock, mockReset } from 'jest-mock-extended';
 import { UserEntityBuilder } from '../../../../../test/builder/user-entity.builder';
 import { ApiConfigService } from '../../../../api-config/api-config.service';
-import { RedisCacheService } from '../../../../redis-cache/redis-cache.service';
 import { AppErrors } from '../../../../shared/core';
 import { UserName } from '../../domain/user-name.valueobject';
 import { InMemoryUserRepository } from '../../repositories/user/in-memory-user.repository';
@@ -20,7 +20,7 @@ describe('LogoutUsecase', () => {
   const refreshTokenSecretFixture = 'defaultrefreshtokensecret';
   const refreshTokenTtlFixture = 10; // seconds
 
-  let redisCacheService: RedisCacheService;
+  let cacheManager: Cache;
   let authService: AuthService;
   let userRepository: UserRepository;
   let useCase: LogoutUsecase;
@@ -46,7 +46,6 @@ describe('LogoutUsecase', () => {
         { provide: 'JWT_MODULE_OPTIONS', useValue: {} },
         { provide: ApiConfigService, useValue: mockedApiConfigService },
         { provide: UserRepository, useClass: InMemoryUserRepository },
-        RedisCacheService,
         JwtService,
         AuthService,
         LogoutUsecase,
@@ -55,7 +54,7 @@ describe('LogoutUsecase', () => {
     module.useLogger(false);
 
     authService = module.get<AuthService>(AuthService);
-    redisCacheService = module.get<RedisCacheService>(RedisCacheService);
+    cacheManager = module.get<Cache>(CACHE_MANAGER);
     userRepository = module.get<UserRepository>(UserRepository);
     useCase = module.get<LogoutUsecase>(LogoutUsecase);
   });
@@ -96,9 +95,9 @@ describe('LogoutUsecase', () => {
     await authService.saveAuthenticatedUser(user);
 
     // When
-    const valueBeforeLogout = await redisCacheService.get(userNameFixture);
+    const valueBeforeLogout = await cacheManager.get(userNameFixture);
     const result = await useCase.execute(user);
-    const valueAfterLockout = await redisCacheService.get(userNameFixture);
+    const valueAfterLockout = await cacheManager.get(userNameFixture);
 
     // Then
     expect.assertions(3);

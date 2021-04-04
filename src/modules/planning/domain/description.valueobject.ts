@@ -6,8 +6,8 @@ interface DescriptionProps {
 }
 
 export class Description extends ValueObject<DescriptionProps> {
-  public static minLength = 2;
-  public static maxLength = 250;
+  public static readonly MIN_LENGTH = 2;
+  public static readonly MAX_LENGTH = 250;
 
   private constructor(props: DescriptionProps) {
     super(props);
@@ -24,8 +24,8 @@ export class Description extends ValueObject<DescriptionProps> {
       return Result.fail<Description>(nullGuardResult.message);
     }
 
-    const minGuardResult = Guard.againstAtLeast(this.minLength, text);
-    const maxGuardResult = Guard.againstAtMost(this.maxLength, text);
+    const minGuardResult = Guard.againstAtLeast(this.MIN_LENGTH, text);
+    const maxGuardResult = Guard.againstAtMost(this.MAX_LENGTH, text);
 
     if (!minGuardResult.succeeded) {
       return Result.fail<Description>(minGuardResult.message);

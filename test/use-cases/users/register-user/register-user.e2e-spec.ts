@@ -55,7 +55,7 @@ describe('/users (POST)', () => {
     const dto: RegisterUserDto = {
       username: faker.internet.userName(),
       email: faker.internet.email(),
-      password: faker.internet.password(UserPassword.minLength - 1),
+      password: faker.internet.password(UserPassword.MIN_LENGTH - 1),
     };
 
     const response = await registerUser(app, dto).expect(
@@ -69,7 +69,7 @@ describe('/users (POST)', () => {
   it(`should respond with ${HttpStatus.CREATED} if the new user was successfully registered`, async () => {
     const username = faker.internet.userName();
     const email = faker.internet.email();
-    const password = faker.internet.password(UserPassword.minLength);
+    const password = faker.internet.password(UserPassword.MIN_LENGTH);
 
     const dto = {
       username,

@@ -44,7 +44,7 @@ describe('RegisterUserUsecase', () => {
   it('should fail if username cannot be created', async () => {
     // Given
     const emailFixture = faker.internet.email();
-    const passwordFixture = faker.internet.password(UserPassword.minLength);
+    const passwordFixture = faker.internet.password(UserPassword.MIN_LENGTH);
     const request = {
       email: emailFixture,
       password: passwordFixture,
@@ -77,7 +77,7 @@ describe('RegisterUserUsecase', () => {
 
   it('should fail if user email cannot be created', async () => {
     // Given
-    const passwordFixture = faker.internet.password(UserPassword.minLength);
+    const passwordFixture = faker.internet.password(UserPassword.MIN_LENGTH);
     const userNameFixture = faker.internet.userName();
     const request = {
       username: userNameFixture,
@@ -148,7 +148,7 @@ describe('RegisterUserUsecase', () => {
   it('should fail if user cannot be created', async () => {
     // Given
     const emailFixture = faker.internet.email().toLowerCase();
-    const passwordFixture = faker.internet.password(UserPassword.minLength);
+    const passwordFixture = faker.internet.password(UserPassword.MIN_LENGTH);
     const userNameFixture = faker.internet.userName();
     const spy = jest
       .spyOn(User, 'create')
@@ -171,7 +171,7 @@ describe('RegisterUserUsecase', () => {
   it('should fail on any other error', async () => {
     // Given
     const emailFixture = faker.internet.email().toLowerCase();
-    const passwordFixture = faker.internet.password(UserPassword.minLength);
+    const passwordFixture = faker.internet.password(UserPassword.MIN_LENGTH);
     const userNameFixture = faker.internet.userName();
     const spy = jest
       .spyOn(userRepository, 'save')
@@ -197,7 +197,7 @@ describe('RegisterUserUsecase', () => {
   it('should succeed', async () => {
     // Given
     const emailFixture = faker.internet.email().toLowerCase();
-    const passwordFixture = faker.internet.password(UserPassword.minLength);
+    const passwordFixture = faker.internet.password(UserPassword.MIN_LENGTH);
     const userNameFixture = faker.internet.userName();
 
     // When

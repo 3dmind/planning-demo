@@ -33,7 +33,7 @@ describe('ValidateUserUsecase', () => {
   it('should fail if username cannot be created', async () => {
     // Given
     const usernameFixture = '';
-    const passwordFixture = faker.internet.password(UserPassword.minLength);
+    const passwordFixture = faker.internet.password(UserPassword.MIN_LENGTH);
     const request: ValidateUserDto = {
       username: usernameFixture,
       password: passwordFixture,
@@ -67,7 +67,7 @@ describe('ValidateUserUsecase', () => {
   it("should fail if user doesn't exist", async () => {
     // Given
     const usernameFixture = faker.internet.userName();
-    const passwordFixture = faker.internet.password(UserPassword.minLength);
+    const passwordFixture = faker.internet.password(UserPassword.MIN_LENGTH);
     const request: ValidateUserDto = {
       username: usernameFixture,
       password: passwordFixture,
@@ -89,7 +89,7 @@ describe('ValidateUserUsecase', () => {
 
   it("should fail if password doesn't match", async () => {
     // Given
-    const plainTextPassword = faker.internet.password(UserPassword.minLength);
+    const plainTextPassword = faker.internet.password(UserPassword.MIN_LENGTH);
     const hashedPassword = await UserPassword.hash(plainTextPassword);
     const userPassword = UserPassword.create({
       value: hashedPassword,
@@ -102,7 +102,7 @@ describe('ValidateUserUsecase', () => {
       .withPassword(userPassword)
       .build();
     const missMatchingPasswordFixture = faker.internet.password(
-      UserPassword.minLength,
+      UserPassword.MIN_LENGTH,
     );
     const request: ValidateUserDto = {
       username: userNameFixture,
@@ -130,7 +130,7 @@ describe('ValidateUserUsecase', () => {
         throw new Error();
       });
     const usernameFixture = faker.internet.userName();
-    const passwordFixture = faker.internet.password(UserPassword.minLength);
+    const passwordFixture = faker.internet.password(UserPassword.MIN_LENGTH);
     const request: ValidateUserDto = {
       username: usernameFixture,
       password: passwordFixture,
@@ -151,7 +151,7 @@ describe('ValidateUserUsecase', () => {
     // Given
     const userNameFixture = faker.internet.userName();
     const userName = UserName.create(userNameFixture).getValue();
-    const plainTextPassword = faker.internet.password(UserPassword.minLength);
+    const plainTextPassword = faker.internet.password(UserPassword.MIN_LENGTH);
     const hashedPassword = await UserPassword.hash(plainTextPassword);
     const userPassword = UserPassword.create({
       value: hashedPassword,

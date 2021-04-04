@@ -41,7 +41,7 @@ describe('LocalStrategy', () => {
     // Given
     const userNameDoesntExistError = new ValidateUserErrors.UserNameDoesntExistError();
     const usernameFixture = faker.internet.userName();
-    const passwordFixture = faker.internet.password(UserPassword.minLength);
+    const passwordFixture = faker.internet.password(UserPassword.MIN_LENGTH);
 
     // When
     const promise = strategy.validate(usernameFixture, passwordFixture);
@@ -58,10 +58,12 @@ describe('LocalStrategy', () => {
     // Given
     const passwordDoesntMatchError = new ValidateUserErrors.PasswordDoesntMatchError();
     const notMatchingPasswordFixture = faker.internet.password(
-      UserPassword.minLength,
+      UserPassword.MIN_LENGTH,
     );
     const userNameFixture = faker.internet.userName();
-    const userPasswordFixture = faker.internet.password(UserPassword.minLength);
+    const userPasswordFixture = faker.internet.password(
+      UserPassword.MIN_LENGTH,
+    );
     const hashedPasswordFixture = await UserPassword.hash(userPasswordFixture);
     const userPassword = UserPassword.create({
       value: hashedPasswordFixture,
@@ -91,7 +93,7 @@ describe('LocalStrategy', () => {
   it('should deny access on any unexpected error', async () => {
     // Given
     const usernameFixture = faker.internet.userName();
-    const passwordFixture = faker.internet.password(UserPassword.minLength);
+    const passwordFixture = faker.internet.password(UserPassword.MIN_LENGTH);
     const unexpectedError = new AppErrors.UnexpectedError(new Error());
     const spy = jest
       .spyOn(userRepository, 'getUserByUsername')
@@ -113,7 +115,7 @@ describe('LocalStrategy', () => {
   it('should deny access on any other error', async () => {
     // Given
     const usernameFixture = faker.internet.userName();
-    const passwordFixture = faker.internet.password(UserPassword.minLength);
+    const passwordFixture = faker.internet.password(UserPassword.MIN_LENGTH);
     const failure = Result.fail<string>('Lorem ipsum');
     const spy = jest
       .spyOn(validateUserUseCase, 'execute')
@@ -134,7 +136,7 @@ describe('LocalStrategy', () => {
     // Given
     const userNameFixture = faker.internet.userName();
     const userName = UserName.create(userNameFixture).getValue();
-    const passwordFixture = faker.internet.password(UserPassword.minLength);
+    const passwordFixture = faker.internet.password(UserPassword.MIN_LENGTH);
     const hashedPasswordFixture = await UserPassword.hash(passwordFixture);
     const userPassword = UserPassword.create({
       value: hashedPasswordFixture,

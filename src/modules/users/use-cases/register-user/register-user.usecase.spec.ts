@@ -6,8 +6,8 @@ import { DomainEventPublisherService } from '../../../../domain-event-publisher/
 import { AppErrors, Result } from '../../../../shared/core';
 import { UserPassword } from '../../domain/user-password.valueobject';
 import { User } from '../../domain/user.entity';
-import { InMemoryUserRepository } from '../../repositories/user/in-memory-user.repository';
-import { UserRepository } from '../../repositories/user/user.repository';
+import { UserRepository } from '../../domain/user.repository';
+import { InMemoryUserRepository } from '../../repositories/user/implementations/in-memory-user.repository';
 import { RegisterUserDto } from './register-user.dto';
 import { RegisterUserErrors } from './register-user.errors';
 import { RegisterUserUsecase } from './register-user.usecase';

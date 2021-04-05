@@ -10,7 +10,7 @@ import {
 import { AccessToken } from '../../domain/jwt';
 import { JwtClaims } from '../../domain/jwt-claims.interface';
 import { User } from '../../domain/user.entity';
-import { UserRepository } from '../../repositories/user/user.repository';
+import { UserRepository } from '../../domain/user.repository';
 import { AuthService } from '../../services/auth.service';
 
 type Response = Either<AppErrors.UnexpectedError, Result<AccessToken>>;

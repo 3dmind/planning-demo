@@ -1,7 +1,7 @@
-import { UniqueEntityId } from '../../../../shared/domain';
-import { UserEmail } from '../../domain/user-email.valueobject';
-import { UserName } from '../../domain/user-name.valueobject';
-import { User } from '../../domain/user.entity';
+import { UniqueEntityId } from '../../../shared/domain';
+import { UserEmail } from './user-email.valueobject';
+import { UserName } from './user-name.valueobject';
+import { User } from './user.entity';
 
 export type MaybeUser = {
   found: boolean;

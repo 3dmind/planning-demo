@@ -1,4 +1,4 @@
-import { UserEntityBuilder } from '../../../../../test/builder/user-entity.builder';
+import { UserEntityBuilder } from '../../../../../../test/builder/user-entity.builder';
 import { InMemoryUserRepository } from './in-memory-user.repository';
 
 describe('InMemoryUserRepository', () => {

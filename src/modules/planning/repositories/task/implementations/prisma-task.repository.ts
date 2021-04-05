@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { TaskModel } from '@prisma/client';
-import { PrismaService } from '../../../../prisma/prisma.service';
-import { MemberId } from '../../domain/member-id.entity';
-import { TaskId } from '../../domain/task-id.entity';
-import { Task } from '../../domain/task.entity';
-import { TaskMapper } from '../../mappers/task.mapper';
-import { MaybeTask, TaskRepository } from './task.repository';
+import { PrismaService } from '../../../../../prisma/prisma.service';
+import { MemberId } from '../../../domain/member-id.entity';
+import { TaskId } from '../../../domain/task-id.entity';
+import { Task } from '../../../domain/task.entity';
+import { MaybeTask, TaskRepository } from '../../../domain/task.repository';
+import { TaskMapper } from '../../../mappers/task.mapper';
 
 @Injectable()
 export class PrismaTaskRepository extends TaskRepository {

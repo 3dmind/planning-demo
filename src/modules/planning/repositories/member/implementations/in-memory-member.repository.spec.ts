@@ -1,5 +1,5 @@
-import { UserId } from '../../../users/domain/user-id.entity';
-import { Member } from '../../domain/member.entity';
+import { UserId } from '../../../../users/domain/user-id.entity';
+import { Member } from '../../../domain/member.entity';
 import { InMemoryMemberRepository } from './in-memory-member.repository';
 
 describe('InMemoryMemberRepository', () => {

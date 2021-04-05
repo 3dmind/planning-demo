@@ -3,8 +3,8 @@ import { MemberEntityBuilder } from '../../../../../../test/builder/member-entit
 import { AppErrors } from '../../../../../shared/core';
 import { UniqueEntityId } from '../../../../../shared/domain';
 import { UserId } from '../../../../users/domain/user-id.entity';
-import { InMemoryMemberRepository } from '../../../repositories/member/in-memory-member.repository';
-import { MemberRepository } from '../../../repositories/member/member.repository';
+import { MemberRepository } from '../../../domain/member.repository';
+import { InMemoryMemberRepository } from '../../../repositories/member/implementations/in-memory-member.repository';
 import { CreateMemberDto } from './create-member.dto';
 import { CreateMemberErrors } from './create-member.errors';
 import { CreateMemberUsecase } from './create-member.usecase';

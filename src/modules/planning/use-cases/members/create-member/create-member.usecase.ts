@@ -10,7 +10,7 @@ import {
 import { UniqueEntityId } from '../../../../../shared/domain';
 import { UserId } from '../../../../users/domain/user-id.entity';
 import { Member } from '../../../domain/member.entity';
-import { MemberRepository } from '../../../repositories/member/member.repository';
+import { MemberRepository } from '../../../domain/member.repository';
 import { CreateMemberDto } from './create-member.dto';
 import { CreateMemberErrors } from './create-member.errors';
 

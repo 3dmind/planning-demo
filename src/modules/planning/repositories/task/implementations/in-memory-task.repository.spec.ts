@@ -1,5 +1,5 @@
-import { MemberEntityBuilder } from '../../../../../test/builder/member-entity.builder';
-import { TaskEntityBuilder } from '../../../../../test/builder/task-entity.builder';
+import { MemberEntityBuilder } from '../../../../../../test/builder/member-entity.builder';
+import { TaskEntityBuilder } from '../../../../../../test/builder/task-entity.builder';
 import { InMemoryTaskRepository } from './in-memory-task.repository';
 
 describe('InMemoryTaskRepository', () => {

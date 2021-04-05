@@ -9,9 +9,9 @@ import {
 } from '../../../../../shared/core';
 import { UserId } from '../../../../users/domain/user-id.entity';
 import { Description } from '../../../domain/description.valueobject';
+import { MemberRepository } from '../../../domain/member.repository';
 import { Task } from '../../../domain/task.entity';
-import { MemberRepository } from '../../../repositories/member/member.repository';
-import { TaskRepository } from '../../../repositories/task/task.repository';
+import { TaskRepository } from '../../../domain/task.repository';
 import { NoteTaskDto } from './note-task.dto';
 import { NoteTaskErrors } from './note-task.errors';
 

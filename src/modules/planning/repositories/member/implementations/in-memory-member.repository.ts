@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { UniqueEntityId } from '../../../../shared/domain';
-import { MemberId } from '../../domain/member-id.entity';
-import { Member } from '../../domain/member.entity';
-import { MaybeMember, MemberRepository } from './member.repository';
+import { UniqueEntityId } from '../../../../../shared/domain';
+import { MemberId } from '../../../domain/member-id.entity';
+import { Member } from '../../../domain/member.entity';
+import {
+  MaybeMember,
+  MemberRepository,
+} from '../../../domain/member.repository';
 
 /**
  * In-memory implementation of the member repository.

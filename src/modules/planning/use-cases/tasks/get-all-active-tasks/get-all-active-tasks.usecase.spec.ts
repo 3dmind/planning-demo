@@ -4,10 +4,10 @@ import { TaskEntityBuilder } from '../../../../../../test/builder/task-entity.bu
 import { AppErrors } from '../../../../../shared/core';
 import { UniqueEntityId } from '../../../../../shared/domain';
 import { UserId } from '../../../../users/domain/user-id.entity';
-import { InMemoryMemberRepository } from '../../../repositories/member/in-memory-member.repository';
-import { MemberRepository } from '../../../repositories/member/member.repository';
-import { InMemoryTaskRepository } from '../../../repositories/task/in-memory-task.repository';
-import { TaskRepository } from '../../../repositories/task/task.repository';
+import { MemberRepository } from '../../../domain/member.repository';
+import { TaskRepository } from '../../../domain/task.repository';
+import { InMemoryMemberRepository } from '../../../repositories/member/implementations/in-memory-member.repository';
+import { InMemoryTaskRepository } from '../../../repositories/task/implementations/in-memory-task.repository';
 import { GetAllActiveTasksErrors } from './get-all-active-tasks.errors';
 import { GetAllActiveTasksUsecase } from './get-all-active-tasks.usecase';
 

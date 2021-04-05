@@ -10,10 +10,10 @@ import {
 import { UniqueEntityId } from '../../../../../shared/domain';
 import { UserId } from '../../../../users/domain/user-id.entity';
 import { Description } from '../../../domain/description.valueobject';
+import { MemberRepository } from '../../../domain/member.repository';
 import { TaskId } from '../../../domain/task-id.entity';
 import { Task } from '../../../domain/task.entity';
-import { MemberRepository } from '../../../repositories/member/member.repository';
-import { TaskRepository } from '../../../repositories/task/task.repository';
+import { TaskRepository } from '../../../domain/task.repository';
 import { EditTaskDto } from './edit-task.dto';
 import { EditTaskErrors } from './edit-task.errors';
 

@@ -8,9 +8,9 @@ import {
   UseCase,
 } from '../../../../../shared/core';
 import { UserId } from '../../../../users/domain/user-id.entity';
+import { MemberRepository } from '../../../domain/member.repository';
 import { Task } from '../../../domain/task.entity';
-import { MemberRepository } from '../../../repositories/member/member.repository';
-import { TaskRepository } from '../../../repositories/task/task.repository';
+import { TaskRepository } from '../../../domain/task.repository';
 import { GetAllArchivedTasksErrors } from './get-all-archived-tasks.errors';
 
 type Request = {

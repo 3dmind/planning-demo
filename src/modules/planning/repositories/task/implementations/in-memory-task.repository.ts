@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { MemberId } from '../../domain/member-id.entity';
-import { TaskId } from '../../domain/task-id.entity';
-import { Task } from '../../domain/task.entity';
-import { MaybeTask, TaskRepository } from './task.repository';
+import { MemberId } from '../../../domain/member-id.entity';
+import { TaskId } from '../../../domain/task-id.entity';
+import { Task } from '../../../domain/task.entity';
+import { MaybeTask, TaskRepository } from '../../../domain/task.repository';
 
 /**
  * In-memory implementation of the task repository.

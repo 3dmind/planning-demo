@@ -1,10 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../../../prisma/prisma.service';
-import { UniqueEntityId } from '../../../../shared/domain';
-import { MemberId } from '../../domain/member-id.entity';
-import { Member } from '../../domain/member.entity';
-import { MemberMapper } from '../../mappers/member.mapper';
-import { MaybeMember, MemberRepository } from './member.repository';
+import { PrismaService } from '../../../../../prisma/prisma.service';
+import { UniqueEntityId } from '../../../../../shared/domain';
+import { MemberId } from '../../../domain/member-id.entity';
+import { Member } from '../../../domain/member.entity';
+import {
+  MaybeMember,
+  MemberRepository,
+} from '../../../domain/member.repository';
+import { MemberMapper } from '../../../mappers/member.mapper';
 
 @Injectable()
 export class PrismaMemberRepository extends MemberRepository {

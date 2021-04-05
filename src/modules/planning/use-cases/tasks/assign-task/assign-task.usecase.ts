@@ -10,10 +10,10 @@ import {
 import { UniqueEntityId } from '../../../../../shared/domain';
 import { UserId } from '../../../../users/domain/user-id.entity';
 import { MemberId } from '../../../domain/member-id.entity';
+import { MemberRepository } from '../../../domain/member.repository';
 import { TaskId } from '../../../domain/task-id.entity';
 import { Task } from '../../../domain/task.entity';
-import { MemberRepository } from '../../../repositories/member/member.repository';
-import { TaskRepository } from '../../../repositories/task/task.repository';
+import { TaskRepository } from '../../../domain/task.repository';
 import { AssignTaskErrors } from './assign-task.errors';
 
 type Request = {

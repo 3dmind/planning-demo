@@ -1,6 +1,6 @@
-import { MemberId } from '../../domain/member-id.entity';
-import { TaskId } from '../../domain/task-id.entity';
-import { Task } from '../../domain/task.entity';
+import { MemberId } from './member-id.entity';
+import { TaskId } from './task-id.entity';
+import { Task } from './task.entity';
 
 export type MaybeTask = {
   found: boolean;

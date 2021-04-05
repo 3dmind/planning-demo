@@ -1,6 +1,6 @@
-import { UniqueEntityId } from '../../../../shared/domain';
-import { MemberId } from '../../domain/member-id.entity';
-import { Member } from '../../domain/member.entity';
+import { UniqueEntityId } from '../../../shared/domain';
+import { MemberId } from './member-id.entity';
+import { Member } from './member.entity';
 
 export type MaybeMember = {
   found: boolean;

@@ -1,6 +1,6 @@
 import { Provider } from '@nestjs/common';
-import { PrismaTaskRepository } from './prisma-task.repository';
-import { TaskRepository } from './task.repository';
+import { TaskRepository } from '../../domain/task.repository';
+import { PrismaTaskRepository } from './implementations/prisma-task.repository';
 
 export const TaskRepositoryProvider: Provider = {
   provide: TaskRepository,

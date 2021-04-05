@@ -4,11 +4,11 @@ import { MemberEntityBuilder } from '../../../../../../test/builder/member-entit
 import { AppErrors, Result } from '../../../../../shared/core';
 import { UniqueEntityId } from '../../../../../shared/domain';
 import { UserId } from '../../../../users/domain/user-id.entity';
+import { MemberRepository } from '../../../domain/member.repository';
 import { Task } from '../../../domain/task.entity';
-import { InMemoryMemberRepository } from '../../../repositories/member/in-memory-member.repository';
-import { MemberRepository } from '../../../repositories/member/member.repository';
-import { InMemoryTaskRepository } from '../../../repositories/task/in-memory-task.repository';
-import { TaskRepository } from '../../../repositories/task/task.repository';
+import { TaskRepository } from '../../../domain/task.repository';
+import { InMemoryMemberRepository } from '../../../repositories/member/implementations/in-memory-member.repository';
+import { InMemoryTaskRepository } from '../../../repositories/task/implementations/in-memory-task.repository';
 import { NoteTaskDto } from './note-task.dto';
 import { NoteTaskErrors } from './note-task.errors';
 import { NoteTaskUsecase } from './note-task.usecase';

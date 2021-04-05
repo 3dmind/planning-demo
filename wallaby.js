@@ -9,13 +9,16 @@ module.exports = () => {
       '!src/main.ts',
       '!src/app/**',
       '!src/prisma/**',
+      '!src/modules/**/repositories/**/prisma*.repository.ts',
+      '!src/modules/**/repositories/**/*repository.provider.ts',
+      '!src/**/*.controller.ts',
       'package.json',
       'tsconfig.json',
       'src/**/*.ts',
       'test/builder/**/*.ts',
     ],
 
-    tests: ['!src/prisma/**/*.spec.ts', 'src/**/*.spec.ts'],
+    tests: ['!src/**/*.controller.spec.ts', 'src/**/*.spec.ts'],
 
     runMode: 'onsave',
 

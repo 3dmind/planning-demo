@@ -55,15 +55,14 @@ export class InMemoryMemberRepository extends MemberRepository {
         member,
       };
     } else {
-      return { found };
+      return {
+        found,
+      };
     }
   }
 
   public async save(member: Member): Promise<void> {
-    const exists = await this.exists(member.userId.id);
-    if (!exists) {
-      this.members.set(member.memberId.toString(), member);
-    }
+    this.members.set(member.memberId.toString(), member);
   }
 
   private toArray(): Member[] {

@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { UniqueEntityId } from '../../../../../shared/domain';
 import { UserEmail } from '../../../domain/user-email.valueobject';
 import { UserName } from '../../../domain/user-name.valueobject';
 import { User } from '../../../domain/user.entity';
@@ -44,27 +43,8 @@ export class InMemoryUserRepository extends UserRepository {
     }
   }
 
-  public async getUserByUserId(id: UniqueEntityId): Promise<MaybeUser> {
-    const user = this.toArray().find((u) => u.userId.id.equals(id));
-    const found = !!user === true;
-
-    if (found) {
-      return {
-        found,
-        user,
-      };
-    } else {
-      return {
-        found,
-      };
-    }
-  }
-
   public async save(user: User): Promise<void> {
-    const exists = await this.exists(user.email);
-    if (!exists) {
-      this.users.set(user.email.value, user);
-    }
+    this.users.set(user.email.value, user);
   }
 
   private toArray(): User[] {

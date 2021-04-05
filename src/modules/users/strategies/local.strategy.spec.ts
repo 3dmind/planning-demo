@@ -8,8 +8,8 @@ import { UserEntityBuilder } from '../../../../test/builder/user-entity.builder'
 import { AppErrors, left, Result } from '../../../shared/core';
 import { UserName } from '../domain/user-name.valueobject';
 import { UserPassword } from '../domain/user-password.valueobject';
-import { InMemoryUserRepository } from '../repositories/user/in-memory-user.repository';
-import { UserRepository } from '../repositories/user/user.repository';
+import { UserRepository } from '../domain/user.repository';
+import { InMemoryUserRepository } from '../repositories/user/implementations/in-memory-user.repository';
 import { ValidateUserErrors } from '../use-cases/validate-user/validate-user.errors';
 import { ValidateUserUsecase } from '../use-cases/validate-user/validate-user.usecase';
 import { LocalStrategy } from './local.strategy';

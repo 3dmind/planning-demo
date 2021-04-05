@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { UniqueEntityId } from '../../../../shared/domain';
-import { UserEmail } from '../../domain/user-email.valueobject';
-import { UserName } from '../../domain/user-name.valueobject';
-import { User } from '../../domain/user.entity';
-import { MaybeUser, UserRepository } from './user.repository';
+import { UniqueEntityId } from '../../../../../shared/domain';
+import { UserEmail } from '../../../domain/user-email.valueobject';
+import { UserName } from '../../../domain/user-name.valueobject';
+import { User } from '../../../domain/user.entity';
+import { MaybeUser, UserRepository } from '../../../domain/user.repository';
 
 /**
  * In-memory implementation of the user repository.

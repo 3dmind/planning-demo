@@ -1,3 +1,4 @@
+import { MemberEntityBuilder } from '../../../../../../test/builder/member-entity.builder';
 import { UserId } from '../../../../users/domain/user-id.entity';
 import { Member } from '../../../domain/member.entity';
 import { InMemoryMemberRepository } from './in-memory-member.repository';
@@ -16,6 +17,20 @@ describe('InMemoryMemberRepository', () => {
     // Then
     expect.assertions(1);
     await expect(promise).resolves.not.toThrow();
+  });
+
+  it('should determine if the member exists in the repository', async () => {
+    // Given
+    const repository = new InMemoryMemberRepository();
+    const member = new MemberEntityBuilder().build();
+    await repository.save(member);
+
+    // When
+    const memberExists = await repository.exists(member.memberId.id);
+
+    // Then
+    expect.assertions(1);
+    expect(memberExists).toBe(true);
   });
 
   it('should find stored member by id', async () => {

@@ -24,11 +24,11 @@ export class InMemoryTaskRepository extends TaskRepository {
   }
 
   public async exists(taskId: TaskId): Promise<boolean> {
-    return this.tasks.has(taskId.id.toString());
+    return this.tasks.has(taskId.toString());
   }
 
   public async save(task: Task): Promise<void> {
-    this.tasks.set(task.taskId.id.toString(), task);
+    this.tasks.set(task.taskId.toString(), task);
   }
 
   public async getTaskById(taskId: TaskId): Promise<MaybeTask> {

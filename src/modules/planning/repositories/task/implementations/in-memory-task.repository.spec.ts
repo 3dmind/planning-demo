@@ -16,6 +16,20 @@ describe('InMemoryTaskRepository', () => {
     await expect(promise).resolves.not.toThrow();
   });
 
+  it('should determine if the task exists in the repository', async () => {
+    // Given
+    const repository = new InMemoryTaskRepository();
+    const task = new TaskEntityBuilder().build();
+    await repository.save(task);
+
+    // When
+    const taskExists = await repository.exists(task.taskId);
+
+    // Then
+    expect.assertions(1);
+    expect(taskExists).toBe(true);
+  });
+
   // Given
   it('should find task by its id', async () => {
     const task = new TaskEntityBuilder().build();

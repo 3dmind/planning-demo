@@ -28,7 +28,7 @@ Content-Type: application/json
 
 ### Assign task to Bob
 
-POST http://localhost:{{port}}/tasks/{{taskId}}/assign
+PUT http://localhost:{{port}}/tasks/{{taskId}}/assign
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 

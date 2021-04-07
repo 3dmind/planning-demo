@@ -34,7 +34,7 @@ Content-Type: application/json
 
 ### Tick-off a task
 
-POST http://localhost:{{port}}/tasks/{{taskId}}/tickoff
+PUT http://localhost:{{port}}/tasks/{{taskId}}/tickoff
 Authorization: Bearer {{accessToken}}
 
 ### Note new task
@@ -51,7 +51,7 @@ Content-Type: application/json
 
 ### Archive a task
 
-POST http://localhost:{{port}}/tasks/{{taskId}}/archive
+PUT http://localhost:{{port}}/tasks/{{taskId}}/archive
 Authorization: Bearer {{accessToken}}
 
 ### Note new task
@@ -68,7 +68,7 @@ Content-Type: application/json
 
 ### Discard a task
 
-POST http://localhost:{{port}}/tasks/{{taskId}}/discard
+PUT http://localhost:{{port}}/tasks/{{taskId}}/discard
 Authorization: Bearer {{accessToken}}
 
 ### Get all archived task of the user

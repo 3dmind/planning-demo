@@ -28,10 +28,10 @@ Content-Type: application/json
 
 ### Tick-off the created task
 
-POST http://localhost:{{port}}/tasks/{{taskId}}/tickoff
+PUT http://localhost:{{port}}/tasks/{{taskId}}/tickoff
 Authorization: Bearer {{accessToken}}
 
 ### Resume the created task
 
-POST http://localhost:{{port}}/tasks/{{taskId}}/resume
+PUT http://localhost:{{port}}/tasks/{{taskId}}/resume
 Authorization: Bearer {{accessToken}}

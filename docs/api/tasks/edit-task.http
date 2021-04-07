@@ -28,7 +28,7 @@ Content-Type: application/json
 
 ### Edit the task description
 
-POST http://localhost:{{port}}/tasks/{{taskId}}/edit
+PUT http://localhost:{{port}}/tasks/{{taskId}}/edit
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 

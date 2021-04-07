@@ -28,5 +28,5 @@ Content-Type: application/json
 
 ### Archive the created task
 
-POST http://localhost:{{port}}/tasks/{{taskId}}/archive
+PUT http://localhost:{{port}}/tasks/{{taskId}}/archive
 Authorization: Bearer {{accessToken}}

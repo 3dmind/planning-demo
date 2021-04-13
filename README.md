@@ -35,7 +35,7 @@ $ docker build -t planning_db_migrate .
 $ docker-compose up -d
 ```
 
-## Start the app
+### Start the app
 
 ```bash
 # development
@@ -50,13 +50,13 @@ $ yarn run start:prod
 
 ## Test
 
-## Unit tests
+### Unit tests
 
 ```bash
 $ yarn run test
 ```
 
-## Unit tests with coverage
+### Unit tests with coverage
 
 ```bash
 $ yarn run test:cov

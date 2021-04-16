@@ -55,11 +55,12 @@ describe('Member entity', () => {
     const member = memberResult.getValue();
 
     // Then
-    expect.assertions(6);
+    expect.assertions(7);
     expect(memberResult.isSuccess).toBe(true);
     expect(member.memberId.id.equals(entityIdFixture)).toBe(true);
     expect(member.ownerId.id.equals(entityIdFixture)).toBe(true);
     expect(member.assigneeId.id.equals(entityIdFixture)).toBe(true);
+    expect(member.authorId.id.equals(entityIdFixture)).toBeTruthy();
     expect(member.userId.equals(userIdFixture)).toBe(true);
     expect(member.createdAt).toBe(dateFixture);
   });

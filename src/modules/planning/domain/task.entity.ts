@@ -1,7 +1,8 @@
-import { Guard, Result } from '../../../shared/core';
+import { Guard, OrSpecification, Result } from '../../../shared/core';
 import { Entity, UniqueEntityId } from '../../../shared/domain';
 import { AssigneeId } from './assignee-id.entity';
 import { Description } from './description.valueobject';
+import { MemberId } from './member-id.entity';
 import { OwnerId } from './owner-id.entity';
 import { MemberHasNotYetBeenAssigned } from './specifications/member-has-not-yet-been-assigned';
 import { MemberMustBeTaskAssignee } from './specifications/member-must-be-task-assignee';
@@ -17,6 +18,10 @@ export class Task extends Entity<TaskProps> {
   );
   private readonly memberHasNotYetBeenAssigned = new MemberHasNotYetBeenAssigned(
     this,
+  );
+  public readonly memberMustBeOwnerOrAssignee = new OrSpecification<MemberId>(
+    this.memberMustBeTaskOwner,
+    this.memberMustBeTaskAssignee,
   );
 
   private constructor(props: TaskProps, id?: UniqueEntityId) {

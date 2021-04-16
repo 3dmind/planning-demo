@@ -28,6 +28,7 @@ model MemberModel {
   memberBaseId       String
   ownTaskModels      TaskModel[]    @relation("OwnTasks")
   assignedTaskModels TaskModel[]    @relation("AssignedTasks")
+  commentModels      CommentModel[]
 }
 
 model TaskModel {
@@ -48,4 +49,17 @@ model TaskModel {
   ownerId       String
   assigneeModel MemberModel  @relation("AssignedTasks", fields: [assigneeId], references: [memberId])
   assigneeId    String
+  commentModels CommentModel[]
+}
+
+model CommentModel {
+  @@map("Comment")
+  commentId   String      @id
+  updatedAt   DateTime    @updatedAt
+  createdAt   DateTime
+  text        String
+  memberModel MemberModel @relation(fields: [authorId], references: [memberId])
+  authorId    String
+  taskModel   TaskModel   @relation(fields: [taskId], references: [taskId])
+  taskId      String
 }

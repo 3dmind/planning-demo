@@ -1,11 +1,14 @@
 import { Logger, Module } from '@nestjs/common';
 import { PrismaModule } from '../../prisma/prisma.module';
+import { CommentsController } from './controllers/comments.controller';
 import { TasksController } from './controllers/tasks.controller';
 import {
+  CommentRepositoryProvider,
   MemberRepositoryProvider,
   TaskRepositoryProvider,
 } from './repositories/providers';
 import { AfterUserRegisteredSubscriber } from './subscribers/after-user-registered.subscriber';
+import { CommentOnTaskUsecase } from './use-cases/comments/comment-on-task/comment-on-task.usecase';
 import { CreateMemberUsecase } from './use-cases/members/create-member/create-member.usecase';
 import { ArchiveTaskUsecase } from './use-cases/tasks/archive-task/archive-task.usecase';
 import { AssignTaskUsecase } from './use-cases/tasks/assign-task/assign-task.usecase';
@@ -19,11 +22,13 @@ import { TickOffTaskUsecase } from './use-cases/tasks/tick-off-task/tick-off-tas
 
 @Module({
   imports: [PrismaModule],
-  controllers: [TasksController],
+  controllers: [TasksController, CommentsController],
   providers: [
     AfterUserRegisteredSubscriber,
     ArchiveTaskUsecase,
     AssignTaskUsecase,
+    CommentOnTaskUsecase,
+    CommentRepositoryProvider,
     CreateMemberUsecase,
     DiscardTaskUsecase,
     EditTaskUsecase,

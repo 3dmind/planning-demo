@@ -1,23 +1,21 @@
 import { INestApplication } from '@nestjs/common';
 import * as faker from 'faker';
 import * as request from 'supertest';
-import { TaskDto } from '../../../../src/modules/planning/dtos/task.dto';
+import urlcat from 'urlcat';
 import { auth } from '../../../auth';
-import { TasksApi } from '../tasks-api.enum';
+import { CommentsApi } from '../comments-api.enum';
 
-export function noteTask(
+export function commentOnTask(
   app: INestApplication,
   loginResponse: request.Response,
-  text: string = faker.lorem.words(5),
+  taskId: string,
+  text: string = faker.lorem.sentence(25),
 ): request.Test {
+  const url = urlcat(CommentsApi.COMMENTS, { taskId });
   return request(app.getHttpServer())
-    .post(TasksApi.TASKS)
+    .post(url)
     .auth(...auth(loginResponse))
     .send({
       text,
     });
-}
-
-export interface NoteTaskResponse extends request.Response {
-  body: TaskDto;
 }

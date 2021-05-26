@@ -9,13 +9,11 @@ import {
   UseCase,
 } from '../../../../../shared/core';
 import { UniqueEntityId } from '../../../../../shared/domain';
-import { UserId } from '../../../../users/domain/user-id.entity';
 import { CommentText } from '../../../domain/comment/comment-text.valueobject';
 import { Comment } from '../../../domain/comment/comment.entity';
 import { CommentRepository } from '../../../domain/comment/comment.repository';
 import { MemberId } from '../../../domain/member-id.entity';
 import { Member } from '../../../domain/member.entity';
-import { MemberRepository } from '../../../domain/member.repository';
 import { MemberMustBeTaskAssignee } from '../../../domain/specifications/member-must-be-task-assignee';
 import { MemberMustBeTaskOwner } from '../../../domain/specifications/member-must-be-task-owner';
 import { TaskId } from '../../../domain/task-id.entity';
@@ -27,12 +25,11 @@ import { CommentOnTaskErrors } from './comment-on-task.errors';
 type Request = {
   dto: CommentOnTaskDto;
   taskId: string;
-  userId: UserId;
+  member: Member;
 };
 
 type CommentOnTaskUsecaseErrors =
   | AppErrors.UnexpectedError
-  | CommentOnTaskErrors.MemberNotFoundError
   | CommentOnTaskErrors.TaskNotFoundError
   | CommentOnTaskErrors.MemberIsNeitherTaskOwnerNorAssigneeError
   | Result<any>;
@@ -45,7 +42,6 @@ export class CommentOnTaskUsecase implements UseCase<Request, Response> {
 
   constructor(
     private readonly commentRepository: CommentRepository,
-    private readonly memberRepository: MemberRepository,
     private readonly taskRepository: TaskRepository,
   ) {}
 
@@ -58,18 +54,13 @@ export class CommentOnTaskUsecase implements UseCase<Request, Response> {
       return left(taskIdOrError);
     }
 
-    const getMemberResult = await this.getMember(request.userId);
-    if (getMemberResult.isLeft()) {
-      return left(getMemberResult.value);
-    }
-
     const getTaskResult = await this.getTask(taskIdOrError.getValue());
     if (getTaskResult.isLeft()) {
       return left(getTaskResult.value);
     }
 
     const writeCommentResult = this.writeComment(
-      getMemberResult.value,
+      request.member,
       getTaskResult.value,
       request.dto,
     );
@@ -77,36 +68,7 @@ export class CommentOnTaskUsecase implements UseCase<Request, Response> {
       return left(writeCommentResult.value);
     }
 
-    return this.saveComment(writeCommentResult.value);
-  }
-
-  private async getMember(
-    userId: UserId,
-  ): Promise<
-    Either<
-      CommentOnTaskErrors.MemberNotFoundError | AppErrors.UnexpectedError,
-      Member
-    >
-  > {
-    try {
-      const { found, member } = await this.memberRepository.getMemberByUserId(
-        userId.id,
-      );
-
-      if (!found) {
-        const memberNotFoundError = new CommentOnTaskErrors.MemberNotFoundError(
-          userId,
-        );
-        this.logger.debug(memberNotFoundError.errorValue().message);
-        return left(memberNotFoundError);
-      } else {
-        return right(member);
-      }
-    } catch (error) {
-      const unexpectedError = new AppErrors.UnexpectedError(error);
-      this.logger.debug(unexpectedError.errorValue().message);
-      return left(unexpectedError);
-    }
+    return await this.saveComment(writeCommentResult.value);
   }
 
   private async getTask(

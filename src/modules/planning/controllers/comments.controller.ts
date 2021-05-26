@@ -12,9 +12,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../../../guards/jwt-auth.guard';
+import { GetMemberEntityByUserIdPipe } from '../../../pipes/get-member-entity-by-user-id.pipe';
 import { AppErrors } from '../../../shared/core';
 import { GetUser } from '../../users/decorators/get-user.decorator';
-import { UserId } from '../../users/domain/user-id.entity';
+import { Member } from '../domain/member.entity';
 import { CommentOnTaskDto } from '../use-cases/comments/comment-on-task/comment-on-task.dto';
 import { CommentOnTaskErrors } from '../use-cases/comments/comment-on-task/comment-on-task.errors';
 import { CommentOnTaskUsecase } from '../use-cases/comments/comment-on-task/comment-on-task.usecase';
@@ -27,20 +28,19 @@ export class CommentsController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async commentOnTask(
-    @GetUser('userId') userId: UserId,
+    @GetUser('userId', GetMemberEntityByUserIdPipe) member: Member,
     @Query('taskId') taskId: string,
     @Body() dto: CommentOnTaskDto,
   ): Promise<void> {
     const result = await this.commentOnTaskUseCase.execute({
       dto,
+      member,
       taskId,
-      userId,
     });
 
     if (result.isLeft()) {
       const error = result.value;
       switch (Reflect.getPrototypeOf(error).constructor) {
-        case CommentOnTaskErrors.MemberNotFoundError:
         case CommentOnTaskErrors.TaskNotFoundError:
           throw new NotFoundException(error.errorValue().message);
         case CommentOnTaskErrors.MemberIsNeitherTaskOwnerNorAssigneeError:

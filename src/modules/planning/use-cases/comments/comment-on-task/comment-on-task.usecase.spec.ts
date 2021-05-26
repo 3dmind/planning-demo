@@ -3,7 +3,6 @@ import * as faker from 'faker';
 import { MemberEntityBuilder } from '../../../../../../test/builder/member-entity.builder';
 import { TaskEntityBuilder } from '../../../../../../test/builder/task-entity.builder';
 import { AppErrors, Result } from '../../../../../shared/core';
-import { UserId } from '../../../../users/domain/user-id.entity';
 import { CommentRepository } from '../../../domain/comment/comment.repository';
 import { MemberRepository } from '../../../domain/member.repository';
 import { TaskId } from '../../../domain/task-id.entity';
@@ -25,16 +24,16 @@ describe('CommentOnTaskUsecase', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
-          provide: CommentRepository,
-          useClass: InMemoryCommentRepository,
+          provide: MemberRepository,
+          useClass: InMemoryMemberRepository,
         },
         {
           provide: TaskRepository,
           useClass: InMemoryTaskRepository,
         },
         {
-          provide: MemberRepository,
-          useClass: InMemoryMemberRepository,
+          provide: CommentRepository,
+          useClass: InMemoryCommentRepository,
         },
         CommentOnTaskUsecase,
       ],
@@ -49,7 +48,7 @@ describe('CommentOnTaskUsecase', () => {
 
   it('should fail if task-id cannot be created', async () => {
     // Given
-    const userId = UserId.create().getValue();
+    const member = new MemberEntityBuilder().build();
     const taskId = faker.random.uuid();
     const dto: CommentOnTaskDto = {
       text: faker.lorem.sentence(),
@@ -60,9 +59,9 @@ describe('CommentOnTaskUsecase', () => {
 
     // When
     const result = await useCase.execute({
-      taskId,
-      userId,
       dto,
+      member,
+      taskId,
     });
 
     // Then
@@ -72,75 +71,20 @@ describe('CommentOnTaskUsecase', () => {
     spy.mockRestore();
   });
 
-  it('should fail if member cannot be found', async () => {
-    // Given
-    const userId = UserId.create().getValue();
-    const taskId = faker.random.uuid();
-    const dto: CommentOnTaskDto = {
-      text: faker.lorem.sentence(),
-    };
-
-    // When
-    const result = await useCase.execute({
-      taskId,
-      userId,
-      dto,
-    });
-
-    // Then
-    expect.assertions(3);
-    expect(result.isLeft()).toBeTruthy();
-    expect(result.value).toBeInstanceOf(
-      CommentOnTaskErrors.MemberNotFoundError,
-    );
-    expect(result.value.errorValue().message).toEqual(
-      `Could not find member associated with the user id {${userId}}.`,
-    );
-  });
-
-  it('should fail while finding a member throws an error', async () => {
-    // Given
-    const dto: CommentOnTaskDto = {
-      text: faker.lorem.sentence(),
-    };
-    const member = new MemberEntityBuilder().build();
-    const task = new TaskEntityBuilder().withOwnerId(member.ownerId).build();
-    const memberRepositorySpy = jest
-      .spyOn(memberRepository, 'getMemberByUserId')
-      .mockImplementationOnce(() => {
-        throw new Error();
-      });
-    await taskRepository.save(task);
-
-    // When
-    const result = await useCase.execute({
-      dto,
-      taskId: task.taskId.toString(),
-      userId: member.userId,
-    });
-
-    // Then
-    expect.assertions(2);
-    expect(result.isLeft()).toBeTruthy();
-    expect(result.value).toBeInstanceOf(AppErrors.UnexpectedError);
-
-    memberRepositorySpy.mockRestore();
-  });
-
   it('should fail if task cannot be found', async () => {
     // Given
+    const member = new MemberEntityBuilder().build();
     const taskId = faker.random.uuid();
     const dto: CommentOnTaskDto = {
       text: faker.lorem.sentence(),
     };
-    const member = new MemberEntityBuilder().build();
     await memberRepository.save(member);
 
     // When
     const result = await useCase.execute({
       taskId,
-      userId: member.userId,
       dto,
+      member,
     });
 
     // Then
@@ -158,7 +102,7 @@ describe('CommentOnTaskUsecase', () => {
       text: faker.lorem.sentence(),
     };
     const member = new MemberEntityBuilder().build();
-    const task = new TaskEntityBuilder().withOwnerId(member.ownerId).build();
+    const task = new TaskEntityBuilder().build();
     const taskRepositorySpy = jest
       .spyOn(taskRepository, 'getTaskById')
       .mockImplementationOnce(() => {
@@ -169,8 +113,8 @@ describe('CommentOnTaskUsecase', () => {
     // When
     const result = await useCase.execute({
       dto,
+      member,
       taskId: task.taskId.toString(),
-      userId: member.userId,
     });
 
     // Then
@@ -194,8 +138,8 @@ describe('CommentOnTaskUsecase', () => {
     // When
     const result = await useCase.execute({
       dto,
+      member,
       taskId: task.taskId.toString(),
-      userId: member.userId,
     });
 
     // Then
@@ -216,8 +160,8 @@ describe('CommentOnTaskUsecase', () => {
     // When
     const result = await useCase.execute({
       dto,
+      member,
       taskId: task.taskId.toString(),
-      userId: member.userId,
     });
 
     // Then
@@ -237,19 +181,19 @@ describe('CommentOnTaskUsecase', () => {
       text: faker.lorem.sentence(),
     };
     const assignee = new MemberEntityBuilder().build();
+    const member = new MemberEntityBuilder().build();
     const task = new TaskEntityBuilder()
       .withAssigneeId(assignee.assigneeId)
       .build();
-    const member = new MemberEntityBuilder().build();
-    await memberRepository.save(member);
     await memberRepository.save(assignee);
+    await memberRepository.save(member);
     await taskRepository.save(task);
 
     // When
     const result = await useCase.execute({
       dto,
+      member,
       taskId: task.taskId.toString(),
-      userId: member.userId,
     });
 
     // Then
@@ -268,21 +212,21 @@ describe('CommentOnTaskUsecase', () => {
     const dto: CommentOnTaskDto = {
       text: faker.lorem.sentence(),
     };
-    const owner = new MemberEntityBuilder().build();
-    const task = new TaskEntityBuilder().withOwnerId(owner.ownerId).build();
+    const member = new MemberEntityBuilder().build();
+    const task = new TaskEntityBuilder().withOwnerId(member.ownerId).build();
     const spy = jest
       .spyOn(commentRepository, 'save')
       .mockImplementationOnce(() => {
         throw new Error();
       });
-    await memberRepository.save(owner);
+    await memberRepository.save(member);
     await taskRepository.save(task);
 
     // When
     const result = await useCase.execute({
       dto,
+      member,
       taskId: task.taskId.toString(),
-      userId: owner.userId,
     });
 
     // Then
@@ -306,8 +250,8 @@ describe('CommentOnTaskUsecase', () => {
     // When
     const result = await useCase.execute({
       dto,
+      member: owner,
       taskId: task.taskId.toString(),
-      userId: owner.userId,
     });
 
     // Then
@@ -321,17 +265,20 @@ describe('CommentOnTaskUsecase', () => {
       text: faker.lorem.sentence(),
     };
     const owner = new MemberEntityBuilder().build();
+    const assignee = new MemberEntityBuilder().build();
     const task = new TaskEntityBuilder()
-      .withAssigneeId(owner.assigneeId)
+      .withOwnerId(owner.ownerId)
+      .withAssigneeId(assignee.assigneeId)
       .build();
     await memberRepository.save(owner);
+    await memberRepository.save(assignee);
     await taskRepository.save(task);
 
     // When
     const result = await useCase.execute({
       dto,
+      member: assignee,
       taskId: task.taskId.toString(),
-      userId: owner.userId,
     });
 
     // Then

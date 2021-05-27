@@ -8,7 +8,6 @@ import {
   right,
   UseCase,
 } from '../../../../../shared/core';
-import { UniqueEntityId } from '../../../../../shared/domain';
 import { CommentText } from '../../../domain/comment/comment-text.valueobject';
 import { Comment } from '../../../domain/comment/comment.entity';
 import { CommentRepository } from '../../../domain/comment/comment.repository';
@@ -16,16 +15,14 @@ import { MemberId } from '../../../domain/member-id.entity';
 import { Member } from '../../../domain/member.entity';
 import { MemberMustBeTaskAssignee } from '../../../domain/specifications/member-must-be-task-assignee';
 import { MemberMustBeTaskOwner } from '../../../domain/specifications/member-must-be-task-owner';
-import { TaskId } from '../../../domain/task-id.entity';
 import { Task } from '../../../domain/task.entity';
-import { TaskRepository } from '../../../domain/task.repository';
 import { CommentOnTaskDto } from './comment-on-task.dto';
 import { CommentOnTaskErrors } from './comment-on-task.errors';
 
 type Request = {
   dto: CommentOnTaskDto;
-  taskId: string;
   member: Member;
+  task: Task;
 };
 
 type CommentOnTaskUsecaseErrors =
@@ -40,28 +37,14 @@ type Response = Either<CommentOnTaskUsecaseErrors, Result<void>>;
 export class CommentOnTaskUsecase implements UseCase<Request, Response> {
   private readonly logger = new Logger(CommentOnTaskUsecase.name);
 
-  constructor(
-    private readonly commentRepository: CommentRepository,
-    private readonly taskRepository: TaskRepository,
-  ) {}
+  constructor(private readonly commentRepository: CommentRepository) {}
 
   public async execute(request: Request): Promise<Response> {
     this.logger.log('Commenting on task...');
 
-    const taskIdOrError = TaskId.create(new UniqueEntityId(request.taskId));
-    if (taskIdOrError.isFailure) {
-      this.logger.debug(taskIdOrError.errorValue());
-      return left(taskIdOrError);
-    }
-
-    const getTaskResult = await this.getTask(taskIdOrError.getValue());
-    if (getTaskResult.isLeft()) {
-      return left(getTaskResult.value);
-    }
-
     const writeCommentResult = this.writeComment(
       request.member,
-      getTaskResult.value,
+      request.task,
       request.dto,
     );
     if (writeCommentResult.isLeft()) {
@@ -69,33 +52,6 @@ export class CommentOnTaskUsecase implements UseCase<Request, Response> {
     }
 
     return await this.saveComment(writeCommentResult.value);
-  }
-
-  private async getTask(
-    taskId: TaskId,
-  ): Promise<
-    Either<
-      CommentOnTaskErrors.TaskNotFoundError | AppErrors.UnexpectedError,
-      Task
-    >
-  > {
-    try {
-      const { found, task } = await this.taskRepository.getTaskById(taskId);
-
-      if (!found) {
-        const taskNotFoundError = new CommentOnTaskErrors.TaskNotFoundError(
-          taskId,
-        );
-        this.logger.debug(taskNotFoundError.errorValue().message);
-        return left(taskNotFoundError);
-      } else {
-        return right(task);
-      }
-    } catch (error) {
-      const unexpectedError = new AppErrors.UnexpectedError(error);
-      this.logger.debug(unexpectedError.errorValue().message);
-      return left(unexpectedError);
-    }
   }
 
   private writeComment(

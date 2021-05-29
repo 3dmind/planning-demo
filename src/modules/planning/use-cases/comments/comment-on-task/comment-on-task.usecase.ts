@@ -51,7 +51,7 @@ export class CommentOnTaskUsecase implements UseCase<Request, Response> {
       return left(writeCommentResult.value);
     }
 
-    return await this.saveComment(writeCommentResult.value);
+    return this.saveComment(writeCommentResult.value);
   }
 
   private writeComment(

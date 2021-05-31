@@ -10,9 +10,9 @@ import {
   UnprocessableEntityException,
   UseGuards,
 } from '@nestjs/common';
+import { UserEntity } from '../../../decorators/user-entity.decorator';
 import { JwtAuthGuard } from '../../../guards/jwt-auth.guard';
 import { AppErrors } from '../../../shared/core';
-import { GetUser } from '../decorators/get-user.decorator';
 import { AccessToken } from '../domain/jwt';
 import { User } from '../domain/user.entity';
 import { UserDto } from '../dtos/user.dto';
@@ -62,7 +62,7 @@ export class UsersController {
   @UseGuards(LocalAuthGuard)
   @Post('/login')
   @HttpCode(HttpStatus.OK)
-  async login(@GetUser() user: User): Promise<LoginResponseDto> {
+  async login(@UserEntity() user: User): Promise<LoginResponseDto> {
     const result = await this.loginUsecase.execute(user);
 
     if (result.isLeft()) {
@@ -75,7 +75,7 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Get('/me')
-  async getCurrentUser(@GetUser() user: User): Promise<UserDto> {
+  async getCurrentUser(@UserEntity() user: User): Promise<UserDto> {
     return UserMapper.toDto(user);
   }
 
@@ -83,7 +83,7 @@ export class UsersController {
   @Post('/refresh')
   @HttpCode(HttpStatus.OK)
   async refreshAccessToken(
-    @GetUser() user: User,
+    @UserEntity() user: User,
     @Body() refreshTokenDto: RefreshTokenDto,
   ): Promise<RefreshAccessTokenResponseDto> {
     const result = await this.refreshAccessTokenUsecase.execute(user);
@@ -105,7 +105,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Post('/logout')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async logout(@GetUser() user: User): Promise<void> {
+  async logout(@UserEntity() user: User): Promise<void> {
     const result = await this.logoutUsecase.execute(user);
     if (result.isLeft()) {
       const error = result.value;

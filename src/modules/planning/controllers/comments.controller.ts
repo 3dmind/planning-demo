@@ -10,11 +10,11 @@ import {
   UnprocessableEntityException,
   UseGuards,
 } from '@nestjs/common';
+import { UserEntity } from '../../../decorators/user-entity.decorator';
 import { JwtAuthGuard } from '../../../guards/jwt-auth.guard';
 import { GetMemberEntityByUserIdPipe } from '../../../pipes/get-member-entity-by-user-id.pipe';
 import { GetTaskEntityByIdPipe } from '../../../pipes/get-task-entity-by-id.pipe';
 import { AppErrors } from '../../../shared/core';
-import { GetUser } from '../../users/decorators/get-user.decorator';
 import { Member } from '../domain/member.entity';
 import { Task } from '../domain/task.entity';
 import { CommentOnTaskDto } from '../use-cases/comments/comment-on-task/comment-on-task.dto';
@@ -29,7 +29,7 @@ export class CommentsController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async commentOnTask(
-    @GetUser('userId', GetMemberEntityByUserIdPipe) member: Member,
+    @UserEntity('userId', GetMemberEntityByUserIdPipe) member: Member,
     @Query('taskId', GetTaskEntityByIdPipe) task: Task,
     @Body() dto: CommentOnTaskDto,
   ): Promise<void> {

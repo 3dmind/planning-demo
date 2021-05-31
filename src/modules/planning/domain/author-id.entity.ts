@@ -14,7 +14,7 @@ export class AuthorId extends Entity<null> {
     return Result.ok<AuthorId>(new AuthorId(id));
   }
 
-  public toString(): string {
+  public override toString(): string {
     return this._id.toString();
   }
 }

@@ -12,9 +12,9 @@ import {
   UnprocessableEntityException,
   UseGuards,
 } from '@nestjs/common';
+import { UserEntity } from '../../../decorators/user-entity.decorator';
 import { JwtAuthGuard } from '../../../guards/jwt-auth.guard';
 import { AppErrors } from '../../../shared/core';
-import { GetUser } from '../../users/decorators/get-user.decorator';
 import { UserId } from '../../users/domain/user-id.entity';
 import { TaskDto } from '../dtos/task.dto';
 import { TaskMapper } from '../mappers/task.mapper';
@@ -57,7 +57,7 @@ export class TasksController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async noteTask(
-    @GetUser('userId') userId: UserId,
+    @UserEntity('userId') userId: UserId,
     @Body() dto: NoteTaskDto,
   ): Promise<TaskDto> {
     const result = await this.noteTaskUseCase.execute({
@@ -85,7 +85,7 @@ export class TasksController {
 
   @Put(':id/tickoff')
   async tickOffTask(
-    @GetUser('userId') userId: UserId,
+    @UserEntity('userId') userId: UserId,
     @Param('id') id: string,
   ): Promise<TaskDto> {
     const result = await this.tickOffTaskUseCase.execute({
@@ -115,7 +115,7 @@ export class TasksController {
 
   @Put(':id/resume')
   async resumeTask(
-    @GetUser('userId') userId: UserId,
+    @UserEntity('userId') userId: UserId,
     @Param('id') id: string,
   ): Promise<TaskDto> {
     const result = await this.resumeTaskUseCase.execute({
@@ -144,7 +144,7 @@ export class TasksController {
 
   @Put(':id/edit')
   async editTask(
-    @GetUser('userId') userId: UserId,
+    @UserEntity('userId') userId: UserId,
     @Param('id') id: string,
     @Body() dto: EditTaskDto,
   ): Promise<TaskDto> {
@@ -175,7 +175,7 @@ export class TasksController {
 
   @Put(':id/archive')
   async archiveTask(
-    @GetUser('userId') userId: UserId,
+    @UserEntity('userId') userId: UserId,
     @Param('id') id: string,
   ): Promise<TaskDto> {
     const result = await this.archivedTasksUseCase.execute({
@@ -204,7 +204,7 @@ export class TasksController {
 
   @Put(':id/discard')
   async discardTask(
-    @GetUser('userId') userId: UserId,
+    @UserEntity('userId') userId: UserId,
     @Param('id') id: string,
   ): Promise<TaskDto> {
     const result = await this.discardTaskUseCase.execute({
@@ -232,7 +232,9 @@ export class TasksController {
   }
 
   @Get('/active')
-  async getActiveTasks(@GetUser('userId') userId: UserId): Promise<TaskDto[]> {
+  async getActiveTasks(
+    @UserEntity('userId') userId: UserId,
+  ): Promise<TaskDto[]> {
     const result = await this.getAllActiveTasksUseCase.execute({ userId });
 
     if (result.isRight()) {
@@ -255,7 +257,7 @@ export class TasksController {
 
   @Get('/archived')
   async getArchivedTasks(
-    @GetUser('userId') userId: UserId,
+    @UserEntity('userId') userId: UserId,
   ): Promise<TaskDto[]> {
     const result = await this.getAllArchivedTasksUseCase.execute({ userId });
 
@@ -280,7 +282,7 @@ export class TasksController {
 
   @Put(':id/assign')
   async assign(
-    @GetUser('userId') userId: UserId,
+    @UserEntity('userId') userId: UserId,
     @Param('id') id: string,
     @Body() dto: AssignTaskDto,
   ): Promise<TaskDto> {

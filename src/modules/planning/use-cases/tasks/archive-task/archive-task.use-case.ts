@@ -1,13 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { AppErrors, Either, left, Result, right, UseCase } from '../../../../../shared/core';
-import { Description } from '../../../domain/description.valueobject';
 import { Member } from '../../../domain/member.entity';
 import { Task } from '../../../domain/task.entity';
 import { TaskRepository } from '../../../domain/task.repository';
-import { EditTaskDto } from './edit-task.dto';
 
 type Request = {
-  dto: EditTaskDto;
   member: Member;
   task: Task;
 };
@@ -15,36 +12,28 @@ type Request = {
 type Response = Either<AppErrors.UnexpectedError | Result<any>, Result<Task>>;
 
 @Injectable()
-export class EditTaskUsecase implements UseCase<Request, Response> {
-  private readonly logger = new Logger(EditTaskUsecase.name);
+export class ArchiveTaskUseCase implements UseCase<Request, Response> {
+  private readonly logger = new Logger(ArchiveTaskUseCase.name);
 
   constructor(private readonly taskRepository: TaskRepository) {}
 
   async execute(request: Request): Promise<Response> {
-    this.logger.log('Editing task...');
+    this.logger.log('Archiving task...');
 
-    const { dto, member, task } = request;
-
-    const descriptionResult = Description.create(dto.text);
-    if (descriptionResult.isFailure) {
-      this.logger.debug(descriptionResult.error);
-      return left(descriptionResult);
-    }
+    const { member, task } = request;
 
     try {
-      const newDescription = descriptionResult.getValue();
-      if (task.description.equals(newDescription)) {
-        this.logger.debug('Task already has this description.');
+      if (task.isArchived()) {
+        this.logger.debug('Task already archived.');
         return right(Result.ok(task));
       }
 
-      const result = task.edit(newDescription, member.ownerId);
+      const result = task.archive(member.ownerId);
       if (result.isFailure) {
-        this.logger.debug(result.errorValue());
         return left(result);
       } else {
         await this.taskRepository.save(task);
-        this.logger.log('Task successfully edited.');
+        this.logger.log('Task successfully archived.');
         return right(Result.ok<Task>(task));
       }
     } catch (error) {

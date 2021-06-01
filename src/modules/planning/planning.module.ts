@@ -9,30 +9,30 @@ import { AfterUserRegisteredSubscriber } from './subscribers/after-user-register
 import { CommentOnTaskUsecase } from './use-cases/comments/comment-on-task/comment-on-task.usecase';
 import { CreateMemberUsecase } from './use-cases/members/create-member/create-member.usecase';
 import { GetMemberByUserIdUseCase } from './use-cases/members/get-member-by-user-id/get-member-by-user-id.use-case';
-import { ArchiveTaskUsecase } from './use-cases/tasks/archive-task/archive-task.usecase';
-import { AssignTaskUsecase } from './use-cases/tasks/assign-task/assign-task.usecase';
-import { DiscardTaskUsecase } from './use-cases/tasks/discard-task/discard-task.usecase';
+import { ArchiveTaskUseCase } from './use-cases/tasks/archive-task/archive-task.use-case';
+import { AssignTaskUseCase } from './use-cases/tasks/assign-task/assign-task.use-case';
+import { DiscardTaskUseCase } from './use-cases/tasks/discard-task/discard-task.use-case';
 import { EditTaskUsecase } from './use-cases/tasks/edit-task/edit-task.usecase';
-import { GetAllActiveTasksUsecase } from './use-cases/tasks/get-all-active-tasks/get-all-active-tasks.usecase';
+import { GetAllActiveTasksUseCase } from './use-cases/tasks/get-all-active-tasks/get-all-active-tasks.use-case';
 import { GetAllArchivedTasksUsecase } from './use-cases/tasks/get-all-archived-tasks/get-all-archived-tasks.usecase';
 import { GetTaskByIdUseCase } from './use-cases/tasks/get-task-by-id/get-task-by-id.use-case';
-import { NoteTaskUsecase } from './use-cases/tasks/note-task/note-task.usecase';
-import { ResumeTaskUsecase } from './use-cases/tasks/resume-task/resume-task.usecase';
-import { TickOffTaskUsecase } from './use-cases/tasks/tick-off-task/tick-off-task.usecase';
+import { NoteTaskUseCase } from './use-cases/tasks/note-task/note-task.use-case';
+import { ResumeTaskUseCase } from './use-cases/tasks/resume-task/resume-task.use-case';
+import { TickOffTaskUseCase } from './use-cases/tasks/tick-off-task/tick-off-task.use-case';
 
 @Module({
   imports: [PrismaModule],
   controllers: [TasksController, CommentsController],
   providers: [
     AfterUserRegisteredSubscriber,
-    ArchiveTaskUsecase,
-    AssignTaskUsecase,
+    ArchiveTaskUseCase,
+    AssignTaskUseCase,
     CommentOnTaskUsecase,
     CommentRepositoryProvider,
     CreateMemberUsecase,
-    DiscardTaskUsecase,
+    DiscardTaskUseCase,
     EditTaskUsecase,
-    GetAllActiveTasksUsecase,
+    GetAllActiveTasksUseCase,
     GetAllArchivedTasksUsecase,
     GetMemberByUserIdUseCase,
     GetMemberEntityByUserIdPipe,
@@ -40,10 +40,10 @@ import { TickOffTaskUsecase } from './use-cases/tasks/tick-off-task/tick-off-tas
     GetTaskByIdUseCase,
     Logger,
     MemberRepositoryProvider,
-    NoteTaskUsecase,
-    ResumeTaskUsecase,
+    NoteTaskUseCase,
+    ResumeTaskUseCase,
     TaskRepositoryProvider,
-    TickOffTaskUsecase,
+    TickOffTaskUseCase,
   ],
 })
 export class PlanningModule {}

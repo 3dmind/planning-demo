@@ -2,17 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MemberEntityBuilder } from '../../../../../../test/builder/member-entity.builder';
 import { TaskEntityBuilder } from '../../../../../../test/builder/task-entity.builder';
 import { AppErrors } from '../../../../../shared/core';
-import { UniqueEntityId } from '../../../../../shared/domain';
-import { UserId } from '../../../../users/domain/user-id.entity';
-import { MemberRepository } from '../../../domain/member.repository';
 import { TaskRepository } from '../../../domain/task.repository';
-import { InMemoryMemberRepository } from '../../../repositories/member/implementations/in-memory-member.repository';
 import { InMemoryTaskRepository } from '../../../repositories/task/implementations/in-memory-task.repository';
-import { GetAllArchivedTasksErrors } from './get-all-archived-tasks.errors';
 import { GetAllArchivedTasksUsecase } from './get-all-archived-tasks.usecase';
 
 describe('GetAllArchivedTasksUsecase', () => {
-  let memberRepository: MemberRepository;
   let taskRepository: TaskRepository;
   let useCase: GetAllArchivedTasksUsecase;
 
@@ -23,47 +17,24 @@ describe('GetAllArchivedTasksUsecase', () => {
           provide: TaskRepository,
           useClass: InMemoryTaskRepository,
         },
-        {
-          provide: MemberRepository,
-          useClass: InMemoryMemberRepository,
-        },
         GetAllArchivedTasksUsecase,
       ],
     }).compile();
     module.useLogger(false);
 
-    memberRepository = module.get<MemberRepository>(MemberRepository);
     taskRepository = module.get<TaskRepository>(TaskRepository);
     useCase = module.get<GetAllArchivedTasksUsecase>(GetAllArchivedTasksUsecase);
   });
 
-  it('should fail if member cannot be found', async () => {
-    // Given
-    const userId = UserId.create(new UniqueEntityId()).getValue();
-
-    // When
-    const result = await useCase.execute({ userId });
-    const error = <GetAllArchivedTasksErrors.MemberNotFoundError>result.value;
-
-    // Then
-    expect.assertions(3);
-    expect(result.isLeft()).toBe(true);
-    expect(error).toBeInstanceOf(GetAllArchivedTasksErrors.MemberNotFoundError);
-    expect(error.errorValue().message).toEqual(`Could not find member associated with the user id {${userId}}.`);
-  });
-
   it('should fail on any error', async () => {
     // Given
+    const member = new MemberEntityBuilder().build();
     const spy = jest.spyOn(taskRepository, 'getAllArchivedTasksOfMember').mockImplementationOnce(() => {
       throw new Error();
     });
-    const member = new MemberEntityBuilder().build();
-    await memberRepository.save(member);
 
     // When
-    const result = await useCase.execute({
-      userId: member.userId,
-    });
+    const result = await useCase.execute({ member });
 
     // Then
     expect.assertions(2);
@@ -82,8 +53,6 @@ describe('GetAllArchivedTasksUsecase', () => {
     const archivedTaskOfMemberOne = new TaskEntityBuilder().withOwnerId(memberOne.ownerId).makeArchived().build();
     const discardedTaskOfMemberOne = new TaskEntityBuilder().withOwnerId(memberOne.ownerId).makeDiscarded().build();
     const notedTaskOfMemberTwo = new TaskEntityBuilder().withOwnerId(memberTwo.ownerId).build();
-    await memberRepository.save(memberOne);
-    await memberRepository.save(memberTwo);
     await taskRepository.save(notedTaskOfMemberOne);
     await taskRepository.save(tickedOffTaskOfMemberOne);
     await taskRepository.save(archivedTaskOfMemberOne);
@@ -92,7 +61,7 @@ describe('GetAllArchivedTasksUsecase', () => {
 
     // When
     const result = await useCase.execute({
-      userId: memberOne.userId,
+      member: memberOne,
     });
     const tasks = result.value.getValue();
 

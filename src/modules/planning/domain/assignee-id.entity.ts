@@ -14,7 +14,7 @@ export class AssigneeId extends Entity<null> {
     return Result.ok<AssigneeId>(new AssigneeId(id));
   }
 
-  public override toString(): string {
+  public toString(): string {
     return this._id.toString();
   }
 }

@@ -14,7 +14,7 @@ export class MemberId extends Entity<any> {
     return Result.ok<MemberId>(new MemberId(id));
   }
 
-  public override toString(): string {
+  public toString(): string {
     return this._id.toString();
   }
 }

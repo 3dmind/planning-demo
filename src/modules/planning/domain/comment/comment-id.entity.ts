@@ -13,7 +13,7 @@ export class CommentId extends Entity<null> {
     return Result.ok<CommentId>(new CommentId(id));
   }
 
-  public override toString(): string {
+  public toString(): string {
     return this._id.toString();
   }
 }

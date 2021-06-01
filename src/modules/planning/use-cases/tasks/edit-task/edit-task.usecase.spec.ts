@@ -43,9 +43,7 @@ describe('EditTaskUsecase', () => {
 
   it('should fail if task-id cannot be created', async () => {
     // Given
-    const spy = jest
-      .spyOn(TaskId, 'create')
-      .mockReturnValue(Result.fail<TaskId>('error'));
+    const spy = jest.spyOn(TaskId, 'create').mockReturnValue(Result.fail<TaskId>('error'));
     const userId = UserId.create(new UniqueEntityId()).getValue();
     const dto: EditTaskDto = {
       text: faker.lorem.words(5),
@@ -82,9 +80,7 @@ describe('EditTaskUsecase', () => {
     // Then
     expect.assertions(2);
     expect(result.isLeft()).toBe(true);
-    expect(result.value.errorValue()).toContain(
-      'Text is not at least 2 chars.',
-    );
+    expect(result.value.errorValue()).toContain('Text is not at least 2 chars.');
   });
 
   it('should fail if member cannot be found', async () => {
@@ -104,9 +100,7 @@ describe('EditTaskUsecase', () => {
     expect.assertions(3);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(EditTaskErrors.MemberNotFoundError);
-    expect(result.value.errorValue().message).toEqual(
-      `Could not find member associated with the user id {${userId}}.`,
-    );
+    expect(result.value.errorValue().message).toEqual(`Could not find member associated with the user id {${userId}}.`);
   });
 
   it('should fail if a task cannot be found', async () => {
@@ -127,9 +121,7 @@ describe('EditTaskUsecase', () => {
     expect.assertions(3);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(EditTaskErrors.TaskNotFoundError);
-    expect(result.value.errorValue().message).toEqual(
-      `Could not find a task by the id {${taskId}}.`,
-    );
+    expect(result.value.errorValue().message).toEqual(`Could not find a task by the id {${taskId}}.`);
   });
 
   it('should fail if member is not the task owner', async () => {
@@ -154,11 +146,9 @@ describe('EditTaskUsecase', () => {
 
   it('should fail on any other error', async () => {
     // Given
-    const spy = jest
-      .spyOn(taskRepository, 'getTaskById')
-      .mockImplementationOnce(() => {
-        throw new Error();
-      });
+    const spy = jest.spyOn(taskRepository, 'getTaskById').mockImplementationOnce(() => {
+      throw new Error();
+    });
     const member = new MemberEntityBuilder().build();
     const taskId = faker.random.uuid();
     const dto: EditTaskDto = { text: faker.lorem.words(5) };
@@ -183,10 +173,7 @@ describe('EditTaskUsecase', () => {
     // Given
     const text = faker.lorem.words(5);
     const member = new MemberEntityBuilder().build();
-    const task = new TaskEntityBuilder()
-      .withDescription(text)
-      .withOwnerId(member.ownerId)
-      .build();
+    const task = new TaskEntityBuilder().withDescription(text).withOwnerId(member.ownerId).build();
     const dto: EditTaskDto = { text };
     await memberRepository.save(member);
     await taskRepository.save(task);

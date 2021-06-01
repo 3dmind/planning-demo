@@ -25,10 +25,7 @@ export class UserPassword extends ValueObject<UserPasswordProps> {
   }
 
   public static create(props: UserPasswordProps): Result<UserPassword> {
-    const nullGuardResult = Guard.againstNullOrUndefined(
-      props.value,
-      'password',
-    );
+    const nullGuardResult = Guard.againstNullOrUndefined(props.value, 'password');
     if (!nullGuardResult.succeeded) {
       return Result.fail<UserPassword>(nullGuardResult.message);
     }

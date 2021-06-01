@@ -1,12 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import {
-  AppErrors,
-  Either,
-  left,
-  Result,
-  right,
-  UseCase,
-} from '../../../../shared/core';
+import { AppErrors, Either, left, Result, right, UseCase } from '../../../../shared/core';
 import { AccessToken } from '../../domain/jwt';
 import { JwtClaims } from '../../domain/jwt-claims.interface';
 import { User } from '../../domain/user.entity';
@@ -19,10 +12,7 @@ type Response = Either<AppErrors.UnexpectedError, Result<AccessToken>>;
 export class RefreshAccessTokenUsecase implements UseCase<User, Response> {
   private readonly logger = new Logger(RefreshAccessTokenUsecase.name);
 
-  constructor(
-    private readonly userRepository: UserRepository,
-    private readonly authService: AuthService,
-  ) {}
+  constructor(private readonly userRepository: UserRepository, private readonly authService: AuthService) {}
 
   async execute(user: User): Promise<Response> {
     this.logger.log('User is going to refresh access token...');
@@ -32,9 +22,7 @@ export class RefreshAccessTokenUsecase implements UseCase<User, Response> {
       const payload: JwtClaims = {
         username: user.username.value,
       };
-      const newAccessToken: AccessToken = this.authService.createAccessToken(
-        payload,
-      );
+      const newAccessToken: AccessToken = this.authService.createAccessToken(payload);
 
       user.setTokens(newAccessToken, savedTokens.refreshToken);
       await this.authService.saveAuthenticatedUser(user);

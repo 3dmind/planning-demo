@@ -1,12 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import {
-  AppErrors,
-  Either,
-  left,
-  Result,
-  right,
-  UseCase,
-} from '../../../../../shared/core';
+import { AppErrors, Either, left, Result, right, UseCase } from '../../../../../shared/core';
 import { UniqueEntityId } from '../../../../../shared/domain';
 import { UserId } from '../../../../users/domain/user-id.entity';
 import { MemberRepository } from '../../../domain/member.repository';
@@ -21,10 +14,7 @@ type Request = {
 };
 
 type Response = Either<
-  | ResumeTaskErrors.TaskNotFoundError
-  | ResumeTaskErrors.MemberNotFoundError
-  | AppErrors.UnexpectedError
-  | Result<any>,
+  ResumeTaskErrors.TaskNotFoundError | ResumeTaskErrors.MemberNotFoundError | AppErrors.UnexpectedError | Result<any>,
   Result<Task>
 >;
 
@@ -32,10 +22,7 @@ type Response = Either<
 export class ResumeTaskUsecase implements UseCase<Request, Response> {
   private readonly logger = new Logger(ResumeTaskUsecase.name);
 
-  constructor(
-    private readonly memberRepository: MemberRepository,
-    private readonly taskRepository: TaskRepository,
-  ) {}
+  constructor(private readonly memberRepository: MemberRepository, private readonly taskRepository: TaskRepository) {}
 
   async execute(request: Request): Promise<Response> {
     this.logger.log('Resuming task...');
@@ -47,26 +34,17 @@ export class ResumeTaskUsecase implements UseCase<Request, Response> {
     }
 
     try {
-      const {
-        found: memberFound,
-        member,
-      } = await this.memberRepository.getMemberByUserId(request.userId.id);
+      const { found: memberFound, member } = await this.memberRepository.getMemberByUserId(request.userId.id);
       if (!memberFound) {
-        const memberNotFoundError = new ResumeTaskErrors.MemberNotFoundError(
-          request.userId,
-        );
+        const memberNotFoundError = new ResumeTaskErrors.MemberNotFoundError(request.userId);
         this.logger.debug(memberNotFoundError.errorValue().message);
         return left(memberNotFoundError);
       }
 
       const taskId = taskIdResult.getValue();
-      const { found: taskFound, task } = await this.taskRepository.getTaskById(
-        taskId,
-      );
+      const { found: taskFound, task } = await this.taskRepository.getTaskById(taskId);
       if (!taskFound) {
-        const taskNotFoundError = new ResumeTaskErrors.TaskNotFoundError(
-          request.taskId,
-        );
+        const taskNotFoundError = new ResumeTaskErrors.TaskNotFoundError(request.taskId);
         this.logger.debug(taskNotFoundError.errorValue().message);
         return left(taskNotFoundError);
       }

@@ -1,12 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import {
-  AppErrors,
-  Either,
-  left,
-  Result,
-  right,
-  UseCase,
-} from '../../../../../shared/core';
+import { AppErrors, Either, left, Result, right, UseCase } from '../../../../../shared/core';
 import { UniqueEntityId } from '../../../../../shared/domain';
 import { TaskId } from '../../../domain/task-id.entity';
 import { Task } from '../../../domain/task.entity';
@@ -17,10 +10,7 @@ type Request = {
   taskId: string;
 };
 
-type Response = Either<
-  GetTaskByIdErrors.TaskNotFoundError | AppErrors.UnexpectedError | Result<any>,
-  Result<Task>
->;
+type Response = Either<GetTaskByIdErrors.TaskNotFoundError | AppErrors.UnexpectedError | Result<any>, Result<Task>>;
 
 @Injectable()
 export class GetTaskByIdUseCase implements UseCase<Request, Response> {
@@ -41,9 +31,7 @@ export class GetTaskByIdUseCase implements UseCase<Request, Response> {
       const { found, task } = await this.taskRepository.getTaskById(taskId);
 
       if (!found) {
-        const taskNotFoundError = new GetTaskByIdErrors.TaskNotFoundError(
-          taskId,
-        );
+        const taskNotFoundError = new GetTaskByIdErrors.TaskNotFoundError(taskId);
         this.logger.debug(taskNotFoundError.errorValue().message);
         return left(taskNotFoundError);
       } else {

@@ -1,12 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import {
-  AppErrors,
-  Either,
-  left,
-  Result,
-  right,
-  UseCase,
-} from '../../../../../shared/core';
+import { AppErrors, Either, left, Result, right, UseCase } from '../../../../../shared/core';
 import { UniqueEntityId } from '../../../../../shared/domain';
 import { UserId } from '../../../../users/domain/user-id.entity';
 import { MemberId } from '../../../domain/member-id.entity';
@@ -35,10 +28,7 @@ type Response = Either<
 export class AssignTaskUsecase implements UseCase<Request, Response> {
   private readonly logger = new Logger(AssignTaskUsecase.name);
 
-  constructor(
-    private readonly memberRepository: MemberRepository,
-    private readonly taskRepository: TaskRepository,
-  ) {}
+  constructor(private readonly memberRepository: MemberRepository, private readonly taskRepository: TaskRepository) {}
 
   async execute(request: Request): Promise<Response> {
     this.logger.log('Assigning task...');
@@ -49,9 +39,7 @@ export class AssignTaskUsecase implements UseCase<Request, Response> {
       return left(taskIdResult);
     }
 
-    const memberIdResult = MemberId.create(
-      new UniqueEntityId(request.memberId),
-    );
+    const memberIdResult = MemberId.create(new UniqueEntityId(request.memberId));
     if (memberIdResult.isFailure) {
       this.logger.debug(memberIdResult.errorValue());
       return left(memberIdResult);
@@ -61,10 +49,7 @@ export class AssignTaskUsecase implements UseCase<Request, Response> {
       /*
         Find the task owner.
        */
-      const {
-        found: ownerFound,
-        member: owner,
-      } = await this.memberRepository.getMemberByUserId(request.userId.id);
+      const { found: ownerFound, member: owner } = await this.memberRepository.getMemberByUserId(request.userId.id);
       if (!ownerFound) {
         const memberNotFoundByUserIdError = new AssignTaskErrors.MemberNotFoundByUserIdError(
           request.userId.id.toString(),
@@ -77,14 +62,9 @@ export class AssignTaskUsecase implements UseCase<Request, Response> {
         Find the member which will become the task assignee.
        */
       const memberId = memberIdResult.getValue();
-      const {
-        found: memberFound,
-        member,
-      } = await this.memberRepository.getMemberById(memberId);
+      const { found: memberFound, member } = await this.memberRepository.getMemberById(memberId);
       if (!memberFound) {
-        const memberNotFoundByUsernameError = new AssignTaskErrors.MemberNotFoundError(
-          memberId,
-        );
+        const memberNotFoundByUsernameError = new AssignTaskErrors.MemberNotFoundError(memberId);
         this.logger.debug(memberNotFoundByUsernameError.errorValue().message);
         return left(memberNotFoundByUsernameError);
       }
@@ -93,13 +73,9 @@ export class AssignTaskUsecase implements UseCase<Request, Response> {
         Find the task which is going to be assigned.
        */
       const taskId = taskIdResult.getValue();
-      const { found: taskFound, task } = await this.taskRepository.getTaskById(
-        taskId,
-      );
+      const { found: taskFound, task } = await this.taskRepository.getTaskById(taskId);
       if (!taskFound) {
-        const taskNotFoundError = new AssignTaskErrors.TaskNotFoundError(
-          taskId.id.toString(),
-        );
+        const taskNotFoundError = new AssignTaskErrors.TaskNotFoundError(taskId.id.toString());
         this.logger.debug(taskNotFoundError.errorValue().message);
         return left(taskNotFoundError);
       }

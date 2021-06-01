@@ -26,11 +26,7 @@ describe('/tasks/:id/edit (POST)', () => {
 
   it(`should respond with ${HttpStatus.NOT_FOUND} if the member cannot be found`, async () => {
     const taskId = '00f60ee9-9b19-4a7b-9f51-07f4511adef9';
-    const loginResponse = await login(
-      app,
-      'no-member-planning-demo',
-      'no-member-planning-demo',
-    ).expect(HttpStatus.OK);
+    const loginResponse = await login(app, 'no-member-planning-demo', 'no-member-planning-demo').expect(HttpStatus.OK);
 
     await editTask(app, loginResponse, taskId).expect(HttpStatus.NOT_FOUND);
 
@@ -49,14 +45,10 @@ describe('/tasks/:id/edit (POST)', () => {
   it(`should respond with ${HttpStatus.UNPROCESSABLE_ENTITY} if the member is not the task owner`, async () => {
     let loginResponse: request.Response;
     loginResponse = await loginAsAlice(app).expect(HttpStatus.OK);
-    const noteTaskResponse = await noteTask(app, loginResponse).expect(
-      HttpStatus.CREATED,
-    );
+    const noteTaskResponse = await noteTask(app, loginResponse).expect(HttpStatus.CREATED);
     loginResponse = await loginAsBob(app).expect(HttpStatus.OK);
 
-    await editTask(app, loginResponse, noteTaskResponse.body.id).expect(
-      HttpStatus.UNPROCESSABLE_ENTITY,
-    );
+    await editTask(app, loginResponse, noteTaskResponse.body.id).expect(HttpStatus.UNPROCESSABLE_ENTITY);
 
     return logout(app, loginResponse).expect(HttpStatus.NO_CONTENT);
   });
@@ -65,18 +57,11 @@ describe('/tasks/:id/edit (POST)', () => {
     const noteTaskText = faker.lorem.words(5);
     const editTaskText = faker.lorem.words(5);
     const loginResponse = await login(app).expect(HttpStatus.OK);
-    const noteTaskResponse = await noteTask(
-      app,
-      loginResponse,
-      noteTaskText,
-    ).expect(HttpStatus.CREATED);
+    const noteTaskResponse = await noteTask(app, loginResponse, noteTaskText).expect(HttpStatus.CREATED);
 
-    const editTaskResponse = await editTask(
-      app,
-      loginResponse,
-      noteTaskResponse.body.id,
-      editTaskText,
-    ).expect(HttpStatus.OK);
+    const editTaskResponse = await editTask(app, loginResponse, noteTaskResponse.body.id, editTaskText).expect(
+      HttpStatus.OK,
+    );
 
     expect.assertions(1);
     expect(editTaskResponse.body).toMatchObject<Partial<TaskDto>>({

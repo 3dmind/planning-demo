@@ -26,19 +26,11 @@ describe('LogoutUsecase', () => {
   let useCase: LogoutUsecase;
 
   beforeAll(async () => {
-    mockedApiConfigService.getAccessTokenSecret.mockReturnValue(
-      accessTokenSecretFixture,
-    );
-    mockedApiConfigService.getAccessTokenTtl.mockReturnValue(
-      accessTokenTtlFixture,
-    );
+    mockedApiConfigService.getAccessTokenSecret.mockReturnValue(accessTokenSecretFixture);
+    mockedApiConfigService.getAccessTokenTtl.mockReturnValue(accessTokenTtlFixture);
 
-    mockedApiConfigService.getRefreshTokenSecret.mockReturnValue(
-      refreshTokenSecretFixture,
-    );
-    mockedApiConfigService.getRefreshTokenTtl.mockReturnValue(
-      refreshTokenTtlFixture,
-    );
+    mockedApiConfigService.getRefreshTokenSecret.mockReturnValue(refreshTokenSecretFixture);
+    mockedApiConfigService.getRefreshTokenTtl.mockReturnValue(refreshTokenTtlFixture);
 
     const module: TestingModule = await Test.createTestingModule({
       imports: [CacheModule.register({ store: 'memory' })],
@@ -66,11 +58,9 @@ describe('LogoutUsecase', () => {
   it('should fail on any other error', async () => {
     // Given
     const user = new UserEntityBuilder().makeLoggedIn().build();
-    const spy = jest
-      .spyOn(authService, 'deAuthenticateUser')
-      .mockImplementationOnce(() => {
-        throw new Error();
-      });
+    const spy = jest.spyOn(authService, 'deAuthenticateUser').mockImplementationOnce(() => {
+      throw new Error();
+    });
 
     // When
     const result = await useCase.execute(user);
@@ -87,10 +77,7 @@ describe('LogoutUsecase', () => {
     // Given
     const userNameFixture = faker.internet.userName();
     const userName = UserName.create(userNameFixture).getValue();
-    const user = new UserEntityBuilder()
-      .withUserName(userName)
-      .makeLoggedIn()
-      .build();
+    const user = new UserEntityBuilder().withUserName(userName).makeLoggedIn().build();
     await userRepository.save(user);
     await authService.saveAuthenticatedUser(user);
 

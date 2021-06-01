@@ -54,7 +54,7 @@ describe('UniqueEntityId', () => {
     const entityIdOne = new UniqueEntityId(uuid);
     const entityIdTwo = new UniqueEntityId(uuid);
     const entityIdThree = new UniqueEntityId();
-    const entityId = ({} as unknown) as UniqueEntityId;
+    const entityId = {} as unknown as UniqueEntityId;
 
     // Then
     expect.assertions(5);

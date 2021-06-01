@@ -110,9 +110,7 @@ describe('RegisterUserUsecase', () => {
     // Then
     expect.assertions(3);
     expect(result.isLeft()).toBe(true);
-    expect(result.value).toBeInstanceOf(
-      RegisterUserErrors.EmailAlreadyExistsError,
-    );
+    expect(result.value).toBeInstanceOf(RegisterUserErrors.EmailAlreadyExistsError);
     expect(result.value.errorValue().message).toEqual(
       `The email ${emailFixture} associated for this account already exists.`,
     );
@@ -138,9 +136,7 @@ describe('RegisterUserUsecase', () => {
     expect.assertions(3);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(RegisterUserErrors.UsernameTakenError);
-    expect(result.value.errorValue().message).toEqual(
-      `The username ${userNameFixture} was already taken.`,
-    );
+    expect(result.value.errorValue().message).toEqual(`The username ${userNameFixture} was already taken.`);
 
     spy.mockRestore();
   });
@@ -150,9 +146,7 @@ describe('RegisterUserUsecase', () => {
     const emailFixture = faker.internet.email().toLowerCase();
     const passwordFixture = faker.internet.password(UserPassword.MIN_LENGTH);
     const userNameFixture = faker.internet.userName();
-    const spy = jest
-      .spyOn(User, 'create')
-      .mockReturnValue(Result.fail<User>('error'));
+    const spy = jest.spyOn(User, 'create').mockReturnValue(Result.fail<User>('error'));
 
     // When
     const result = await useCase.execute({
@@ -173,11 +167,9 @@ describe('RegisterUserUsecase', () => {
     const emailFixture = faker.internet.email().toLowerCase();
     const passwordFixture = faker.internet.password(UserPassword.MIN_LENGTH);
     const userNameFixture = faker.internet.userName();
-    const spy = jest
-      .spyOn(userRepository, 'save')
-      .mockImplementationOnce(() => {
-        throw new Error();
-      });
+    const spy = jest.spyOn(userRepository, 'save').mockImplementationOnce(() => {
+      throw new Error();
+    });
 
     // When
     const result = await useCase.execute({

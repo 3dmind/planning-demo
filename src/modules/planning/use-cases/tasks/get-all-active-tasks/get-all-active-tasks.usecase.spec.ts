@@ -49,18 +49,14 @@ describe('GetAllActiveTasksUsecase', () => {
     expect.assertions(3);
     expect(result.isLeft()).toBe(true);
     expect(error).toBeInstanceOf(GetAllActiveTasksErrors.MemberNotFoundError);
-    expect(error.errorValue().message).toEqual(
-      `Could not find member associated with the user id {${userId}}.`,
-    );
+    expect(error.errorValue().message).toEqual(`Could not find member associated with the user id {${userId}}.`);
   });
 
   it('should fail on any error', async () => {
     // Given
-    const spy = jest
-      .spyOn(taskRepository, 'getAllActiveTasksOfMember')
-      .mockImplementationOnce(() => {
-        throw new Error();
-      });
+    const spy = jest.spyOn(taskRepository, 'getAllActiveTasksOfMember').mockImplementationOnce(() => {
+      throw new Error();
+    });
     const member = new MemberEntityBuilder().build();
     await memberRepository.save(member);
 
@@ -81,24 +77,11 @@ describe('GetAllActiveTasksUsecase', () => {
     // Given
     const memberOne = new MemberEntityBuilder().build();
     const memberTwo = new MemberEntityBuilder().build();
-    const notedTaskOfMemberOne = new TaskEntityBuilder()
-      .withOwnerId(memberOne.ownerId)
-      .build();
-    const tickedOffTaskOfMemberOne = new TaskEntityBuilder()
-      .withOwnerId(memberOne.ownerId)
-      .makeTickedOff()
-      .build();
-    const archivedTaskOfMemberOne = new TaskEntityBuilder()
-      .withOwnerId(memberOne.ownerId)
-      .makeArchived()
-      .build();
-    const discardedTaskOfMemberOne = new TaskEntityBuilder()
-      .withOwnerId(memberOne.ownerId)
-      .makeDiscarded()
-      .build();
-    const notedTaskOfMemberTwo = new TaskEntityBuilder()
-      .withOwnerId(memberTwo.ownerId)
-      .build();
+    const notedTaskOfMemberOne = new TaskEntityBuilder().withOwnerId(memberOne.ownerId).build();
+    const tickedOffTaskOfMemberOne = new TaskEntityBuilder().withOwnerId(memberOne.ownerId).makeTickedOff().build();
+    const archivedTaskOfMemberOne = new TaskEntityBuilder().withOwnerId(memberOne.ownerId).makeArchived().build();
+    const discardedTaskOfMemberOne = new TaskEntityBuilder().withOwnerId(memberOne.ownerId).makeDiscarded().build();
+    const notedTaskOfMemberTwo = new TaskEntityBuilder().withOwnerId(memberTwo.ownerId).build();
     const taskAssignedToMemberOne = new TaskEntityBuilder()
       .withOwnerId(memberTwo.ownerId)
       .withAssigneeId(memberOne.assigneeId)

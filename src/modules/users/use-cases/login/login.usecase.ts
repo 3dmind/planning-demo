@@ -1,12 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import {
-  AppErrors,
-  Either,
-  left,
-  Result,
-  right,
-  UseCase,
-} from '../../../../shared/core';
+import { AppErrors, Either, left, Result, right, UseCase } from '../../../../shared/core';
 import { AccessToken, RefreshToken } from '../../domain/jwt';
 import { JwtClaims } from '../../domain/jwt-claims.interface';
 import { User } from '../../domain/user.entity';
@@ -27,12 +20,8 @@ export class LoginUsecase implements UseCase<User, Response> {
       const payload: JwtClaims = {
         username: user.username.value,
       };
-      const accessToken: AccessToken = this.authService.createAccessToken(
-        payload,
-      );
-      const refreshToken: RefreshToken = this.authService.createRefreshToken(
-        payload,
-      );
+      const accessToken: AccessToken = this.authService.createAccessToken(payload);
+      const refreshToken: RefreshToken = this.authService.createRefreshToken(payload);
 
       user.setTokens(accessToken, refreshToken);
       await this.authService.saveAuthenticatedUser(user);

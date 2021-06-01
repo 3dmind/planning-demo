@@ -12,10 +12,7 @@ export class Guard {
     return { succeeded: true };
   }
 
-  public static greaterThan(
-    minValue: number,
-    actualValue: number,
-  ): GuardResult {
+  public static greaterThan(minValue: number, actualValue: number): GuardResult {
     return actualValue > minValue
       ? { succeeded: true }
       : {
@@ -51,10 +48,7 @@ export class Guard {
         };
   }
 
-  public static againstNullOrUndefined(
-    argument: unknown,
-    argumentName: string,
-  ): GuardResult {
+  public static againstNullOrUndefined(argument: unknown, argumentName: string): GuardResult {
     if (argument === null || argument === undefined) {
       return {
         succeeded: false,
@@ -67,10 +61,7 @@ export class Guard {
 
   public static againstNullOrUndefinedBulk(args: GuardArgument[]): GuardResult {
     for (const arg of args) {
-      const result = this.againstNullOrUndefined(
-        arg.argument,
-        arg.argumentName,
-      );
+      const result = this.againstNullOrUndefined(arg.argument, arg.argumentName);
       if (!result.succeeded) {
         return result;
       }
@@ -79,11 +70,7 @@ export class Guard {
     return { succeeded: true };
   }
 
-  public static isOneOf(
-    value: unknown,
-    validValues: any[],
-    argumentName: string,
-  ): GuardResult {
+  public static isOneOf(value: unknown, validValues: any[], argumentName: string): GuardResult {
     let isValid = false;
     for (const validValue of validValues) {
       if (value === validValue) {
@@ -96,19 +83,12 @@ export class Guard {
     } else {
       return {
         succeeded: false,
-        message: `${argumentName} isn't oneOf the correct types in ${JSON.stringify(
-          validValues,
-        )}. Got "${value}".`,
+        message: `${argumentName} isn't oneOf the correct types in ${JSON.stringify(validValues)}. Got "${value}".`,
       };
     }
   }
 
-  public static inRange(
-    num: number,
-    min: number,
-    max: number,
-    argumentName: string,
-  ): GuardResult {
+  public static inRange(num: number, min: number, max: number, argumentName: string): GuardResult {
     const isInRange = num >= min && num <= max;
     if (!isInRange) {
       return {
@@ -120,12 +100,7 @@ export class Guard {
     }
   }
 
-  public static allInRange(
-    numbers: number[],
-    min: number,
-    max: number,
-    argumentName: string,
-  ): GuardResult {
+  public static allInRange(numbers: number[], min: number, max: number, argumentName: string): GuardResult {
     let failingResult: GuardResult = null;
     for (const num of numbers) {
       const numIsInRangeResult = this.inRange(num, min, max, argumentName);

@@ -1,12 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import {
-  AppErrors,
-  Either,
-  left,
-  Result,
-  right,
-  UseCase,
-} from '../../../../shared/core';
+import { AppErrors, Either, left, Result, right, UseCase } from '../../../../shared/core';
 import { UserName } from '../../domain/user-name.valueobject';
 import { UserPassword } from '../../domain/user-password.valueobject';
 import { User } from '../../domain/user.entity';
@@ -44,18 +37,14 @@ export class ValidateUserUsecase implements UseCase<ValidateUserDto, Response> {
       const username = userNameResult.getValue();
       const password = userPasswordResult.getValue();
 
-      const { found, user } = await this.userRepository.getUserByUsername(
-        username,
-      );
+      const { found, user } = await this.userRepository.getUserByUsername(username);
       if (!found) {
         const userNameDoesntExistError = new ValidateUserErrors.UserNameDoesntExistError();
         this.logger.debug(userNameDoesntExistError.errorValue().message);
         return left(userNameDoesntExistError);
       }
 
-      const isPasswordValid = await user.password.comparePassword(
-        password.value,
-      );
+      const isPasswordValid = await user.password.comparePassword(password.value);
       if (!isPasswordValid) {
         const passwordDoesntMatchError = new ValidateUserErrors.PasswordDoesntMatchError();
         this.logger.debug(passwordDoesntMatchError.errorValue().message);

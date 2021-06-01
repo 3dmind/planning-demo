@@ -191,16 +191,8 @@ describe('Task', () => {
     const task = new TaskEntityBuilder()
       .withDescription('Lorem ipsum')
       .withId(new UniqueEntityId('8bb2a83e-cf7e-46d7-a7b0-49f49d94c460'))
-      .withOwnerId(
-        OwnerId.create(
-          new UniqueEntityId('74d21847-3298-4775-aaf8-942fed0f53e7'),
-        ).getValue(),
-      )
-      .withAssigneeId(
-        AssigneeId.create(
-          new UniqueEntityId('27f0ca32-e888-4fcc-9908-b24bf152573d'),
-        ).getValue(),
-      )
+      .withOwnerId(OwnerId.create(new UniqueEntityId('74d21847-3298-4775-aaf8-942fed0f53e7')).getValue())
+      .withAssigneeId(AssigneeId.create(new UniqueEntityId('27f0ca32-e888-4fcc-9908-b24bf152573d')).getValue())
       .withCreationDate(new Date(Date.parse('1977-01-01')))
       .build();
 
@@ -262,10 +254,7 @@ describe('Task', () => {
     it('should be able to be resumed by the assigned member', () => {
       // Given
       const assigneeId = AssigneeId.create(new UniqueEntityId()).getValue();
-      const task = new TaskEntityBuilder()
-        .withAssigneeId(assigneeId)
-        .makeTickedOff()
-        .build();
+      const task = new TaskEntityBuilder().withAssigneeId(assigneeId).makeTickedOff().build();
 
       // When
       const result = task.resume(assigneeId);
@@ -296,10 +285,7 @@ describe('Task', () => {
       // Given
       const text = faker.lorem.words(5);
       const ownerId = OwnerId.create(new UniqueEntityId()).getValue();
-      const task = new TaskEntityBuilder()
-        .withDescription(text)
-        .withOwnerId(ownerId)
-        .build();
+      const task = new TaskEntityBuilder().withDescription(text).withOwnerId(ownerId).build();
       const newText = faker.lorem.words(5);
       const newDescription = Description.create(newText).getValue();
 
@@ -353,10 +339,7 @@ describe('Task', () => {
       // Given
       const taskOwnerId = OwnerId.create().getValue();
       const assigneeId = AssigneeId.create().getValue();
-      const task = new TaskEntityBuilder()
-        .withOwnerId(taskOwnerId)
-        .withAssigneeId(assigneeId)
-        .build();
+      const task = new TaskEntityBuilder().withOwnerId(taskOwnerId).withAssigneeId(assigneeId).build();
 
       // When
       const result = task.assign(taskOwnerId, assigneeId);

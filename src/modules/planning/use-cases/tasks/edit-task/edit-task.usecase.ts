@@ -1,12 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import {
-  AppErrors,
-  Either,
-  left,
-  Result,
-  right,
-  UseCase,
-} from '../../../../../shared/core';
+import { AppErrors, Either, left, Result, right, UseCase } from '../../../../../shared/core';
 import { UniqueEntityId } from '../../../../../shared/domain';
 import { UserId } from '../../../../users/domain/user-id.entity';
 import { Description } from '../../../domain/description.valueobject';
@@ -24,10 +17,7 @@ type Request = {
 };
 
 type Response = Either<
-  | EditTaskErrors.MemberNotFoundError
-  | EditTaskErrors.TaskNotFoundError
-  | AppErrors.UnexpectedError
-  | Result<any>,
+  EditTaskErrors.MemberNotFoundError | EditTaskErrors.TaskNotFoundError | AppErrors.UnexpectedError | Result<any>,
   Result<Task>
 >;
 
@@ -35,10 +25,7 @@ type Response = Either<
 export class EditTaskUsecase implements UseCase<Request, Response> {
   private readonly logger = new Logger(EditTaskUsecase.name);
 
-  constructor(
-    private readonly memberRepository: MemberRepository,
-    private readonly taskRepository: TaskRepository,
-  ) {}
+  constructor(private readonly memberRepository: MemberRepository, private readonly taskRepository: TaskRepository) {}
 
   async execute(request: Request): Promise<Response> {
     this.logger.log('Editing task...');
@@ -52,26 +39,17 @@ export class EditTaskUsecase implements UseCase<Request, Response> {
     }
 
     try {
-      const {
-        found: memberFound,
-        member,
-      } = await this.memberRepository.getMemberByUserId(request.userId.id);
+      const { found: memberFound, member } = await this.memberRepository.getMemberByUserId(request.userId.id);
       if (!memberFound) {
-        const memberNotFoundError = new EditTaskErrors.MemberNotFoundError(
-          request.userId,
-        );
+        const memberNotFoundError = new EditTaskErrors.MemberNotFoundError(request.userId);
         this.logger.debug(memberNotFoundError.errorValue().message);
         return left(memberNotFoundError);
       }
 
       const taskId = taskIdResult.getValue();
-      const { found: taskFound, task } = await this.taskRepository.getTaskById(
-        taskId,
-      );
+      const { found: taskFound, task } = await this.taskRepository.getTaskById(taskId);
       if (!taskFound) {
-        const taskNotFoundError = new EditTaskErrors.TaskNotFoundError(
-          request.taskId,
-        );
+        const taskNotFoundError = new EditTaskErrors.TaskNotFoundError(request.taskId);
         this.logger.debug(taskNotFoundError.errorValue().message);
         return left(taskNotFoundError);
       }

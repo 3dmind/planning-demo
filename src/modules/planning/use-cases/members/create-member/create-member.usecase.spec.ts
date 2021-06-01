@@ -44,12 +44,8 @@ describe('CreateMemberUsecase', () => {
     // Then
     expect.assertions(3);
     expect(result.isLeft()).toBe(true);
-    expect(result.value).toBeInstanceOf(
-      CreateMemberErrors.MemberAlreadyExistsError,
-    );
-    expect(result.value.errorValue().message).toEqual(
-      `A member for user id ${userId} already exists.`,
-    );
+    expect(result.value).toBeInstanceOf(CreateMemberErrors.MemberAlreadyExistsError);
+    expect(result.value.errorValue().message).toEqual(`A member for user id ${userId} already exists.`);
   });
 
   it('should fail on any other error', async () => {

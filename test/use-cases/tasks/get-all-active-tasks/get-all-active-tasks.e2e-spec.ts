@@ -27,11 +27,7 @@ describe('/tasks/active (GET)', () => {
   });
 
   it(`should respond with ${HttpStatus.NOT_FOUND} if the member cannot be found`, async () => {
-    const loginResponse = await login(
-      app,
-      'no-member-planning-demo',
-      'no-member-planning-demo',
-    ).expect(HttpStatus.OK);
+    const loginResponse = await login(app, 'no-member-planning-demo', 'no-member-planning-demo').expect(HttpStatus.OK);
 
     await getActiveTasks(app, loginResponse).expect(HttpStatus.NOT_FOUND);
 
@@ -46,9 +42,7 @@ describe('/tasks/active (GET)', () => {
       Alice assigns a task to Bob.
      */
     loginResponse = await loginAsAlice(app).expect(HttpStatus.OK);
-    noteTaskResponse = await noteTask(app, loginResponse).expect(
-      HttpStatus.CREATED,
-    );
+    noteTaskResponse = await noteTask(app, loginResponse).expect(HttpStatus.CREATED);
     const assignedTaskResponse = await assignTask(
       app,
       loginResponse,
@@ -65,22 +59,14 @@ describe('/tasks/active (GET)', () => {
     /*
       Bob archives a task.
      */
-    noteTaskResponse = await noteTask(app, loginResponse).expect(
-      HttpStatus.CREATED,
-    );
-    await archiveTask(app, loginResponse, noteTaskResponse.body.id).expect(
-      HttpStatus.OK,
-    );
+    noteTaskResponse = await noteTask(app, loginResponse).expect(HttpStatus.CREATED);
+    await archiveTask(app, loginResponse, noteTaskResponse.body.id).expect(HttpStatus.OK);
 
     /*
       Bob discards a task
      */
-    noteTaskResponse = await noteTask(app, loginResponse).expect(
-      HttpStatus.CREATED,
-    );
-    await discardTask(app, loginResponse, noteTaskResponse.body.id).expect(
-      HttpStatus.OK,
-    );
+    noteTaskResponse = await noteTask(app, loginResponse).expect(HttpStatus.CREATED);
+    await discardTask(app, loginResponse, noteTaskResponse.body.id).expect(HttpStatus.OK);
 
     /*
       Bob notes a new task.
@@ -90,9 +76,7 @@ describe('/tasks/active (GET)', () => {
     /*
       Get all active tasks of Bob.
      */
-    const response = await getActiveTasks(app, loginResponse).expect(
-      HttpStatus.OK,
-    );
+    const response = await getActiveTasks(app, loginResponse).expect(HttpStatus.OK);
 
     expect.assertions(3);
     expect(response.body).toContainEqual(assignedTaskResponse.body);

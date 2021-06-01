@@ -56,12 +56,8 @@ describe('GetUserByUserNameUsecase', () => {
     // Then
     expect.assertions(3);
     expect(result.isLeft()).toBe(true);
-    expect(result.value).toBeInstanceOf(
-      GetUserByUserNameError.UserNotFoundError,
-    );
-    expect(result.value.errorValue().message).toEqual(
-      `User with the username '${usernameFixture}' does not exist.`,
-    );
+    expect(result.value).toBeInstanceOf(GetUserByUserNameError.UserNotFoundError);
+    expect(result.value.errorValue().message).toEqual(`User with the username '${usernameFixture}' does not exist.`);
   });
 
   it('should fail on any other error', async () => {
@@ -70,11 +66,9 @@ describe('GetUserByUserNameUsecase', () => {
     const requestFixture: GetUserByUserNameDto = {
       username: usernameFixture,
     };
-    const spy = jest
-      .spyOn(userRepository, 'getUserByUsername')
-      .mockImplementationOnce(() => {
-        throw new Error();
-      });
+    const spy = jest.spyOn(userRepository, 'getUserByUsername').mockImplementationOnce(() => {
+      throw new Error();
+    });
 
     // When
     const result = await useCase.execute(requestFixture);

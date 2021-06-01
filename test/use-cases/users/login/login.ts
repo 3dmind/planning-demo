@@ -7,28 +7,22 @@ export function login(
   username = 'e2e-planning-demo',
   password = 'e2e-planning-demo',
 ): request.Test {
-  return request(app.getHttpServer())
-    .post(UsersApi.USERS_LOGIN)
-    .send({
-      username,
-      password,
-    });
+  return request(app.getHttpServer()).post(UsersApi.USERS_LOGIN).send({
+    username,
+    password,
+  });
 }
 
 export function loginAsAlice(app: INestApplication): request.Test {
-  return request(app.getHttpServer())
-    .post(UsersApi.USERS_LOGIN)
-    .send({
-      username: 'alice',
-      password: 'alice1234',
-    });
+  return request(app.getHttpServer()).post(UsersApi.USERS_LOGIN).send({
+    username: 'alice',
+    password: 'alice1234',
+  });
 }
 
 export function loginAsBob(app: INestApplication): request.Test {
-  return request(app.getHttpServer())
-    .post(UsersApi.USERS_LOGIN)
-    .send({
-      username: 'bob',
-      password: 'bob1234',
-    });
+  return request(app.getHttpServer()).post(UsersApi.USERS_LOGIN).send({
+    username: 'bob',
+    password: 'bob1234',
+  });
 }

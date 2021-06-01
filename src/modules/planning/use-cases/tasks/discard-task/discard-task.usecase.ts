@@ -1,12 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import {
-  AppErrors,
-  Either,
-  left,
-  Result,
-  right,
-  UseCase,
-} from '../../../../../shared/core';
+import { AppErrors, Either, left, Result, right, UseCase } from '../../../../../shared/core';
 import { UniqueEntityId } from '../../../../../shared/domain';
 import { UserId } from '../../../../users/domain/user-id.entity';
 import { MemberRepository } from '../../../domain/member.repository';
@@ -21,10 +14,7 @@ type Request = {
 };
 
 type Response = Either<
-  | DiscardTaskErrors.MemberNotFoundError
-  | DiscardTaskErrors.TaskNotFoundError
-  | AppErrors.UnexpectedError
-  | Result<any>,
+  DiscardTaskErrors.MemberNotFoundError | DiscardTaskErrors.TaskNotFoundError | AppErrors.UnexpectedError | Result<any>,
   Result<Task>
 >;
 
@@ -32,10 +22,7 @@ type Response = Either<
 export class DiscardTaskUsecase implements UseCase<Request, Response> {
   private readonly logger = new Logger(DiscardTaskUsecase.name);
 
-  constructor(
-    private readonly memberRepository: MemberRepository,
-    private readonly taskRepository: TaskRepository,
-  ) {}
+  constructor(private readonly memberRepository: MemberRepository, private readonly taskRepository: TaskRepository) {}
 
   async execute(request: Request): Promise<Response> {
     this.logger.log('Discarding task...');
@@ -47,26 +34,17 @@ export class DiscardTaskUsecase implements UseCase<Request, Response> {
     }
 
     try {
-      const {
-        found: memberFound,
-        member,
-      } = await this.memberRepository.getMemberByUserId(request.userId.id);
+      const { found: memberFound, member } = await this.memberRepository.getMemberByUserId(request.userId.id);
       if (!memberFound) {
-        const memberNotFoundError = new DiscardTaskErrors.MemberNotFoundError(
-          request.userId,
-        );
+        const memberNotFoundError = new DiscardTaskErrors.MemberNotFoundError(request.userId);
         this.logger.debug(memberNotFoundError.errorValue().message);
         return left(memberNotFoundError);
       }
 
       const taskId = taskIdResult.getValue();
-      const { found: taskFound, task } = await this.taskRepository.getTaskById(
-        taskId,
-      );
+      const { found: taskFound, task } = await this.taskRepository.getTaskById(taskId);
       if (!taskFound) {
-        const taskNotFoundError = new DiscardTaskErrors.TaskNotFoundError(
-          request.taskId,
-        );
+        const taskNotFoundError = new DiscardTaskErrors.TaskNotFoundError(request.taskId);
         this.logger.debug(taskNotFoundError.errorValue().message);
         return left(taskNotFoundError);
       }

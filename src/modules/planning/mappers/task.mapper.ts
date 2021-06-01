@@ -38,9 +38,7 @@ export class TaskMapper {
     const id = new UniqueEntityId(taskModel.taskId);
     const descriptionResult = Description.create(taskModel.description);
     const ownerIdResult = OwnerId.create(new UniqueEntityId(taskModel.ownerId));
-    const assigneeIdResult = AssigneeId.create(
-      new UniqueEntityId(taskModel.assigneeId),
-    );
+    const assigneeIdResult = AssigneeId.create(new UniqueEntityId(taskModel.assigneeId));
     const taskResult = Task.create(
       {
         archived: taskModel.archived,

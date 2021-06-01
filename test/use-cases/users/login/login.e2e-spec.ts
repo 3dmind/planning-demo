@@ -25,11 +25,7 @@ describe('/users/login (POST)', () => {
   it(`should respond with ${HttpStatus.UNAUTHORIZED} if the username is incorrect`, async () => {
     expect.assertions(1);
 
-    const response = await login(
-      app,
-      'wrong-username',
-      'e2e-planning-demo',
-    ).expect(HttpStatus.UNAUTHORIZED);
+    const response = await login(app, 'wrong-username', 'e2e-planning-demo').expect(HttpStatus.UNAUTHORIZED);
 
     expect(response.body.message).toEqual('Username or password incorrect.');
   });
@@ -37,11 +33,7 @@ describe('/users/login (POST)', () => {
   it(`should respond with ${HttpStatus.UNAUTHORIZED} if the password does not match`, async () => {
     expect.assertions(1);
 
-    const response = await login(
-      app,
-      'e2e-planning-demo',
-      'wrong password',
-    ).expect(HttpStatus.UNAUTHORIZED);
+    const response = await login(app, 'e2e-planning-demo', 'wrong password').expect(HttpStatus.UNAUTHORIZED);
 
     expect(response.body.message).toEqual('Password doesnt match.');
   });
@@ -49,11 +41,7 @@ describe('/users/login (POST)', () => {
   it(`should respond with ${HttpStatus.OK} if the correct credentials are provided`, async () => {
     expect.assertions(1);
 
-    const response = await login(
-      app,
-      'e2e-planning-demo',
-      'e2e-planning-demo',
-    ).expect(HttpStatus.OK);
+    const response = await login(app, 'e2e-planning-demo', 'e2e-planning-demo').expect(HttpStatus.OK);
 
     expect(response.body).toMatchObject({
       accessToken: expect.any(String),

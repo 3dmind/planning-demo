@@ -31,10 +31,7 @@ export class Comment extends Entity<CommentProps> {
     return this.props.taskId;
   }
 
-  public static create(
-    props: CommentProps,
-    id?: UniqueEntityId,
-  ): Result<Comment> {
+  public static create(props: CommentProps, id?: UniqueEntityId): Result<Comment> {
     const nullGuard = Guard.againstNullOrUndefinedBulk([
       { argument: props.authorId, argumentName: 'authorId' },
       { argument: props.commentText, argumentName: 'commentText' },
@@ -48,11 +45,7 @@ export class Comment extends Entity<CommentProps> {
     }
   }
 
-  public static write(
-    commentText: CommentText,
-    authorId: AuthorId,
-    taskId: TaskId,
-  ): Result<Comment> {
+  public static write(commentText: CommentText, authorId: AuthorId, taskId: TaskId): Result<Comment> {
     return Comment.create({
       authorId,
       commentText,

@@ -1,12 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import {
-  AppErrors,
-  Either,
-  left,
-  Result,
-  right,
-  UseCase,
-} from '../../../../../shared/core';
+import { AppErrors, Either, left, Result, right, UseCase } from '../../../../../shared/core';
 import { UserId } from '../../../../users/domain/user-id.entity';
 import { Description } from '../../../domain/description.valueobject';
 import { MemberRepository } from '../../../domain/member.repository';
@@ -19,19 +12,13 @@ type Request = {
   userId: UserId;
   dto: NoteTaskDto;
 };
-type Response = Either<
-  NoteTaskErrors.MemberNotFoundError | AppErrors.UnexpectedError | Result<any>,
-  Result<Task>
->;
+type Response = Either<NoteTaskErrors.MemberNotFoundError | AppErrors.UnexpectedError | Result<any>, Result<Task>>;
 
 @Injectable()
 export class NoteTaskUsecase implements UseCase<Request, Response> {
   private readonly logger = new Logger(NoteTaskUsecase.name);
 
-  constructor(
-    private readonly memberRepository: MemberRepository,
-    private readonly taskRepository: TaskRepository,
-  ) {}
+  constructor(private readonly memberRepository: MemberRepository, private readonly taskRepository: TaskRepository) {}
 
   async execute(request: Request): Promise<Response> {
     this.logger.log('Noting new task...');
@@ -45,23 +32,15 @@ export class NoteTaskUsecase implements UseCase<Request, Response> {
         return left(descriptionResult);
       }
 
-      const { found, member } = await this.memberRepository.getMemberByUserId(
-        userId.id,
-      );
+      const { found, member } = await this.memberRepository.getMemberByUserId(userId.id);
       if (!found) {
-        const memberNotFoundError = new NoteTaskErrors.MemberNotFoundError(
-          userId,
-        );
+        const memberNotFoundError = new NoteTaskErrors.MemberNotFoundError(userId);
         this.logger.debug(memberNotFoundError.errorValue().message);
         return left(memberNotFoundError);
       }
 
       const description = descriptionResult.getValue();
-      const taskResult = Task.note(
-        description,
-        member.ownerId,
-        member.assigneeId,
-      );
+      const taskResult = Task.note(description, member.ownerId, member.assigneeId);
       if (taskResult.isFailure) {
         this.logger.debug(taskResult.errorValue());
         return left(taskResult);

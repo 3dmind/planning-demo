@@ -25,11 +25,7 @@ describe('/tasks/:id/discard (PUT)', () => {
 
   it(`should respond with ${HttpStatus.NOT_FOUND} if the member cannot be found`, async () => {
     const taskId = '8f262256-452b-4691-b5ce-eb590b4db147';
-    const loginResponse = await login(
-      app,
-      'no-member-planning-demo',
-      'no-member-planning-demo',
-    ).expect(HttpStatus.OK);
+    const loginResponse = await login(app, 'no-member-planning-demo', 'no-member-planning-demo').expect(HttpStatus.OK);
 
     await discardTask(app, loginResponse, taskId).expect(HttpStatus.NOT_FOUND);
 
@@ -48,29 +44,19 @@ describe('/tasks/:id/discard (PUT)', () => {
   it(`should respond with ${HttpStatus.UNPROCESSABLE_ENTITY} if the member is not the task owner`, async () => {
     let loginResponse: request.Response;
     loginResponse = await loginAsAlice(app).expect(HttpStatus.OK);
-    const noteTaskResponse = await noteTask(app, loginResponse).expect(
-      HttpStatus.CREATED,
-    );
+    const noteTaskResponse = await noteTask(app, loginResponse).expect(HttpStatus.CREATED);
     loginResponse = await loginAsBob(app).expect(HttpStatus.OK);
 
-    discardTask(app, loginResponse, noteTaskResponse.body.id).expect(
-      HttpStatus.UNPROCESSABLE_ENTITY,
-    );
+    discardTask(app, loginResponse, noteTaskResponse.body.id).expect(HttpStatus.UNPROCESSABLE_ENTITY);
 
     return logout(app, loginResponse).expect(HttpStatus.NO_CONTENT);
   });
 
   it(`should respond with ${HttpStatus.OK} if the task was discarded`, async () => {
     const loginResponse = await login(app).expect(HttpStatus.OK);
-    const noteTaskResponse = await noteTask(app, loginResponse).expect(
-      HttpStatus.CREATED,
-    );
+    const noteTaskResponse = await noteTask(app, loginResponse).expect(HttpStatus.CREATED);
 
-    const response = await discardTask(
-      app,
-      loginResponse,
-      noteTaskResponse.body.id,
-    ).expect(HttpStatus.OK);
+    const response = await discardTask(app, loginResponse, noteTaskResponse.body.id).expect(HttpStatus.OK);
 
     expect.assertions(1);
     expect(response.body).toMatchObject<Partial<TaskDto>>({

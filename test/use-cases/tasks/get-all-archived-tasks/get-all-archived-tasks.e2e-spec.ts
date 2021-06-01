@@ -26,11 +26,7 @@ describe('/tasks/archived (GET)', () => {
   });
 
   it(`should respond with ${HttpStatus.NOT_FOUND} if the member cannot be found`, async () => {
-    const loginResponse = await login(
-      app,
-      'no-member-planning-demo',
-      'no-member-planning-demo',
-    ).expect(HttpStatus.OK);
+    const loginResponse = await login(app, 'no-member-planning-demo', 'no-member-planning-demo').expect(HttpStatus.OK);
 
     await getArchivedTasks(app, loginResponse).expect(HttpStatus.NOT_FOUND);
 
@@ -45,9 +41,7 @@ describe('/tasks/archived (GET)', () => {
       Alice notes a new task.
      */
     loginResponse = await loginAsAlice(app).expect(HttpStatus.OK);
-    const notedTaskFromAlice = await noteTask(app, loginResponse).expect(
-      HttpStatus.CREATED,
-    );
+    const notedTaskFromAlice = await noteTask(app, loginResponse).expect(HttpStatus.CREATED);
 
     /*
       Bob logs in
@@ -57,29 +51,19 @@ describe('/tasks/archived (GET)', () => {
     /*
       Bob archives a task.
      */
-    noteTaskResponse = await noteTask(app, loginResponse).expect(
-      HttpStatus.CREATED,
-    );
-    await archiveTask(app, loginResponse, noteTaskResponse.body.id).expect(
-      HttpStatus.OK,
-    );
+    noteTaskResponse = await noteTask(app, loginResponse).expect(HttpStatus.CREATED);
+    await archiveTask(app, loginResponse, noteTaskResponse.body.id).expect(HttpStatus.OK);
 
     /*
       Bob discards a task
      */
-    noteTaskResponse = await noteTask(app, loginResponse).expect(
-      HttpStatus.CREATED,
-    );
-    await discardTask(app, loginResponse, noteTaskResponse.body.id).expect(
-      HttpStatus.OK,
-    );
+    noteTaskResponse = await noteTask(app, loginResponse).expect(HttpStatus.CREATED);
+    await discardTask(app, loginResponse, noteTaskResponse.body.id).expect(HttpStatus.OK);
 
     /*
       Get all archived tasks of Bob
      */
-    const response = await getArchivedTasks(app, loginResponse).expect(
-      HttpStatus.OK,
-    );
+    const response = await getArchivedTasks(app, loginResponse).expect(HttpStatus.OK);
 
     expect.assertions(4);
     expect(response.body).toContainEqual(

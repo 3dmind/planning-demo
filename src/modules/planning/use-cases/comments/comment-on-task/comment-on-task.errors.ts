@@ -11,9 +11,7 @@ export namespace CommentOnTaskErrors {
     }
   }
 
-  export class MemberIsNeitherTaskOwnerNorAssigneeError extends Result<
-    UseCaseError
-  > {
+  export class MemberIsNeitherTaskOwnerNorAssigneeError extends Result<UseCaseError> {
     constructor(memberId: MemberId) {
       super(false, {
         message: `Member with id {${memberId}} is neither the task owner nor the assignee.`,

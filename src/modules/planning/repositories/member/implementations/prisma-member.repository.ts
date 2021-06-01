@@ -3,10 +3,7 @@ import { PrismaService } from '../../../../../prisma/prisma.service';
 import { UniqueEntityId } from '../../../../../shared/domain';
 import { MemberId } from '../../../domain/member-id.entity';
 import { Member } from '../../../domain/member.entity';
-import {
-  MaybeMember,
-  MemberRepository,
-} from '../../../domain/member.repository';
+import { MaybeMember, MemberRepository } from '../../../domain/member.repository';
 import { MemberMapper } from '../../../mappers/member.mapper';
 
 @Injectable()

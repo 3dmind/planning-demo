@@ -12,9 +12,7 @@ describe('CommentMapper', () => {
 
     // Then
     expect.assertions(1);
-    expect(commentModelCreateInput).toMatchObject<
-      Prisma.CommentModelCreateInput
-    >({
+    expect(commentModelCreateInput).toMatchObject<Prisma.CommentModelCreateInput>({
       createdAt: expect.any(Date),
       commentId: expect.any(String),
       memberModel: {

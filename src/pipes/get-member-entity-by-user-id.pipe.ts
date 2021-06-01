@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-  PipeTransform,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException, PipeTransform } from '@nestjs/common';
 import { Member } from '../modules/planning/domain/member.entity';
 import { GetMemberByUserIdErrors } from '../modules/planning/use-cases/members/get-member-by-user-id/get-member-by-user-id.errors';
 import { GetMemberByUserIdUseCase } from '../modules/planning/use-cases/members/get-member-by-user-id/get-member-by-user-id.use-case';
@@ -11,11 +6,8 @@ import { UserId } from '../modules/users/domain/user-id.entity';
 import { AppErrors } from '../shared/core';
 
 @Injectable()
-export class GetMemberEntityByUserIdPipe
-  implements PipeTransform<UserId, Promise<Member>> {
-  constructor(
-    private readonly getMemberByUserIdUseCase: GetMemberByUserIdUseCase,
-  ) {}
+export class GetMemberEntityByUserIdPipe implements PipeTransform<UserId, Promise<Member>> {
+  constructor(private readonly getMemberByUserIdUseCase: GetMemberByUserIdUseCase) {}
 
   public async transform(userId: UserId): Promise<Member> {
     const result = await this.getMemberByUserIdUseCase.execute({ userId });

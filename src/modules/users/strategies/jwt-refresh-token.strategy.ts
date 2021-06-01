@@ -18,10 +18,7 @@ import { GetUserByUserNameError } from '../use-cases/get-user-by-user-name/get-u
 import { GetUserByUserNameUsecase } from '../use-cases/get-user-by-user-name/get-user-by-user-name.usecase';
 
 @Injectable()
-export class JwtRefreshTokenStrategy extends PassportStrategy(
-  Strategy,
-  'JwtRefreshToken',
-) {
+export class JwtRefreshTokenStrategy extends PassportStrategy(Strategy, 'JwtRefreshToken') {
   public static extractor = ExtractJwt.fromBodyField('refreshToken');
 
   constructor(
@@ -37,24 +34,13 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(
     });
   }
 
-  public async validate(
-    request: Request,
-    decodedToken: JwtClaims,
-  ): Promise<User> {
-    const refreshToken: RefreshToken = JwtRefreshTokenStrategy.extractor(
-      request,
-    );
+  public async validate(request: Request, decodedToken: JwtClaims): Promise<User> {
+    const refreshToken: RefreshToken = JwtRefreshTokenStrategy.extractor(request);
     const { username } = decodedToken;
 
-    const isValidToken = await this.authService.validateRefreshToken(
-      username,
-      refreshToken,
-    );
+    const isValidToken = await this.authService.validateRefreshToken(username, refreshToken);
     if (!isValidToken) {
-      throw new ForbiddenException(
-        'Refresh token not found.',
-        'User is probably not logged in. Please log in again.',
-      );
+      throw new ForbiddenException('Refresh token not found.', 'User is probably not logged in. Please log in again.');
     }
 
     const result = await this.getUserByUserNameUsecase.execute({ username });

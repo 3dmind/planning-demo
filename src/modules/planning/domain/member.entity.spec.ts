@@ -28,13 +28,9 @@ describe('Member entity', () => {
     // Then
     expect.assertions(4);
     expect(memberResultNull.isFailure).toBe(true);
-    expect(memberResultNull.errorValue()).toEqual(
-      'userId is null or undefined',
-    );
+    expect(memberResultNull.errorValue()).toEqual('userId is null or undefined');
     expect(memberResultUndefined.isFailure).toBe(true);
-    expect(memberResultUndefined.errorValue()).toEqual(
-      'userId is null or undefined',
-    );
+    expect(memberResultUndefined.errorValue()).toEqual('userId is null or undefined');
   });
 
   it('should create new member', () => {

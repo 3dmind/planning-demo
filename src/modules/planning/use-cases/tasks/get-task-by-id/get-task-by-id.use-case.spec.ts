@@ -33,9 +33,7 @@ describe('GetTaskByIdUseCase', () => {
     // Given
     const taskId = faker.random.uuid();
     const errorMessage = 'error';
-    const spy = jest
-      .spyOn(TaskId, 'create')
-      .mockReturnValueOnce(Result.fail(errorMessage));
+    const spy = jest.spyOn(TaskId, 'create').mockReturnValueOnce(Result.fail(errorMessage));
 
     // When
     const result = await useCase.execute({ taskId });
@@ -67,11 +65,9 @@ describe('GetTaskByIdUseCase', () => {
   it('should fail on any other error', async () => {
     // Given
     const taskId = faker.random.uuid();
-    const spy = jest
-      .spyOn(taskRepository, 'getTaskById')
-      .mockImplementationOnce(() => {
-        throw new Error();
-      });
+    const spy = jest.spyOn(taskRepository, 'getTaskById').mockImplementationOnce(() => {
+      throw new Error();
+    });
 
     // When
     const result = await useCase.execute({ taskId });

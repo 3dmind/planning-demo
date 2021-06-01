@@ -38,9 +38,7 @@ describe('GetMemberByUserIdUseCase', () => {
     // Then
     expect.assertions(3);
     expect(result.isLeft()).toBeTruthy();
-    expect(result.value).toBeInstanceOf(
-      GetMemberByUserIdErrors.MemberNotFoundError,
-    );
+    expect(result.value).toBeInstanceOf(GetMemberByUserIdErrors.MemberNotFoundError);
     expect(result.value.errorValue()).toEqual({
       message: `Could not find member associated with the user id {${userId}}.`,
     });
@@ -49,11 +47,9 @@ describe('GetMemberByUserIdUseCase', () => {
   it('should fail on any other error', async () => {
     // Given
     const userId = UserId.create().getValue();
-    const spy = jest
-      .spyOn(memberRepository, 'getMemberByUserId')
-      .mockImplementationOnce(() => {
-        throw new Error();
-      });
+    const spy = jest.spyOn(memberRepository, 'getMemberByUserId').mockImplementationOnce(() => {
+      throw new Error();
+    });
 
     // When
     const result = await useCase.execute({ userId });

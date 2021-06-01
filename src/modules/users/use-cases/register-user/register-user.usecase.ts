@@ -1,13 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DomainEventPublisherService } from '../../../../domain-event-publisher/domain-event-publisher.service';
-import {
-  AppErrors,
-  Either,
-  left,
-  Result,
-  right,
-  UseCase,
-} from '../../../../shared/core';
+import { AppErrors, Either, left, Result, right, UseCase } from '../../../../shared/core';
 import { UserEmail } from '../../domain/user-email.valueobject';
 import { UserName } from '../../domain/user-name.valueobject';
 import { UserPassword } from '../../domain/user-password.valueobject';
@@ -40,11 +33,7 @@ export class RegisterUserUsecase implements UseCase<RegisterUserDto, Response> {
       value: request.password,
     });
     const userEmailResult = UserEmail.create(request.email);
-    const result = Result.combine([
-      userNameResult,
-      userPasswordResult,
-      userEmailResult,
-    ]);
+    const result = Result.combine([userNameResult, userPasswordResult, userEmailResult]);
 
     if (result.isFailure) {
       this.logger.debug(result.error);
@@ -58,9 +47,7 @@ export class RegisterUserUsecase implements UseCase<RegisterUserDto, Response> {
     try {
       const userAlreadyExists = await this.userRepository.exists(email);
       if (userAlreadyExists) {
-        const emailAlreadyExistsError = new RegisterUserErrors.EmailAlreadyExistsError(
-          email.value,
-        );
+        const emailAlreadyExistsError = new RegisterUserErrors.EmailAlreadyExistsError(email.value);
         this.logger.debug(emailAlreadyExistsError.errorValue().message);
         return left(emailAlreadyExistsError);
       }
@@ -68,9 +55,7 @@ export class RegisterUserUsecase implements UseCase<RegisterUserDto, Response> {
       const { found } = await this.userRepository.getUserByUsername(username);
 
       if (found) {
-        const usernameTakenError = new RegisterUserErrors.UsernameTakenError(
-          username.value,
-        );
+        const usernameTakenError = new RegisterUserErrors.UsernameTakenError(username.value);
         this.logger.debug(usernameTakenError.errorValue().message);
         return left(usernameTakenError);
       }

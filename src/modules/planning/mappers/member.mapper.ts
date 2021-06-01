@@ -18,9 +18,7 @@ export class MemberMapper {
 
   public static toDomain(memberModel: MemberModel): Member {
     const entityId = new UniqueEntityId(memberModel.memberId);
-    const userId = UserId.create(
-      new UniqueEntityId(memberModel.memberBaseId),
-    ).getValue();
+    const userId = UserId.create(new UniqueEntityId(memberModel.memberBaseId)).getValue();
 
     return Member.create(
       {

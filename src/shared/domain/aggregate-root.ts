@@ -22,9 +22,6 @@ export abstract class AggregateRoot<T> extends Entity<T> {
     this.domainEventCollection.add(domainEvent);
     const thisClass = Reflect.getPrototypeOf(this);
     const eventClass = Reflect.getPrototypeOf(domainEvent);
-    this.logger.debug(
-      `Domain event created ${eventClass.constructor.name}`,
-      thisClass.constructor.name,
-    );
+    this.logger.debug(`Domain event created ${eventClass.constructor.name}`, thisClass.constructor.name);
   }
 }

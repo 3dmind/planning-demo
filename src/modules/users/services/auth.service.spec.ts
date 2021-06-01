@@ -23,19 +23,11 @@ describe('AuthService', () => {
   let service: AuthService;
 
   beforeAll(async () => {
-    mockedApiConfigService.getAccessTokenSecret.mockReturnValueOnce(
-      accessTokenSecretFixture,
-    );
-    mockedApiConfigService.getAccessTokenTtl.mockReturnValueOnce(
-      accessTokenTtlFixture,
-    );
+    mockedApiConfigService.getAccessTokenSecret.mockReturnValueOnce(accessTokenSecretFixture);
+    mockedApiConfigService.getAccessTokenTtl.mockReturnValueOnce(accessTokenTtlFixture);
 
-    mockedApiConfigService.getRefreshTokenSecret.mockReturnValueOnce(
-      refreshTokenSecretFixture,
-    );
-    mockedApiConfigService.getRefreshTokenTtl.mockReturnValueOnce(
-      refreshTokenTtlFixture,
-    );
+    mockedApiConfigService.getRefreshTokenSecret.mockReturnValueOnce(refreshTokenSecretFixture);
+    mockedApiConfigService.getRefreshTokenTtl.mockReturnValueOnce(refreshTokenTtlFixture);
 
     const module: TestingModule = await Test.createTestingModule({
       imports: [CacheModule.register({ store: 'memory' })],
@@ -114,10 +106,7 @@ describe('AuthService', () => {
     // Given
     const userNameFixture = 'tomtest';
     const userName = UserName.create(userNameFixture).getValue();
-    const user = new UserEntityBuilder()
-      .withUserName(userName)
-      .makeLoggedIn()
-      .build();
+    const user = new UserEntityBuilder().withUserName(userName).makeLoggedIn().build();
 
     // When
     await service.saveAuthenticatedUser(user);
@@ -164,21 +153,12 @@ describe('AuthService', () => {
     const userName = UserName.create(userNameFixture).getValue();
     const validAccessToken = faker.random.alphaNumeric(10);
     const invalidAccessToken = faker.random.alphaNumeric(10);
-    const user = new UserEntityBuilder()
-      .withUserName(userName)
-      .makeLoggedIn({ accessToken: validAccessToken })
-      .build();
+    const user = new UserEntityBuilder().withUserName(userName).makeLoggedIn({ accessToken: validAccessToken }).build();
     await service.saveAuthenticatedUser(user);
 
     // When
-    const validResult = await service.validateAccessToken(
-      userNameFixture,
-      validAccessToken,
-    );
-    const invalidResult = await service.validateAccessToken(
-      userNameFixture,
-      invalidAccessToken,
-    );
+    const validResult = await service.validateAccessToken(userNameFixture, validAccessToken);
+    const invalidResult = await service.validateAccessToken(userNameFixture, invalidAccessToken);
 
     // Then
     expect.assertions(2);
@@ -199,14 +179,8 @@ describe('AuthService', () => {
     await service.saveAuthenticatedUser(user);
 
     // When
-    const validResult = await service.validateRefreshToken(
-      userNameFixture,
-      validRefreshToken,
-    );
-    const invalidResult = await service.validateRefreshToken(
-      userNameFixture,
-      invalidRefreshToken,
-    );
+    const validResult = await service.validateRefreshToken(userNameFixture, validRefreshToken);
+    const invalidResult = await service.validateRefreshToken(userNameFixture, invalidRefreshToken);
 
     // Then
     expect.assertions(2);

@@ -25,11 +25,7 @@ describe('/tasks/:id/archive (PUT)', () => {
 
   it(`should respond with ${HttpStatus.NOT_FOUND} if the member cannot be found`, async () => {
     const taskId = 'f6284ef5-963c-4d5c-88a6-f7a48dc6281b';
-    const loginResponse = await login(
-      app,
-      'no-member-planning-demo',
-      'no-member-planning-demo',
-    ).expect(HttpStatus.OK);
+    const loginResponse = await login(app, 'no-member-planning-demo', 'no-member-planning-demo').expect(HttpStatus.OK);
 
     await archiveTask(app, loginResponse, taskId).expect(HttpStatus.NOT_FOUND);
 
@@ -48,29 +44,19 @@ describe('/tasks/:id/archive (PUT)', () => {
   it(`should respond with ${HttpStatus.UNPROCESSABLE_ENTITY} if the member is not the task owner`, async () => {
     let loginResponse: request.Response;
     loginResponse = await loginAsAlice(app).expect(HttpStatus.OK);
-    const noteTaskResponse = await noteTask(app, loginResponse).expect(
-      HttpStatus.CREATED,
-    );
+    const noteTaskResponse = await noteTask(app, loginResponse).expect(HttpStatus.CREATED);
     loginResponse = await loginAsBob(app).expect(HttpStatus.OK);
 
-    await archiveTask(app, loginResponse, noteTaskResponse.body.id).expect(
-      HttpStatus.UNPROCESSABLE_ENTITY,
-    );
+    await archiveTask(app, loginResponse, noteTaskResponse.body.id).expect(HttpStatus.UNPROCESSABLE_ENTITY);
 
     return logout(app, loginResponse).expect(HttpStatus.NO_CONTENT);
   });
 
   it(`should respond with ${HttpStatus.OK} if the task was successfully archived`, async () => {
     const loginResponse = await login(app).expect(HttpStatus.OK);
-    const noteTaskResponse = await noteTask(app, loginResponse).expect(
-      HttpStatus.CREATED,
-    );
+    const noteTaskResponse = await noteTask(app, loginResponse).expect(HttpStatus.CREATED);
 
-    const response = await archiveTask(
-      app,
-      loginResponse,
-      noteTaskResponse.body.id,
-    );
+    const response = await archiveTask(app, loginResponse, noteTaskResponse.body.id);
 
     expect.assertions(1);
     expect(response.body).toMatchObject<Partial<TaskDto>>({

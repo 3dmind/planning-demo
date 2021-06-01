@@ -70,10 +70,7 @@ export class AuthService {
     }
   }
 
-  public async validateAccessToken(
-    username: string,
-    accessToken: AccessToken,
-  ): Promise<boolean> {
+  public async validateAccessToken(username: string, accessToken: AccessToken): Promise<boolean> {
     const savedTokens = await this.cacheManger.get<string>(username);
     if (!!savedTokens === false) {
       return false;
@@ -83,10 +80,7 @@ export class AuthService {
     return parsedTokens.accessToken === accessToken;
   }
 
-  public async validateRefreshToken(
-    username: string,
-    refreshToken: RefreshToken,
-  ): Promise<boolean> {
+  public async validateRefreshToken(username: string, refreshToken: RefreshToken): Promise<boolean> {
     const savedTokens = await this.cacheManger.get<string>(username);
     if (!!savedTokens === false) {
       return false;

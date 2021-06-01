@@ -2,19 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MemberEntityBuilder } from '../../../../../../test/builder/member-entity.builder';
 import { TaskEntityBuilder } from '../../../../../../test/builder/task-entity.builder';
 import { AppErrors } from '../../../../../shared/core';
-import { UniqueEntityId } from '../../../../../shared/domain';
-import { UserId } from '../../../../users/domain/user-id.entity';
-import { MemberRepository } from '../../../domain/member.repository';
 import { TaskRepository } from '../../../domain/task.repository';
-import { InMemoryMemberRepository } from '../../../repositories/member/implementations/in-memory-member.repository';
 import { InMemoryTaskRepository } from '../../../repositories/task/implementations/in-memory-task.repository';
-import { GetAllActiveTasksErrors } from './get-all-active-tasks.errors';
-import { GetAllActiveTasksUsecase } from './get-all-active-tasks.usecase';
+import { GetAllActiveTasksUseCase } from './get-all-active-tasks.use-case';
 
-describe('GetAllActiveTasksUsecase', () => {
-  let memberRepository: MemberRepository;
+describe('GetAllActiveTasksUseCase', () => {
   let taskRepository: TaskRepository;
-  let useCase: GetAllActiveTasksUsecase;
+  let useCase: GetAllActiveTasksUseCase;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -23,47 +17,24 @@ describe('GetAllActiveTasksUsecase', () => {
           provide: TaskRepository,
           useClass: InMemoryTaskRepository,
         },
-        {
-          provide: MemberRepository,
-          useClass: InMemoryMemberRepository,
-        },
-        GetAllActiveTasksUsecase,
+        GetAllActiveTasksUseCase,
       ],
     }).compile();
     module.useLogger(false);
 
-    memberRepository = module.get<MemberRepository>(MemberRepository);
     taskRepository = module.get<TaskRepository>(TaskRepository);
-    useCase = module.get<GetAllActiveTasksUsecase>(GetAllActiveTasksUsecase);
-  });
-
-  it('should fail if member cannot be found', async () => {
-    // Given
-    const userId = UserId.create(new UniqueEntityId()).getValue();
-
-    // When
-    const result = await useCase.execute({ userId });
-    const error = <GetAllActiveTasksErrors.MemberNotFoundError>result.value;
-
-    // Then
-    expect.assertions(3);
-    expect(result.isLeft()).toBe(true);
-    expect(error).toBeInstanceOf(GetAllActiveTasksErrors.MemberNotFoundError);
-    expect(error.errorValue().message).toEqual(`Could not find member associated with the user id {${userId}}.`);
+    useCase = module.get<GetAllActiveTasksUseCase>(GetAllActiveTasksUseCase);
   });
 
   it('should fail on any error', async () => {
     // Given
+    const member = new MemberEntityBuilder().build();
     const spy = jest.spyOn(taskRepository, 'getAllActiveTasksOfMember').mockImplementationOnce(() => {
       throw new Error();
     });
-    const member = new MemberEntityBuilder().build();
-    await memberRepository.save(member);
 
     // When
-    const result = await useCase.execute({
-      userId: member.userId,
-    });
+    const result = await useCase.execute({ member });
 
     // Then
     expect.assertions(2);
@@ -90,8 +61,6 @@ describe('GetAllActiveTasksUsecase', () => {
       .withOwnerId(memberOne.ownerId)
       .withAssigneeId(memberTwo.assigneeId)
       .build();
-    await memberRepository.save(memberOne);
-    await memberRepository.save(memberTwo);
     await taskRepository.save(notedTaskOfMemberOne);
     await taskRepository.save(tickedOffTaskOfMemberOne);
     await taskRepository.save(archivedTaskOfMemberOne);
@@ -102,7 +71,7 @@ describe('GetAllActiveTasksUsecase', () => {
 
     // When
     const result = await useCase.execute({
-      userId: memberOne.userId,
+      member: memberOne,
     });
     const tasks = result.value.getValue();
 

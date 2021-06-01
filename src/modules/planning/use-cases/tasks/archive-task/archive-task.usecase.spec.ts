@@ -42,9 +42,7 @@ describe('ArchiveTaskUsecase', () => {
 
   it('should fail if task-id cannot be created', async () => {
     // Given
-    const spy = jest
-      .spyOn(TaskId, 'create')
-      .mockReturnValue(Result.fail<TaskId>('error'));
+    const spy = jest.spyOn(TaskId, 'create').mockReturnValue(Result.fail<TaskId>('error'));
     const userId = UserId.create(new UniqueEntityId()).getValue();
 
     // When
@@ -76,9 +74,7 @@ describe('ArchiveTaskUsecase', () => {
     expect.assertions(3);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(ArchiveTaskErrors.MemberNotFoundError);
-    expect(result.value.errorValue().message).toEqual(
-      `Could not find member associated with the user id {${userId}}.`,
-    );
+    expect(result.value.errorValue().message).toEqual(`Could not find member associated with the user id {${userId}}.`);
   });
 
   it('should fail if a task cannot be found', async () => {
@@ -97,9 +93,7 @@ describe('ArchiveTaskUsecase', () => {
     expect.assertions(3);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(ArchiveTaskErrors.TaskNotFoundError);
-    expect(result.value.errorValue().message).toEqual(
-      `Could not find a task by the id {${taskId}}.`,
-    );
+    expect(result.value.errorValue().message).toEqual(`Could not find a task by the id {${taskId}}.`);
   });
 
   it('should fail if member is not the task owner', async () => {
@@ -122,11 +116,9 @@ describe('ArchiveTaskUsecase', () => {
 
   it('should fail on any other error', async () => {
     // Given
-    const spy = jest
-      .spyOn(taskRepository, 'getTaskById')
-      .mockImplementationOnce(() => {
-        throw new Error();
-      });
+    const spy = jest.spyOn(taskRepository, 'getTaskById').mockImplementationOnce(() => {
+      throw new Error();
+    });
     const member = new MemberEntityBuilder().build();
     const task = new TaskEntityBuilder().withOwnerId(member.ownerId).build();
     await memberRepository.save(member);
@@ -149,10 +141,7 @@ describe('ArchiveTaskUsecase', () => {
   it('should not archive a task which is already archived', async () => {
     // Given
     const member = new MemberEntityBuilder().build();
-    const task = new TaskEntityBuilder()
-      .withOwnerId(member.ownerId)
-      .makeArchived()
-      .build();
+    const task = new TaskEntityBuilder().withOwnerId(member.ownerId).makeArchived().build();
     await memberRepository.save(member);
     await taskRepository.save(task);
     const saveSpy = jest.spyOn(taskRepository, 'save');

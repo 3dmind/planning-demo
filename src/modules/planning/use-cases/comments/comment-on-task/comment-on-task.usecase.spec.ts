@@ -87,9 +87,7 @@ describe('CommentOnTaskUsecase', () => {
     // Then
     expect.assertions(3);
     expect(result.isLeft()).toBeTruthy();
-    expect(result.value).toBeInstanceOf(
-      CommentOnTaskErrors.MemberIsNeitherTaskOwnerNorAssigneeError,
-    );
+    expect(result.value).toBeInstanceOf(CommentOnTaskErrors.MemberIsNeitherTaskOwnerNorAssigneeError);
     expect(result.value.errorValue().message).toEqual(
       `Member with id {${member.memberId}} is neither the task owner nor the assignee.`,
     );
@@ -102,9 +100,7 @@ describe('CommentOnTaskUsecase', () => {
     };
     const assignee = new MemberEntityBuilder().build();
     const member = new MemberEntityBuilder().build();
-    const task = new TaskEntityBuilder()
-      .withAssigneeId(assignee.assigneeId)
-      .build();
+    const task = new TaskEntityBuilder().withAssigneeId(assignee.assigneeId).build();
     await memberRepository.save(assignee);
     await memberRepository.save(member);
     await taskRepository.save(task);
@@ -119,9 +115,7 @@ describe('CommentOnTaskUsecase', () => {
     // Then
     expect.assertions(3);
     expect(result.isLeft()).toBeTruthy();
-    expect(result.value).toBeInstanceOf(
-      CommentOnTaskErrors.MemberIsNeitherTaskOwnerNorAssigneeError,
-    );
+    expect(result.value).toBeInstanceOf(CommentOnTaskErrors.MemberIsNeitherTaskOwnerNorAssigneeError);
     expect(result.value.errorValue().message).toEqual(
       `Member with id {${member.memberId}} is neither the task owner nor the assignee.`,
     );
@@ -134,11 +128,9 @@ describe('CommentOnTaskUsecase', () => {
     };
     const member = new MemberEntityBuilder().build();
     const task = new TaskEntityBuilder().withOwnerId(member.ownerId).build();
-    const spy = jest
-      .spyOn(commentRepository, 'save')
-      .mockImplementationOnce(() => {
-        throw new Error();
-      });
+    const spy = jest.spyOn(commentRepository, 'save').mockImplementationOnce(() => {
+      throw new Error();
+    });
     await memberRepository.save(member);
     await taskRepository.save(task);
 
@@ -186,10 +178,7 @@ describe('CommentOnTaskUsecase', () => {
     };
     const owner = new MemberEntityBuilder().build();
     const assignee = new MemberEntityBuilder().build();
-    const task = new TaskEntityBuilder()
-      .withOwnerId(owner.ownerId)
-      .withAssigneeId(assignee.assigneeId)
-      .build();
+    const task = new TaskEntityBuilder().withOwnerId(owner.ownerId).withAssigneeId(assignee.assigneeId).build();
     await memberRepository.save(owner);
     await memberRepository.save(assignee);
     await taskRepository.save(task);

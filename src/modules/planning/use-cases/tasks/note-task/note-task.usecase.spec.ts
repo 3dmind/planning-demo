@@ -70,16 +70,12 @@ describe('NoteTaskUsecase', () => {
     expect.assertions(3);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(NoteTaskErrors.MemberNotFoundError);
-    expect(result.value.errorValue().message).toEqual(
-      `Could not find member associated with the user id {${userId}}.`,
-    );
+    expect(result.value.errorValue().message).toEqual(`Could not find member associated with the user id {${userId}}.`);
   });
 
   it('should fail if Task cannot be noted', async () => {
     // Given
-    const spy = jest
-      .spyOn(Task, 'note')
-      .mockReturnValue(Result.fail<Task>('error'));
+    const spy = jest.spyOn(Task, 'note').mockReturnValue(Result.fail<Task>('error'));
     const dto: NoteTaskDto = { text: faker.lorem.words(5) };
     const member = new MemberEntityBuilder().build();
     await memberRepository.save(member);
@@ -99,11 +95,9 @@ describe('NoteTaskUsecase', () => {
 
   it('should fail on any other error', async () => {
     // Given
-    const spy = jest
-      .spyOn(taskRepository, 'save')
-      .mockImplementationOnce(() => {
-        throw new Error();
-      });
+    const spy = jest.spyOn(taskRepository, 'save').mockImplementationOnce(() => {
+      throw new Error();
+    });
     const dto: NoteTaskDto = { text: faker.lorem.words(5) };
     const member = new MemberEntityBuilder().build();
     await memberRepository.save(member);

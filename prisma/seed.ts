@@ -1,11 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { alice, bob, e2eUser, noMemberUser } from './seeds';
-import {
-  memberForAlice,
-  memberForBob,
-  memberForE2eUser,
-} from './seeds/members';
+import { memberForAlice, memberForBob, memberForE2eUser } from './seeds/members';
 
 const SALT_ROUNDS = 10;
 const prisma = new PrismaClient();

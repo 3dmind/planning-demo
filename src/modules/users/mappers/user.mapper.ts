@@ -7,9 +7,7 @@ import { User } from '../domain/user.entity';
 import { UserDto } from '../dtos/user.dto';
 
 export class UserMapper {
-  public static async toPersistence(
-    user: User,
-  ): Promise<Prisma.BaseUserModelCreateInput> {
+  public static async toPersistence(user: User): Promise<Prisma.BaseUserModelCreateInput> {
     const password = user.password;
     let hashedPassword;
 
@@ -30,14 +28,7 @@ export class UserMapper {
   }
 
   public static toDomain(baseUserModel: BaseUserModel): User {
-    const {
-      baseUserId,
-      createdAt,
-      isEmailVerified,
-      userEmail,
-      username,
-      userPassword,
-    } = baseUserModel;
+    const { baseUserId, createdAt, isEmailVerified, userEmail, username, userPassword } = baseUserModel;
     const entityId = new UniqueEntityId(baseUserId);
     const userNameResult = UserName.create(username);
     const userPasswordResult = UserPassword.create({

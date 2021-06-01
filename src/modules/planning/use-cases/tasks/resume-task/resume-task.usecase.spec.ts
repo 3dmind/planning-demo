@@ -42,9 +42,7 @@ describe('ResumeTaskUsecase', () => {
 
   it('should fail if task-id cannot be created', async () => {
     // Given
-    const spy = jest
-      .spyOn(TaskId, 'create')
-      .mockReturnValue(Result.fail<TaskId>('error'));
+    const spy = jest.spyOn(TaskId, 'create').mockReturnValue(Result.fail<TaskId>('error'));
     const userId = UserId.create(new UniqueEntityId()).getValue();
 
     // When
@@ -76,9 +74,7 @@ describe('ResumeTaskUsecase', () => {
     expect.assertions(3);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(ResumeTaskErrors.MemberNotFoundError);
-    expect(result.value.errorValue().message).toEqual(
-      `Could not find member associated with the user id {${userId}}.`,
-    );
+    expect(result.value.errorValue().message).toEqual(`Could not find member associated with the user id {${userId}}.`);
   });
 
   it('should fail if a task cannot be found', async () => {
@@ -97,9 +93,7 @@ describe('ResumeTaskUsecase', () => {
     expect.assertions(3);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(ResumeTaskErrors.TaskNotFoundError);
-    expect(result.value.errorValue().message).toEqual(
-      `Could not find a task by the id {${taskId}}.`,
-    );
+    expect(result.value.errorValue().message).toEqual(`Could not find a task by the id {${taskId}}.`);
   });
 
   it('should fail if the memeber is not assigned to the task', async () => {
@@ -123,11 +117,9 @@ describe('ResumeTaskUsecase', () => {
 
   it('should fail on any other error', async () => {
     // Given
-    const spy = jest
-      .spyOn(taskRepository, 'getTaskById')
-      .mockImplementationOnce(() => {
-        throw new Error();
-      });
+    const spy = jest.spyOn(taskRepository, 'getTaskById').mockImplementationOnce(() => {
+      throw new Error();
+    });
     const taskId = faker.random.uuid();
     const member = new MemberEntityBuilder().build();
     await memberRepository.save(member);
@@ -149,10 +141,7 @@ describe('ResumeTaskUsecase', () => {
   it('should not resume a task which is not ticked-off', async () => {
     // Given
     const member = new MemberEntityBuilder().build();
-    const task = new TaskEntityBuilder()
-      .withAssigneeId(member.assigneeId)
-      .makeResumed()
-      .build();
+    const task = new TaskEntityBuilder().withAssigneeId(member.assigneeId).makeResumed().build();
     await memberRepository.save(member);
     await taskRepository.save(task);
     const saveSpy = jest.spyOn(taskRepository, 'save');
@@ -179,10 +168,7 @@ describe('ResumeTaskUsecase', () => {
   it('should succeed', async () => {
     // Given
     const member = new MemberEntityBuilder().build();
-    const task = new TaskEntityBuilder()
-      .withAssigneeId(member.assigneeId)
-      .makeTickedOff()
-      .build();
+    const task = new TaskEntityBuilder().withAssigneeId(member.assigneeId).makeTickedOff().build();
     await memberRepository.save(member);
     await taskRepository.save(task);
 

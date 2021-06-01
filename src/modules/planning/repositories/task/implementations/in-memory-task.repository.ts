@@ -49,17 +49,13 @@ export class InMemoryTaskRepository extends TaskRepository {
   public async getAllActiveTasksOfMember(memberId: MemberId): Promise<Task[]> {
     return this.toArray()
       .filter((task) => {
-        return (
-          task.ownerId.equals(memberId) || task.assigneeId.equals(memberId)
-        );
+        return task.ownerId.equals(memberId) || task.assigneeId.equals(memberId);
       })
       .filter((task) => !task.isArchived())
       .filter((task) => !task.isDiscarded());
   }
 
-  public async getAllArchivedTasksOfMember(
-    memberId: MemberId,
-  ): Promise<Task[]> {
+  public async getAllArchivedTasksOfMember(memberId: MemberId): Promise<Task[]> {
     return this.toArray()
       .filter((task) => task.ownerId.equals(memberId))
       .filter((task) => !task.isDiscarded())

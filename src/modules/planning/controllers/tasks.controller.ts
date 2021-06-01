@@ -56,10 +56,7 @@ export class TasksController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async noteTask(
-    @UserEntity('userId') userId: UserId,
-    @Body() dto: NoteTaskDto,
-  ): Promise<TaskDto> {
+  async noteTask(@UserEntity('userId') userId: UserId, @Body() dto: NoteTaskDto): Promise<TaskDto> {
     const result = await this.noteTaskUseCase.execute({
       dto,
       userId,
@@ -73,9 +70,7 @@ export class TasksController {
     if (result.isLeft()) {
       const error = result.value;
 
-      if (
-        Reflect.getPrototypeOf(error).constructor === AppErrors.UnexpectedError
-      ) {
+      if (Reflect.getPrototypeOf(error).constructor === AppErrors.UnexpectedError) {
         throw new InternalServerErrorException(error.errorValue().message);
       } else {
         throw new UnprocessableEntityException(error.errorValue());
@@ -84,10 +79,7 @@ export class TasksController {
   }
 
   @Put(':id/tickoff')
-  async tickOffTask(
-    @UserEntity('userId') userId: UserId,
-    @Param('id') id: string,
-  ): Promise<TaskDto> {
+  async tickOffTask(@UserEntity('userId') userId: UserId, @Param('id') id: string): Promise<TaskDto> {
     const result = await this.tickOffTaskUseCase.execute({
       taskId: id,
       userId,
@@ -114,10 +106,7 @@ export class TasksController {
   }
 
   @Put(':id/resume')
-  async resumeTask(
-    @UserEntity('userId') userId: UserId,
-    @Param('id') id: string,
-  ): Promise<TaskDto> {
+  async resumeTask(@UserEntity('userId') userId: UserId, @Param('id') id: string): Promise<TaskDto> {
     const result = await this.resumeTaskUseCase.execute({
       taskId: id,
       userId,
@@ -174,10 +163,7 @@ export class TasksController {
   }
 
   @Put(':id/archive')
-  async archiveTask(
-    @UserEntity('userId') userId: UserId,
-    @Param('id') id: string,
-  ): Promise<TaskDto> {
+  async archiveTask(@UserEntity('userId') userId: UserId, @Param('id') id: string): Promise<TaskDto> {
     const result = await this.archivedTasksUseCase.execute({
       taskId: id,
       userId,
@@ -203,10 +189,7 @@ export class TasksController {
   }
 
   @Put(':id/discard')
-  async discardTask(
-    @UserEntity('userId') userId: UserId,
-    @Param('id') id: string,
-  ): Promise<TaskDto> {
+  async discardTask(@UserEntity('userId') userId: UserId, @Param('id') id: string): Promise<TaskDto> {
     const result = await this.discardTaskUseCase.execute({
       taskId: id,
       userId,
@@ -232,9 +215,7 @@ export class TasksController {
   }
 
   @Get('/active')
-  async getActiveTasks(
-    @UserEntity('userId') userId: UserId,
-  ): Promise<TaskDto[]> {
+  async getActiveTasks(@UserEntity('userId') userId: UserId): Promise<TaskDto[]> {
     const result = await this.getAllActiveTasksUseCase.execute({ userId });
 
     if (result.isRight()) {
@@ -256,9 +237,7 @@ export class TasksController {
   }
 
   @Get('/archived')
-  async getArchivedTasks(
-    @UserEntity('userId') userId: UserId,
-  ): Promise<TaskDto[]> {
+  async getArchivedTasks(@UserEntity('userId') userId: UserId): Promise<TaskDto[]> {
     const result = await this.getAllArchivedTasksUseCase.execute({ userId });
 
     if (result.isRight()) {

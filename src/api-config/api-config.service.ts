@@ -22,10 +22,7 @@ export class ApiConfigService {
 
   getRedisPort(): number {
     const DEFAULT_PORT = 6379;
-    const parsedPort = Number.parseInt(
-      this.configService.get('REDIS_PORT'),
-      10,
-    );
+    const parsedPort = Number.parseInt(this.configService.get('REDIS_PORT'), 10);
 
     if (Number.isNaN(parsedPort)) {
       return DEFAULT_PORT;
@@ -40,10 +37,7 @@ export class ApiConfigService {
 
   getAccessTokenTtl(): number {
     const DEFAULT_TTL_IN_SECONDS = 300; // seconds => 5 minutes
-    const parsedTtl = Number.parseInt(
-      this.configService.get('JWT_ACCESS_TOKEN_TTL'),
-      10,
-    );
+    const parsedTtl = Number.parseInt(this.configService.get('JWT_ACCESS_TOKEN_TTL'), 10);
 
     if (Number.isNaN(parsedTtl)) {
       return DEFAULT_TTL_IN_SECONDS;
@@ -58,10 +52,7 @@ export class ApiConfigService {
 
   getRefreshTokenTtl(): number {
     const DEFAULT_TTL_IN_SECONDS = 604800; // seconds => 7 days
-    const parsedTtl = Number.parseInt(
-      this.configService.get('JWT_REFRESH_TOKEN_TTL'),
-      10,
-    );
+    const parsedTtl = Number.parseInt(this.configService.get('JWT_REFRESH_TOKEN_TTL'), 10);
 
     if (Number.isNaN(parsedTtl)) {
       return DEFAULT_TTL_IN_SECONDS;

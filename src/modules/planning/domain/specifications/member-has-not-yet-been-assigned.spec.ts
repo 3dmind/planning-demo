@@ -20,9 +20,7 @@ describe('MemberHasNotYetBeenAssigned', () => {
   it('should not be satisfied if the member is assigned to the task', () => {
     // Given
     const member = new MemberEntityBuilder().build();
-    const task = new TaskEntityBuilder()
-      .withAssigneeId(member.assigneeId)
-      .build();
+    const task = new TaskEntityBuilder().withAssigneeId(member.assigneeId).build();
     const memberHasNotYetBeenAssigned = new MemberHasNotYetBeenAssigned(task);
 
     // When

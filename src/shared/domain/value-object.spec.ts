@@ -32,7 +32,7 @@ describe('ValueObject', () => {
     // When
     const sentenceOne = new Sentence({ value: wordsA });
     const sentenceTwo = new Sentence({ value: wordsA });
-    const sentenceThree = ({} as unknown) as Sentence;
+    const sentenceThree = {} as unknown as Sentence;
     const sentenceFour = new Sentence({ value: wordsB });
 
     // Then

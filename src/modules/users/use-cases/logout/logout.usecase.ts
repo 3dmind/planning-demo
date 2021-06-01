@@ -1,12 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import {
-  AppErrors,
-  Either,
-  left,
-  Result,
-  right,
-  UseCase,
-} from '../../../../shared/core';
+import { AppErrors, Either, left, Result, right, UseCase } from '../../../../shared/core';
 import { User } from '../../domain/user.entity';
 import { AuthService } from '../../services/auth.service';
 

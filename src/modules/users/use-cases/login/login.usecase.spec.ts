@@ -23,19 +23,11 @@ describe('LoginUsecase', () => {
   let useCase: LoginUsecase;
 
   beforeAll(async () => {
-    mockedConfigService.getAccessTokenSecret.mockReturnValue(
-      accessTokenSecretFixture,
-    );
-    mockedConfigService.getAccessTokenTtl.mockReturnValue(
-      accessTokenTtlFixture,
-    );
+    mockedConfigService.getAccessTokenSecret.mockReturnValue(accessTokenSecretFixture);
+    mockedConfigService.getAccessTokenTtl.mockReturnValue(accessTokenTtlFixture);
 
-    mockedConfigService.getRefreshTokenSecret.mockReturnValue(
-      refreshTokenSecretFixture,
-    );
-    mockedConfigService.getRefreshTokenTtl.mockReturnValue(
-      refreshTokenTtlFixture,
-    );
+    mockedConfigService.getRefreshTokenSecret.mockReturnValue(refreshTokenSecretFixture);
+    mockedConfigService.getRefreshTokenTtl.mockReturnValue(refreshTokenTtlFixture);
 
     const module: TestingModule = await Test.createTestingModule({
       imports: [CacheModule.register({ store: 'memory' })],
@@ -60,11 +52,9 @@ describe('LoginUsecase', () => {
 
   it('should fail on any error', async () => {
     // Given
-    const spy = jest
-      .spyOn(authService, 'createAccessToken')
-      .mockImplementationOnce(() => {
-        throw new Error('BOOM!');
-      });
+    const spy = jest.spyOn(authService, 'createAccessToken').mockImplementationOnce(() => {
+      throw new Error('BOOM!');
+    });
     const user = new UserEntityBuilder().build();
 
     // When

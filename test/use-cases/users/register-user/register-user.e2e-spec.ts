@@ -31,9 +31,7 @@ describe('/users (POST)', () => {
     const response = await registerUser(app, dto).expect(HttpStatus.CONFLICT);
 
     expect.assertions(1);
-    expect(response.body.message).toEqual(
-      'The email e2e@planning.demo associated for this account already exists.',
-    );
+    expect(response.body.message).toEqual('The email e2e@planning.demo associated for this account already exists.');
   });
 
   it(`should respond with ${HttpStatus.CONFLICT} if the username is taken`, async () => {
@@ -46,9 +44,7 @@ describe('/users (POST)', () => {
     const response = await registerUser(app, dto).expect(HttpStatus.CONFLICT);
 
     expect.assertions(1);
-    expect(response.body.message).toEqual(
-      'The username e2e-planning-demo was already taken.',
-    );
+    expect(response.body.message).toEqual('The username e2e-planning-demo was already taken.');
   });
 
   it(`should respond with ${HttpStatus.UNPROCESSABLE_ENTITY} if the password is to short`, async () => {
@@ -58,9 +54,7 @@ describe('/users (POST)', () => {
       password: faker.internet.password(UserPassword.MIN_LENGTH - 1),
     };
 
-    const response = await registerUser(app, dto).expect(
-      HttpStatus.UNPROCESSABLE_ENTITY,
-    );
+    const response = await registerUser(app, dto).expect(HttpStatus.UNPROCESSABLE_ENTITY);
 
     expect.assertions(1);
     expect(response.body.message).toEqual('Text is not at least 6 chars.');

@@ -1,12 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import {
-  AppErrors,
-  Either,
-  left,
-  Result,
-  right,
-  UseCase,
-} from '../../../../../shared/core';
+import { AppErrors, Either, left, Result, right, UseCase } from '../../../../../shared/core';
 import { UniqueEntityId } from '../../../../../shared/domain';
 import { UserId } from '../../../../users/domain/user-id.entity';
 import { MemberRepository } from '../../../domain/member.repository';
@@ -32,10 +25,7 @@ type Response = Either<
 export class TickOffTaskUsecase implements UseCase<Request, Response> {
   private readonly logger = new Logger(TickOffTaskUsecase.name);
 
-  constructor(
-    private readonly memberRepository: MemberRepository,
-    private readonly taskRepository: TaskRepository,
-  ) {}
+  constructor(private readonly memberRepository: MemberRepository, private readonly taskRepository: TaskRepository) {}
 
   async execute(request: Request): Promise<Response> {
     this.logger.log('Ticking-off task...');
@@ -47,26 +37,17 @@ export class TickOffTaskUsecase implements UseCase<Request, Response> {
     }
 
     try {
-      const {
-        found: memberFound,
-        member,
-      } = await this.memberRepository.getMemberByUserId(request.userId.id);
+      const { found: memberFound, member } = await this.memberRepository.getMemberByUserId(request.userId.id);
       if (!memberFound) {
-        const memberNotFoundError = new TickOffTasksErrors.MemberNotFoundError(
-          request.userId,
-        );
+        const memberNotFoundError = new TickOffTasksErrors.MemberNotFoundError(request.userId);
         this.logger.debug(memberNotFoundError.errorValue().message);
         return left(memberNotFoundError);
       }
 
       const taskId = taskIdResult.getValue();
-      const { found: taskFound, task } = await this.taskRepository.getTaskById(
-        taskId,
-      );
+      const { found: taskFound, task } = await this.taskRepository.getTaskById(taskId);
       if (!taskFound) {
-        const taskNotFoundError = new TickOffTasksErrors.TaskNotFoundError(
-          request.taskId,
-        );
+        const taskNotFoundError = new TickOffTasksErrors.TaskNotFoundError(request.taskId);
         this.logger.debug(taskNotFoundError.errorValue().message);
         return left(taskNotFoundError);
       }

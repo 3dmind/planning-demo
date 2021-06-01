@@ -18,10 +18,7 @@ import { GetUserByUserNameError } from '../use-cases/get-user-by-user-name/get-u
 import { GetUserByUserNameUsecase } from '../use-cases/get-user-by-user-name/get-user-by-user-name.usecase';
 
 @Injectable()
-export class JwtAccessTokenStrategy extends PassportStrategy(
-  Strategy,
-  'JwtAccessToken',
-) {
+export class JwtAccessTokenStrategy extends PassportStrategy(Strategy, 'JwtAccessToken') {
   public static extractor = ExtractJwt.fromAuthHeaderAsBearerToken();
 
   constructor(
@@ -37,17 +34,11 @@ export class JwtAccessTokenStrategy extends PassportStrategy(
     });
   }
 
-  public async validate(
-    request: Request,
-    decodedToken: JwtClaims,
-  ): Promise<User> {
+  public async validate(request: Request, decodedToken: JwtClaims): Promise<User> {
     const accessToken: AccessToken = JwtAccessTokenStrategy.extractor(request);
     const { username } = decodedToken;
 
-    const isValidToken = await this.authService.validateAccessToken(
-      username,
-      accessToken,
-    );
+    const isValidToken = await this.authService.validateAccessToken(username, accessToken);
     if (!isValidToken) {
       throw new UnauthorizedException(
         'Authorization token not found.',

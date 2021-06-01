@@ -1,8 +1,4 @@
-import {
-  InternalServerErrorException,
-  NotFoundException,
-  UnprocessableEntityException,
-} from '@nestjs/common';
+import { InternalServerErrorException, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as faker from 'faker';
 import { TaskEntityBuilder } from '../../test/builder/task-entity.builder';
@@ -37,9 +33,7 @@ describe('GetTaskEntityByIdPipe', () => {
   it('should throw UnprocessableEntityException if task-id cannot be created', async () => {
     // Given
     const taskId = faker.random.uuid();
-    const spy = jest
-      .spyOn(TaskId, 'create')
-      .mockReturnValueOnce(Result.fail('error'));
+    const spy = jest.spyOn(TaskId, 'create').mockReturnValueOnce(Result.fail('error'));
 
     // When
     const promise = pipe.transform(taskId);
@@ -66,11 +60,9 @@ describe('GetTaskEntityByIdPipe', () => {
   it('should throw InternalServerErrorException on any other error', async () => {
     // Given
     const taskId = faker.random.uuid();
-    const spy = jest
-      .spyOn(taskRepository, 'getTaskById')
-      .mockImplementationOnce(() => {
-        throw new Error();
-      });
+    const spy = jest.spyOn(taskRepository, 'getTaskById').mockImplementationOnce(() => {
+      throw new Error();
+    });
 
     // When
     const promise = pipe.transform(taskId);

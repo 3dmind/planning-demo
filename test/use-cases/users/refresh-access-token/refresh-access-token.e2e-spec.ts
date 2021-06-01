@@ -35,12 +35,8 @@ xdescribe('/users/refresh (POST)', () => {
       accessToken: expect.any(String),
       refreshToken: expect.any(String),
     });
-    expect(response.body.accessToken).not.toStrictEqual(
-      loginResponse.body.accessToken,
-    );
-    expect(response.body.refreshToken).toStrictEqual(
-      loginResponse.body.refreshToken,
-    );
+    expect(response.body.accessToken).not.toStrictEqual(loginResponse.body.accessToken);
+    expect(response.body.refreshToken).toStrictEqual(loginResponse.body.refreshToken);
 
     await logout(app, loginResponse).expect(HttpStatus.OK);
   });

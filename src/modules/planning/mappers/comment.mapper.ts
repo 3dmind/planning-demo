@@ -2,9 +2,7 @@ import { Prisma } from '@prisma/client';
 import { Comment } from '../domain/comment/comment.entity';
 
 export class CommentMapper {
-  public static toPersistence(
-    comment: Comment,
-  ): Prisma.CommentModelCreateInput {
+  public static toPersistence(comment: Comment): Prisma.CommentModelCreateInput {
     return {
       commentId: comment.commentId.toString(),
       createdAt: comment.createdAt,

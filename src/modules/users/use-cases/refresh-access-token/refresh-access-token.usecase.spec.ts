@@ -22,19 +22,11 @@ describe('RefreshAccessTokenUsecase', () => {
   let useCase: RefreshAccessTokenUsecase;
 
   beforeAll(async () => {
-    mockedConfigService.getAccessTokenSecret.mockReturnValue(
-      accessTokenSecretFixture,
-    );
-    mockedConfigService.getAccessTokenTtl.mockReturnValue(
-      accessTokenTtlFixture,
-    );
+    mockedConfigService.getAccessTokenSecret.mockReturnValue(accessTokenSecretFixture);
+    mockedConfigService.getAccessTokenTtl.mockReturnValue(accessTokenTtlFixture);
 
-    mockedConfigService.getRefreshTokenSecret.mockReturnValue(
-      refreshTokenSecretFixture,
-    );
-    mockedConfigService.getRefreshTokenTtl.mockReturnValue(
-      refreshTokenTtlFixture,
-    );
+    mockedConfigService.getRefreshTokenSecret.mockReturnValue(refreshTokenSecretFixture);
+    mockedConfigService.getRefreshTokenTtl.mockReturnValue(refreshTokenTtlFixture);
 
     const module: TestingModule = await Test.createTestingModule({
       imports: [CacheModule.register({ store: 'memory' })],
@@ -70,11 +62,9 @@ describe('RefreshAccessTokenUsecase', () => {
 
   it('should fail on any other error', async () => {
     // Given
-    const spy = jest
-      .spyOn(authService, 'createAccessToken')
-      .mockImplementationOnce(() => {
-        throw new Error();
-      });
+    const spy = jest.spyOn(authService, 'createAccessToken').mockImplementationOnce(() => {
+      throw new Error();
+    });
     const user = new UserEntityBuilder().build();
 
     // When

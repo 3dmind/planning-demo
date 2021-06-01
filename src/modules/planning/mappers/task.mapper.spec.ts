@@ -35,10 +35,7 @@ describe('TaskMapper', () => {
     it('should map ticked-off Task to DTO', () => {
       // Given
       const text = faker.lorem.words(5);
-      const task = new TaskEntityBuilder()
-        .withDescription(text)
-        .makeTickedOff()
-        .build();
+      const task = new TaskEntityBuilder().withDescription(text).makeTickedOff().build();
 
       // When
       const dto = TaskMapper.toDto(task);
@@ -63,11 +60,7 @@ describe('TaskMapper', () => {
     it('should map resumed Task to DTO', () => {
       // Given
       const text = faker.lorem.words(5);
-      const task = new TaskEntityBuilder()
-        .withDescription(text)
-        .makeTickedOff()
-        .makeResumed()
-        .build();
+      const task = new TaskEntityBuilder().withDescription(text).makeTickedOff().makeResumed().build();
 
       // When
       const dto = TaskMapper.toDto(task);
@@ -92,12 +85,7 @@ describe('TaskMapper', () => {
     it('should map archived Task to DTO', () => {
       // Given
       const text = faker.lorem.words(5);
-      const task = new TaskEntityBuilder()
-        .withDescription(text)
-        .makeTickedOff()
-        .makeResumed()
-        .makeArchived()
-        .build();
+      const task = new TaskEntityBuilder().withDescription(text).makeTickedOff().makeResumed().makeArchived().build();
 
       // When
       const dto = TaskMapper.toDto(task);
@@ -208,10 +196,7 @@ describe('TaskMapper', () => {
     it('should map ticked-off Task to Model', () => {
       // Given
       const text = faker.lorem.words(5);
-      const task = new TaskEntityBuilder()
-        .withDescription(text)
-        .makeTickedOff()
-        .build();
+      const task = new TaskEntityBuilder().withDescription(text).makeTickedOff().build();
 
       // When
       const rawModel = TaskMapper.toPersistence(task);
@@ -246,11 +231,7 @@ describe('TaskMapper', () => {
     it('should map resumed Task to Model', () => {
       // Given
       const text = faker.lorem.words(5);
-      const task = new TaskEntityBuilder()
-        .withDescription(text)
-        .makeTickedOff()
-        .makeResumed()
-        .build();
+      const task = new TaskEntityBuilder().withDescription(text).makeTickedOff().makeResumed().build();
 
       // When
       const rawModel = TaskMapper.toPersistence(task);
@@ -285,12 +266,7 @@ describe('TaskMapper', () => {
     it('should map archived Task to Model', () => {
       // Given
       const text = faker.lorem.words(5);
-      const task = new TaskEntityBuilder()
-        .withDescription(text)
-        .makeTickedOff()
-        .makeResumed()
-        .makeArchived()
-        .build();
+      const task = new TaskEntityBuilder().withDescription(text).makeTickedOff().makeResumed().makeArchived().build();
 
       // When
       const rawModel = TaskMapper.toPersistence(task);
@@ -360,10 +336,7 @@ describe('TaskMapper', () => {
     it('should map discarded Task to Model', () => {
       // Given
       const text = faker.lorem.words(5);
-      const task = new TaskEntityBuilder()
-        .withDescription(text)
-        .makeDiscarded()
-        .build();
+      const task = new TaskEntityBuilder().withDescription(text).makeDiscarded().build();
 
       // When
       const rawModel = TaskMapper.toPersistence(task);

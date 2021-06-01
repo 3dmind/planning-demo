@@ -11,8 +11,7 @@ import { GetTaskByIdUseCase } from '../modules/planning/use-cases/tasks/get-task
 import { AppErrors } from '../shared/core';
 
 @Injectable()
-export class GetTaskEntityByIdPipe
-  implements PipeTransform<string, Promise<Task>> {
+export class GetTaskEntityByIdPipe implements PipeTransform<string, Promise<Task>> {
   constructor(private readonly getTaskByIdUseCase: GetTaskByIdUseCase) {}
 
   public async transform(taskId: string): Promise<Task> {

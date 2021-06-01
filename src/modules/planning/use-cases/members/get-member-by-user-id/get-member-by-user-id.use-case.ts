@@ -1,12 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import {
-  AppErrors,
-  Either,
-  left,
-  Result,
-  right,
-  UseCase,
-} from '../../../../../shared/core';
+import { AppErrors, Either, left, Result, right, UseCase } from '../../../../../shared/core';
 import { UserId } from '../../../../users/domain/user-id.entity';
 import { Member } from '../../../domain/member.entity';
 import { MemberRepository } from '../../../domain/member.repository';
@@ -16,10 +9,7 @@ type Request = {
   userId: UserId;
 };
 
-type Response = Either<
-  GetMemberByUserIdErrors.MemberNotFoundError | AppErrors.UnexpectedError,
-  Result<Member>
->;
+type Response = Either<GetMemberByUserIdErrors.MemberNotFoundError | AppErrors.UnexpectedError, Result<Member>>;
 
 @Injectable()
 export class GetMemberByUserIdUseCase implements UseCase<Request, Response> {
@@ -32,13 +22,9 @@ export class GetMemberByUserIdUseCase implements UseCase<Request, Response> {
     const { userId } = request;
 
     try {
-      const { found, member } = await this.memberRepository.getMemberByUserId(
-        userId.id,
-      );
+      const { found, member } = await this.memberRepository.getMemberByUserId(userId.id);
       if (!found) {
-        const memberNotFoundError = new GetMemberByUserIdErrors.MemberNotFoundError(
-          userId,
-        );
+        const memberNotFoundError = new GetMemberByUserIdErrors.MemberNotFoundError(userId);
         this.logger.debug(memberNotFoundError.errorValue().message);
         return left(memberNotFoundError);
       } else {

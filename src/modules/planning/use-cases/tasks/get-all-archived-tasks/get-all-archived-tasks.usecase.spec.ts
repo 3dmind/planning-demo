@@ -34,9 +34,7 @@ describe('GetAllArchivedTasksUsecase', () => {
 
     memberRepository = module.get<MemberRepository>(MemberRepository);
     taskRepository = module.get<TaskRepository>(TaskRepository);
-    useCase = module.get<GetAllArchivedTasksUsecase>(
-      GetAllArchivedTasksUsecase,
-    );
+    useCase = module.get<GetAllArchivedTasksUsecase>(GetAllArchivedTasksUsecase);
   });
 
   it('should fail if member cannot be found', async () => {
@@ -51,18 +49,14 @@ describe('GetAllArchivedTasksUsecase', () => {
     expect.assertions(3);
     expect(result.isLeft()).toBe(true);
     expect(error).toBeInstanceOf(GetAllArchivedTasksErrors.MemberNotFoundError);
-    expect(error.errorValue().message).toEqual(
-      `Could not find member associated with the user id {${userId}}.`,
-    );
+    expect(error.errorValue().message).toEqual(`Could not find member associated with the user id {${userId}}.`);
   });
 
   it('should fail on any error', async () => {
     // Given
-    const spy = jest
-      .spyOn(taskRepository, 'getAllArchivedTasksOfMember')
-      .mockImplementationOnce(() => {
-        throw new Error();
-      });
+    const spy = jest.spyOn(taskRepository, 'getAllArchivedTasksOfMember').mockImplementationOnce(() => {
+      throw new Error();
+    });
     const member = new MemberEntityBuilder().build();
     await memberRepository.save(member);
 
@@ -83,24 +77,11 @@ describe('GetAllArchivedTasksUsecase', () => {
     // Given
     const memberOne = new MemberEntityBuilder().build();
     const memberTwo = new MemberEntityBuilder().build();
-    const notedTaskOfMemberOne = new TaskEntityBuilder()
-      .withOwnerId(memberOne.ownerId)
-      .build();
-    const tickedOffTaskOfMemberOne = new TaskEntityBuilder()
-      .withOwnerId(memberOne.ownerId)
-      .makeTickedOff()
-      .build();
-    const archivedTaskOfMemberOne = new TaskEntityBuilder()
-      .withOwnerId(memberOne.ownerId)
-      .makeArchived()
-      .build();
-    const discardedTaskOfMemberOne = new TaskEntityBuilder()
-      .withOwnerId(memberOne.ownerId)
-      .makeDiscarded()
-      .build();
-    const notedTaskOfMemberTwo = new TaskEntityBuilder()
-      .withOwnerId(memberTwo.ownerId)
-      .build();
+    const notedTaskOfMemberOne = new TaskEntityBuilder().withOwnerId(memberOne.ownerId).build();
+    const tickedOffTaskOfMemberOne = new TaskEntityBuilder().withOwnerId(memberOne.ownerId).makeTickedOff().build();
+    const archivedTaskOfMemberOne = new TaskEntityBuilder().withOwnerId(memberOne.ownerId).makeArchived().build();
+    const discardedTaskOfMemberOne = new TaskEntityBuilder().withOwnerId(memberOne.ownerId).makeDiscarded().build();
+    const notedTaskOfMemberTwo = new TaskEntityBuilder().withOwnerId(memberTwo.ownerId).build();
     await memberRepository.save(memberOne);
     await memberRepository.save(memberTwo);
     await taskRepository.save(notedTaskOfMemberOne);

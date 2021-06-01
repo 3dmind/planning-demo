@@ -48,20 +48,10 @@ describe('InMemoryTaskRepository', () => {
     // Given
     const memberOne = new MemberEntityBuilder().build();
     const memberTwo = new MemberEntityBuilder().build();
-    const notedTaskOfMemberOne = new TaskEntityBuilder()
-      .withOwnerId(memberOne.ownerId)
-      .build();
-    const archivedTaskOfMemberOne = new TaskEntityBuilder()
-      .withOwnerId(memberOne.ownerId)
-      .makeArchived()
-      .build();
-    const discardedTaskOfMemberOne = new TaskEntityBuilder()
-      .withOwnerId(memberOne.ownerId)
-      .makeDiscarded()
-      .build();
-    const notedTaskOfMemberTwo = new TaskEntityBuilder()
-      .withOwnerId(memberTwo.ownerId)
-      .build();
+    const notedTaskOfMemberOne = new TaskEntityBuilder().withOwnerId(memberOne.ownerId).build();
+    const archivedTaskOfMemberOne = new TaskEntityBuilder().withOwnerId(memberOne.ownerId).makeArchived().build();
+    const discardedTaskOfMemberOne = new TaskEntityBuilder().withOwnerId(memberOne.ownerId).makeDiscarded().build();
+    const notedTaskOfMemberTwo = new TaskEntityBuilder().withOwnerId(memberTwo.ownerId).build();
     const repository = new InMemoryTaskRepository();
     await repository.save(notedTaskOfMemberOne);
     await repository.save(archivedTaskOfMemberOne);
@@ -69,9 +59,7 @@ describe('InMemoryTaskRepository', () => {
     await repository.save(notedTaskOfMemberTwo);
 
     // Then
-    const tasks = await repository.getAllArchivedTasksOfMember(
-      memberOne.memberId,
-    );
+    const tasks = await repository.getAllArchivedTasksOfMember(memberOne.memberId);
 
     // Then
     expect.assertions(4);
@@ -85,24 +73,11 @@ describe('InMemoryTaskRepository', () => {
     // Given
     const memberOne = new MemberEntityBuilder().build();
     const memberTwo = new MemberEntityBuilder().build();
-    const notedTaskOfMemberOne = new TaskEntityBuilder()
-      .withOwnerId(memberOne.ownerId)
-      .build();
-    const tickedOffTaskOfMemberOne = new TaskEntityBuilder()
-      .withOwnerId(memberOne.ownerId)
-      .makeTickedOff()
-      .build();
-    const archivedTaskOfMemberOne = new TaskEntityBuilder()
-      .withOwnerId(memberOne.ownerId)
-      .makeArchived()
-      .build();
-    const discardedTaskOfMemberOne = new TaskEntityBuilder()
-      .withOwnerId(memberOne.ownerId)
-      .makeDiscarded()
-      .build();
-    const notedTaskOfMemberTwo = new TaskEntityBuilder()
-      .withOwnerId(memberTwo.ownerId)
-      .build();
+    const notedTaskOfMemberOne = new TaskEntityBuilder().withOwnerId(memberOne.ownerId).build();
+    const tickedOffTaskOfMemberOne = new TaskEntityBuilder().withOwnerId(memberOne.ownerId).makeTickedOff().build();
+    const archivedTaskOfMemberOne = new TaskEntityBuilder().withOwnerId(memberOne.ownerId).makeArchived().build();
+    const discardedTaskOfMemberOne = new TaskEntityBuilder().withOwnerId(memberOne.ownerId).makeDiscarded().build();
+    const notedTaskOfMemberTwo = new TaskEntityBuilder().withOwnerId(memberTwo.ownerId).build();
     const taskAssignedToMemberOne = new TaskEntityBuilder()
       .withOwnerId(memberTwo.ownerId)
       .withAssigneeId(memberOne.assigneeId)
@@ -121,9 +96,7 @@ describe('InMemoryTaskRepository', () => {
     await repository.save(taskAssignedToMemberTwo);
 
     // When
-    const tasks = await repository.getAllActiveTasksOfMember(
-      memberOne.memberId,
-    );
+    const tasks = await repository.getAllActiveTasksOfMember(memberOne.memberId);
 
     // Then
     expect.assertions(7);

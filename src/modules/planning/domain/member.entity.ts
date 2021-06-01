@@ -36,10 +36,7 @@ export class Member extends Entity<MemberProps> {
     return this.props.createdAt;
   }
 
-  public static create(
-    props: MemberProps,
-    id?: UniqueEntityId,
-  ): Result<Member> {
+  public static create(props: MemberProps, id?: UniqueEntityId): Result<Member> {
     const guardResult = Guard.againstNullOrUndefinedBulk([
       {
         argument: props.userId,

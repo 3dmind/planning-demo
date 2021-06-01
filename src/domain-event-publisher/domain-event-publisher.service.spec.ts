@@ -38,9 +38,7 @@ describe('DomainEventPublisherService', () => {
     module.useLogger(false);
 
     eventEmitter = module.get<EventEmitter2>(EventEmitter2);
-    service = module.get<DomainEventPublisherService>(
-      DomainEventPublisherService,
-    );
+    service = module.get<DomainEventPublisherService>(DomainEventPublisherService);
   });
 
   it('should publish domain events', () => {

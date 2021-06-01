@@ -1,13 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import {
-  AppErrors,
-  Either,
-  left,
-  OrSpecification,
-  Result,
-  right,
-  UseCase,
-} from '../../../../../shared/core';
+import { AppErrors, Either, left, OrSpecification, Result, right, UseCase } from '../../../../../shared/core';
 import { CommentText } from '../../../domain/comment/comment-text.valueobject';
 import { Comment } from '../../../domain/comment/comment.entity';
 import { CommentRepository } from '../../../domain/comment/comment.repository';
@@ -42,11 +34,7 @@ export class CommentOnTaskUsecase implements UseCase<Request, Response> {
   public async execute(request: Request): Promise<Response> {
     this.logger.log('Commenting on task...');
 
-    const writeCommentResult = this.writeComment(
-      request.member,
-      request.task,
-      request.dto,
-    );
+    const writeCommentResult = this.writeComment(request.member, request.task, request.dto);
     if (writeCommentResult.isLeft()) {
       return left(writeCommentResult.value);
     }
@@ -58,10 +46,7 @@ export class CommentOnTaskUsecase implements UseCase<Request, Response> {
     member: Member,
     task: Task,
     dto: CommentOnTaskDto,
-  ): Either<
-    CommentOnTaskErrors.MemberIsNeitherTaskOwnerNorAssigneeError | Result<any>,
-    Comment
-  > {
+  ): Either<CommentOnTaskErrors.MemberIsNeitherTaskOwnerNorAssigneeError | Result<any>, Comment> {
     const { text } = dto;
     const textOrError = CommentText.create(text);
     if (textOrError.isFailure) {
@@ -78,17 +63,11 @@ export class CommentOnTaskUsecase implements UseCase<Request, Response> {
       const memberIsNeitherTaskOwnerNorAssigneeError = new CommentOnTaskErrors.MemberIsNeitherTaskOwnerNorAssigneeError(
         member.memberId,
       );
-      this.logger.debug(
-        memberIsNeitherTaskOwnerNorAssigneeError.errorValue().message,
-      );
+      this.logger.debug(memberIsNeitherTaskOwnerNorAssigneeError.errorValue().message);
       return left(memberIsNeitherTaskOwnerNorAssigneeError);
     }
 
-    const commentOrError = Comment.write(
-      textOrError.getValue(),
-      member.authorId,
-      task.taskId,
-    );
+    const commentOrError = Comment.write(textOrError.getValue(), member.authorId, task.taskId);
     if (commentOrError.isFailure) {
       this.logger.debug(commentOrError.errorValue());
       return left(commentOrError);
@@ -97,9 +76,7 @@ export class CommentOnTaskUsecase implements UseCase<Request, Response> {
     }
   }
 
-  private async saveComment(
-    comment: Comment,
-  ): Promise<Either<AppErrors.UnexpectedError, Result<void>>> {
+  private async saveComment(comment: Comment): Promise<Either<AppErrors.UnexpectedError, Result<void>>> {
     try {
       await this.commentRepository.save(comment);
       this.logger.log('Successfully comment on task.');

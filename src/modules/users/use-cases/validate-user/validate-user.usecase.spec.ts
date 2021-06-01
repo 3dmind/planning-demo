@@ -79,12 +79,8 @@ describe('ValidateUserUsecase', () => {
     // Then
     expect.assertions(3);
     expect(result.isLeft()).toBe(true);
-    expect(result.value).toBeInstanceOf(
-      ValidateUserErrors.UserNameDoesntExistError,
-    );
-    expect(result.value.errorValue().message).toEqual(
-      'Username or password incorrect.',
-    );
+    expect(result.value).toBeInstanceOf(ValidateUserErrors.UserNameDoesntExistError);
+    expect(result.value.errorValue().message).toEqual('Username or password incorrect.');
   });
 
   it("should fail if password doesn't match", async () => {
@@ -97,13 +93,8 @@ describe('ValidateUserUsecase', () => {
     }).getValue();
     const userNameFixture = faker.internet.userName();
     const userName = UserName.create(userNameFixture).getValue();
-    const user = new UserEntityBuilder()
-      .withUserName(userName)
-      .withPassword(userPassword)
-      .build();
-    const missMatchingPasswordFixture = faker.internet.password(
-      UserPassword.MIN_LENGTH,
-    );
+    const user = new UserEntityBuilder().withUserName(userName).withPassword(userPassword).build();
+    const missMatchingPasswordFixture = faker.internet.password(UserPassword.MIN_LENGTH);
     const request: ValidateUserDto = {
       username: userNameFixture,
       password: missMatchingPasswordFixture,
@@ -116,19 +107,15 @@ describe('ValidateUserUsecase', () => {
     // Then
     expect.assertions(3);
     expect(result.isLeft()).toBe(true);
-    expect(result.value).toBeInstanceOf(
-      ValidateUserErrors.PasswordDoesntMatchError,
-    );
+    expect(result.value).toBeInstanceOf(ValidateUserErrors.PasswordDoesntMatchError);
     expect(result.value.errorValue().message).toEqual('Password doesnt match.');
   });
 
   it('should fail on any other error', async () => {
     // Given
-    const spy = jest
-      .spyOn(userRepository, 'getUserByUsername')
-      .mockImplementationOnce(() => {
-        throw new Error();
-      });
+    const spy = jest.spyOn(userRepository, 'getUserByUsername').mockImplementationOnce(() => {
+      throw new Error();
+    });
     const usernameFixture = faker.internet.userName();
     const passwordFixture = faker.internet.password(UserPassword.MIN_LENGTH);
     const request: ValidateUserDto = {
@@ -157,10 +144,7 @@ describe('ValidateUserUsecase', () => {
       value: hashedPassword,
       hashed: true,
     }).getValue();
-    const user = new UserEntityBuilder()
-      .withUserName(userName)
-      .withPassword(userPassword)
-      .build();
+    const user = new UserEntityBuilder().withUserName(userName).withPassword(userPassword).build();
     const request: ValidateUserDto = {
       username: userNameFixture,
       password: plainTextPassword,

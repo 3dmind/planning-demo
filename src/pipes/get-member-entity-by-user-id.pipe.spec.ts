@@ -1,7 +1,4 @@
-import {
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MemberEntityBuilder } from '../../test/builder/member-entity.builder';
 import { MemberRepository } from '../modules/planning/domain/member.repository';
@@ -46,11 +43,9 @@ describe('GetMemberEntityByUserIdPipe', () => {
   it('should throw InternalServerErrorException on any other error', async () => {
     // Given
     const userId = UserId.create().getValue();
-    const spy = jest
-      .spyOn(memberRepository, 'getMemberByUserId')
-      .mockImplementationOnce(() => {
-        throw new Error();
-      });
+    const spy = jest.spyOn(memberRepository, 'getMemberByUserId').mockImplementationOnce(() => {
+      throw new Error();
+    });
 
     // When
     const promise = pipe.transform(userId);

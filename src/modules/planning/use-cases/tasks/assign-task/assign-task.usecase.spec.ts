@@ -54,12 +54,8 @@ describe('AssignTaskUsecase', () => {
     // Then
     expect.assertions(3);
     expect(result.isLeft()).toBe(true);
-    expect(result.value).toBeInstanceOf(
-      AssignTaskErrors.MemberNotFoundByUserIdError,
-    );
-    expect(result.value.errorValue().message).toEqual(
-      `Could not find member associated with the user id {${userId}}.`,
-    );
+    expect(result.value).toBeInstanceOf(AssignTaskErrors.MemberNotFoundByUserIdError);
+    expect(result.value.errorValue().message).toEqual(`Could not find member associated with the user id {${userId}}.`);
   });
 
   it('should fail if member cannot be found', async () => {
@@ -80,9 +76,7 @@ describe('AssignTaskUsecase', () => {
     expect.assertions(3);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(AssignTaskErrors.MemberNotFoundError);
-    expect(result.value.errorValue().message).toEqual(
-      `Could not find member by the id {${memberId}}.`,
-    );
+    expect(result.value.errorValue().message).toEqual(`Could not find member by the id {${memberId}}.`);
   });
 
   it('should fail if task cannot be found', async () => {
@@ -104,9 +98,7 @@ describe('AssignTaskUsecase', () => {
     expect.assertions(3);
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(AssignTaskErrors.TaskNotFoundError);
-    expect(result.value.errorValue().message).toEqual(
-      `Could not find a task by the id {${taskId}}.`,
-    );
+    expect(result.value.errorValue().message).toEqual(`Could not find a task by the id {${taskId}}.`);
   });
 
   it('should fail if the assigner is not the task owner', async () => {
@@ -134,11 +126,9 @@ describe('AssignTaskUsecase', () => {
 
   it('should fail on any other error', async () => {
     // Given
-    const spy = jest
-      .spyOn(taskRepository, 'getTaskById')
-      .mockImplementationOnce(() => {
-        throw new Error();
-      });
+    const spy = jest.spyOn(taskRepository, 'getTaskById').mockImplementationOnce(() => {
+      throw new Error();
+    });
     const taskOwner = new MemberEntityBuilder().build();
     const member = new MemberEntityBuilder().build();
     const task = new TaskEntityBuilder().withOwnerId(taskOwner.ownerId).build();
@@ -165,10 +155,7 @@ describe('AssignTaskUsecase', () => {
     // Given
     const owner = new MemberEntityBuilder().build();
     const member = new MemberEntityBuilder().build();
-    const task = new TaskEntityBuilder()
-      .withOwnerId(owner.ownerId)
-      .withAssigneeId(member.assigneeId)
-      .build();
+    const task = new TaskEntityBuilder().withOwnerId(owner.ownerId).withAssigneeId(member.assigneeId).build();
     await memberRepository.save(owner);
     await memberRepository.save(member);
     await taskRepository.save(task);

@@ -13,12 +13,8 @@ import { TaskSnapshot } from './task-snapshot';
 
 export class Task extends Entity<TaskProps> {
   private readonly memberMustBeTaskOwner = new MemberMustBeTaskOwner(this);
-  private readonly memberMustBeTaskAssignee = new MemberMustBeTaskAssignee(
-    this,
-  );
-  private readonly memberHasNotYetBeenAssigned = new MemberHasNotYetBeenAssigned(
-    this,
-  );
+  private readonly memberMustBeTaskAssignee = new MemberMustBeTaskAssignee(this);
+  private readonly memberHasNotYetBeenAssigned = new MemberHasNotYetBeenAssigned(this);
   public readonly memberMustBeOwnerOrAssignee = new OrSpecification<MemberId>(
     this.memberMustBeTaskOwner,
     this.memberMustBeTaskAssignee,
@@ -83,11 +79,7 @@ export class Task extends Entity<TaskProps> {
     return Result.ok<Task>(new Task(props, id));
   }
 
-  public static note(
-    description: Description,
-    ownerId: OwnerId,
-    assigneeId: AssigneeId,
-  ): Result<Task> {
+  public static note(description: Description, ownerId: OwnerId, assigneeId: AssigneeId): Result<Task> {
     return Task.create({
       archived: false,
       archivedAt: null,

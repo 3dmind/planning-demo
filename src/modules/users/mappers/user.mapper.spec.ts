@@ -70,9 +70,7 @@ describe('UserMapper', () => {
     expect(user).toBeInstanceOf(User);
     expect(user.userId.id.toValue()).toEqual(idFixture);
     expect(user.props.createdAt).toEqual(dateFixture);
-    expect(user.props.isEmailVerified).toEqual(
-      mockedBaseUserModel.isEmailVerified,
-    );
+    expect(user.props.isEmailVerified).toEqual(mockedBaseUserModel.isEmailVerified);
     expect(user.props.email.value).toEqual(emailFixture);
     expect(user.props.username.value).toEqual(userNameFixture);
     expect(user.props.password.value).toEqual(passwordFixture);

@@ -25,9 +25,8 @@ describe('/users/me (GET)', () => {
 
     const loginResponse = await login(app).expect(HttpStatus.OK);
 
-    const response = await getUserByUserName(app, loginResponse).expect(
-      HttpStatus.OK,
-    );
+    const response = await getUserByUserName(app, loginResponse).expect(HttpStatus.OK);
+
     expect(response.body).toMatchObject({
       createdAt: expect.any(String),
       email: 'e2e@planning.demo',

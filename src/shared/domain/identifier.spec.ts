@@ -35,7 +35,7 @@ describe('Identifier', () => {
     const identifierThree = new Identifier<number>(faker.random.number());
     const identifierFour = new Identifier<number>(faker.random.number());
     const identifierFive = new Identifier<number>(faker.random.number());
-    const id = ({} as unknown) as Identifier<number>;
+    const id = {} as unknown as Identifier<number>;
 
     // Then
     expect.assertions(5);

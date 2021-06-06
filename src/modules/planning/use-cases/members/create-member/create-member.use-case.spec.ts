@@ -7,11 +7,11 @@ import { MemberRepository } from '../../../domain/member.repository';
 import { InMemoryMemberRepository } from '../../../repositories/member/implementations/in-memory-member.repository';
 import { CreateMemberDto } from './create-member.dto';
 import { CreateMemberErrors } from './create-member.errors';
-import { CreateMemberUsecase } from './create-member.usecase';
+import { CreateMemberUseCase } from './create-member.use-case';
 
-describe('CreateMemberUsecase', () => {
+describe('CreateMemberUseCase', () => {
   let memberRepository: MemberRepository;
-  let useCase: CreateMemberUsecase;
+  let useCase: CreateMemberUseCase;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -20,13 +20,13 @@ describe('CreateMemberUsecase', () => {
           provide: MemberRepository,
           useClass: InMemoryMemberRepository,
         },
-        CreateMemberUsecase,
+        CreateMemberUseCase,
       ],
     }).compile();
     module.useLogger(false);
 
     memberRepository = module.get<MemberRepository>(MemberRepository);
-    useCase = module.get<CreateMemberUsecase>(CreateMemberUsecase);
+    useCase = module.get<CreateMemberUseCase>(CreateMemberUseCase);
   });
 
   it('should fail if member already exists', async () => {

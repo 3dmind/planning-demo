@@ -9,8 +9,8 @@ import { LoginResponseDto } from './login-response.dto';
 type Response = Either<AppErrors.UnexpectedError, Result<LoginResponseDto>>;
 
 @Injectable()
-export class LoginUsecase implements UseCase<User, Response> {
-  private readonly logger = new Logger(LoginUsecase.name);
+export class LoginUseCase implements UseCase<User, Response> {
+  private readonly logger = new Logger(LoginUseCase.name);
 
   constructor(private readonly authService: AuthService) {}
 

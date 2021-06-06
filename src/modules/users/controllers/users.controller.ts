@@ -19,25 +19,25 @@ import { UserDto } from '../dtos/user.dto';
 import { JwtRefreshAuthGuard } from '../guards/jwt-refresh-auth.guard';
 import { LocalAuthGuard } from '../guards/local-auth.guard';
 import { UserMapper } from '../mappers/user.mapper';
-import { GetUserByUserNameUsecase } from '../use-cases/get-user-by-user-name/get-user-by-user-name.usecase';
+import { GetUserByUserNameUseCase } from '../use-cases/get-user-by-user-name/get-user-by-user-name.use-case';
 import { LoginResponseDto } from '../use-cases/login/login-response.dto';
-import { LoginUsecase } from '../use-cases/login/login.usecase';
-import { LogoutUsecase } from '../use-cases/logout/logout.usecase';
+import { LoginUseCase } from '../use-cases/login/login.use-case';
+import { LogoutUseCase } from '../use-cases/logout/logout.use-case';
 import { RefreshAccessTokenResponseDto } from '../use-cases/refresh-access-token/refresh-access-token-response.dto';
-import { RefreshAccessTokenUsecase } from '../use-cases/refresh-access-token/refresh-access-token.usecase';
+import { RefreshAccessTokenUseCase } from '../use-cases/refresh-access-token/refresh-access-token.use-case';
 import { RefreshTokenDto } from '../use-cases/refresh-access-token/refresh-token.dto';
 import { RegisterUserDto } from '../use-cases/register-user/register-user.dto';
 import { RegisterUserErrors } from '../use-cases/register-user/register-user.errors';
-import { RegisterUserUsecase } from '../use-cases/register-user/register-user.usecase';
+import { RegisterUserUseCase } from '../use-cases/register-user/register-user.use-case';
 
 @Controller('users')
 export class UsersController {
   constructor(
-    private readonly createUserUsecase: RegisterUserUsecase,
-    private readonly loginUsecase: LoginUsecase,
-    private readonly getUserByUserNameUsecase: GetUserByUserNameUsecase,
-    private readonly refreshAccessTokenUsecase: RefreshAccessTokenUsecase,
-    private readonly logoutUsecase: LogoutUsecase,
+    private readonly createUserUsecase: RegisterUserUseCase,
+    private readonly loginUsecase: LoginUseCase,
+    private readonly getUserByUserNameUsecase: GetUserByUserNameUseCase,
+    private readonly refreshAccessTokenUsecase: RefreshAccessTokenUseCase,
+    private readonly logoutUsecase: LogoutUseCase,
   ) {}
 
   @Post()

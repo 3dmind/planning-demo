@@ -1,26 +1,25 @@
-import { CACHE_MANAGER, CacheModule } from '@nestjs/common';
+import { CacheModule } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { JWT_MODULE_OPTIONS } from '@nestjs/jwt/dist/jwt.constants';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Cache } from 'cache-manager';
 import { mock, mockReset } from 'jest-mock-extended';
 import { UserEntityBuilder } from '../../../../../test/builder/user-entity.builder';
 import { ApiConfigService } from '../../../../api-config/api-config.service';
 import { AppErrors } from '../../../../shared/core';
+import { UserRepository } from '../../domain/user.repository';
+import { InMemoryUserRepository } from '../../repositories/user/implementations/in-memory-user.repository';
 import { AuthService } from '../../services/auth.service';
-import { LoginResponseDto } from './login-response.dto';
-import { LoginUsecase } from './login.usecase';
+import { RefreshAccessTokenUseCase } from './refresh-access-token.use-case';
 
-describe('LoginUsecase', () => {
+describe('RefreshAccessTokenUseCase', () => {
   const mockedConfigService = mock<ApiConfigService>();
-
   const accessTokenSecretFixture = 'defaultaccesstokensecret';
   const accessTokenTtlFixture = 10; // seconds
   const refreshTokenSecretFixture = 'defaultrefreshtokensecret';
   const refreshTokenTtlFixture = 10; // seconds
-
-  let cacheManager: Cache;
   let authService: AuthService;
-  let useCase: LoginUsecase;
+  let userRepository: UserRepository;
+  let useCase: RefreshAccessTokenUseCase;
 
   beforeAll(async () => {
     mockedConfigService.getAccessTokenSecret.mockReturnValue(accessTokenSecretFixture);
@@ -31,29 +30,40 @@ describe('LoginUsecase', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       imports: [CacheModule.register({ store: 'memory' })],
+
       providers: [
-        { provide: 'JWT_MODULE_OPTIONS', useValue: {} },
-        { provide: ApiConfigService, useValue: mockedConfigService },
+        {
+          provide: JWT_MODULE_OPTIONS,
+          useValue: {},
+        },
+        {
+          provide: ApiConfigService,
+          useValue: mockedConfigService,
+        },
+        {
+          provide: UserRepository,
+          useClass: InMemoryUserRepository,
+        },
         JwtService,
         AuthService,
-        LoginUsecase,
+        RefreshAccessTokenUseCase,
       ],
     }).compile();
     module.useLogger(false);
 
-    cacheManager = module.get<Cache>(CACHE_MANAGER);
     authService = module.get<AuthService>(AuthService);
-    useCase = module.get<LoginUsecase>(LoginUsecase);
+    userRepository = module.get<UserRepository>(UserRepository);
+    useCase = module.get<RefreshAccessTokenUseCase>(RefreshAccessTokenUseCase);
   });
 
   afterAll(() => {
     mockReset(mockedConfigService);
   });
 
-  it('should fail on any error', async () => {
+  it('should fail on any other error', async () => {
     // Given
     const spy = jest.spyOn(authService, 'createAccessToken').mockImplementationOnce(() => {
-      throw new Error('BOOM!');
+      throw new Error();
     });
     const user = new UserEntityBuilder().build();
 
@@ -70,19 +80,15 @@ describe('LoginUsecase', () => {
 
   it('should succeed', async () => {
     // Given
-    const user = new UserEntityBuilder().build();
+    const user = new UserEntityBuilder().makeLoggedIn().build();
+    await authService.saveAuthenticatedUser(user);
+    await userRepository.save(user);
 
     // When
     const result = await useCase.execute(user);
-    const value = await cacheManager.get(user.username.value);
 
     // Then
-    expect.assertions(3);
+    expect.assertions(1);
     expect(result.isRight()).toBe(true);
-    expect(result.value.getValue()).toMatchObject<LoginResponseDto>({
-      accessToken: expect.any(String),
-      refreshToken: expect.any(String),
-    });
-    expect(value).toBeDefined();
   });
 });

@@ -15,7 +15,7 @@ import { JwtClaims } from '../domain/jwt-claims.interface';
 import { User } from '../domain/user.entity';
 import { AuthService } from '../services/auth.service';
 import { GetUserByUserNameError } from '../use-cases/get-user-by-user-name/get-user-by-user-name.errors';
-import { GetUserByUserNameUsecase } from '../use-cases/get-user-by-user-name/get-user-by-user-name.usecase';
+import { GetUserByUserNameUseCase } from '../use-cases/get-user-by-user-name/get-user-by-user-name.use-case';
 
 @Injectable()
 export class JwtAccessTokenStrategy extends PassportStrategy(Strategy, 'JwtAccessToken') {
@@ -24,7 +24,7 @@ export class JwtAccessTokenStrategy extends PassportStrategy(Strategy, 'JwtAcces
   constructor(
     private readonly apiConfigService: ApiConfigService,
     private readonly authService: AuthService,
-    private readonly getUserByUserNameUsecase: GetUserByUserNameUsecase,
+    private readonly getUserByUserNameUsecase: GetUserByUserNameUseCase,
   ) {
     super({
       jwtFromRequest: JwtAccessTokenStrategy.extractor,

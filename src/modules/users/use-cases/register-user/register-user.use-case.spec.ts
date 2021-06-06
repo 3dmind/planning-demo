@@ -10,12 +10,12 @@ import { UserRepository } from '../../domain/user.repository';
 import { InMemoryUserRepository } from '../../repositories/user/implementations/in-memory-user.repository';
 import { RegisterUserDto } from './register-user.dto';
 import { RegisterUserErrors } from './register-user.errors';
-import { RegisterUserUsecase } from './register-user.usecase';
+import { RegisterUserUseCase } from './register-user.use-case';
 
-describe('RegisterUserUsecase', () => {
+describe('RegisterUserUseCase', () => {
   const mockedDomainEventPublisherService = mock<DomainEventPublisherService>();
   let userRepository: UserRepository;
-  let useCase: RegisterUserUsecase;
+  let useCase: RegisterUserUseCase;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -28,13 +28,13 @@ describe('RegisterUserUsecase', () => {
           provide: DomainEventPublisherService,
           useValue: mockedDomainEventPublisherService,
         },
-        RegisterUserUsecase,
+        RegisterUserUseCase,
       ],
     }).compile();
     module.useLogger(false);
 
     userRepository = module.get<UserRepository>(UserRepository);
-    useCase = module.get<RegisterUserUsecase>(RegisterUserUsecase);
+    useCase = module.get<RegisterUserUseCase>(RegisterUserUseCase);
   });
 
   afterAll(() => {

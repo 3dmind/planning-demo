@@ -15,8 +15,8 @@ type Request = {
 type Response = Either<AppErrors.UnexpectedError | Result<any>, Result<Task>>;
 
 @Injectable()
-export class EditTaskUsecase implements UseCase<Request, Response> {
-  private readonly logger = new Logger(EditTaskUsecase.name);
+export class EditTaskUseCase implements UseCase<Request, Response> {
+  private readonly logger = new Logger(EditTaskUseCase.name);
 
   constructor(private readonly taskRepository: TaskRepository) {}
 

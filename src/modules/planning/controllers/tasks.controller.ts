@@ -27,9 +27,9 @@ import { AssignTaskErrors } from '../use-cases/tasks/assign-task/assign-task.err
 import { AssignTaskUseCase } from '../use-cases/tasks/assign-task/assign-task.use-case';
 import { DiscardTaskUseCase } from '../use-cases/tasks/discard-task/discard-task.use-case';
 import { EditTaskDto } from '../use-cases/tasks/edit-task/edit-task.dto';
-import { EditTaskUsecase } from '../use-cases/tasks/edit-task/edit-task.usecase';
+import { EditTaskUseCase } from '../use-cases/tasks/edit-task/edit-task.use-case';
 import { GetAllActiveTasksUseCase } from '../use-cases/tasks/get-all-active-tasks/get-all-active-tasks.use-case';
-import { GetAllArchivedTasksUsecase } from '../use-cases/tasks/get-all-archived-tasks/get-all-archived-tasks.usecase';
+import { GetAllArchivedTasksUseCase } from '../use-cases/tasks/get-all-archived-tasks/get-all-archived-tasks.use-case';
 import { NoteTaskDto } from '../use-cases/tasks/note-task/note-task.dto';
 import { NoteTaskUseCase } from '../use-cases/tasks/note-task/note-task.use-case';
 import { ResumeTaskUseCase } from '../use-cases/tasks/resume-task/resume-task.use-case';
@@ -42,9 +42,9 @@ export class TasksController {
     private readonly archivedTasksUseCase: ArchiveTaskUseCase,
     private readonly assignTaskUsecase: AssignTaskUseCase,
     private readonly discardTaskUseCase: DiscardTaskUseCase,
-    private readonly editTaskUseCase: EditTaskUsecase,
+    private readonly editTaskUseCase: EditTaskUseCase,
     private readonly getAllActiveTasksUseCase: GetAllActiveTasksUseCase,
-    private readonly getAllArchivedTasksUseCase: GetAllArchivedTasksUsecase,
+    private readonly getAllArchivedTasksUseCase: GetAllArchivedTasksUseCase,
     private readonly noteTaskUseCase: NoteTaskUseCase,
     private readonly resumeTaskUseCase: ResumeTaskUseCase,
     private readonly tickOffTaskUseCase: TickOffTaskUseCase,

@@ -19,12 +19,12 @@ import { Member } from '../domain/member.entity';
 import { Task } from '../domain/task.entity';
 import { CommentOnTaskDto } from '../use-cases/comments/comment-on-task/comment-on-task.dto';
 import { CommentOnTaskErrors } from '../use-cases/comments/comment-on-task/comment-on-task.errors';
-import { CommentOnTaskUsecase } from '../use-cases/comments/comment-on-task/comment-on-task.usecase';
+import { CommentOnTaskUseCase } from '../use-cases/comments/comment-on-task/comment-on-task.use-case';
 
 @Controller('comments')
 @UseGuards(JwtAuthGuard)
 export class CommentsController {
-  constructor(private readonly commentOnTaskUseCase: CommentOnTaskUsecase) {}
+  constructor(private readonly commentOnTaskUseCase: CommentOnTaskUseCase) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)

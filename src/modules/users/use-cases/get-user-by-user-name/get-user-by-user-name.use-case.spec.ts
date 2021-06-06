@@ -7,11 +7,11 @@ import { UserRepository } from '../../domain/user.repository';
 import { InMemoryUserRepository } from '../../repositories/user/implementations/in-memory-user.repository';
 import { GetUserByUserNameDto } from './get-user-by-user-name.dto';
 import { GetUserByUserNameError } from './get-user-by-user-name.errors';
-import { GetUserByUserNameUsecase } from './get-user-by-user-name.usecase';
+import { GetUserByUserNameUseCase } from './get-user-by-user-name.use-case';
 
-describe('GetUserByUserNameUsecase', () => {
+describe('GetUserByUserNameUseCase', () => {
   let userRepository: UserRepository;
-  let useCase: GetUserByUserNameUsecase;
+  let useCase: GetUserByUserNameUseCase;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -20,13 +20,13 @@ describe('GetUserByUserNameUsecase', () => {
           provide: UserRepository,
           useClass: InMemoryUserRepository,
         },
-        GetUserByUserNameUsecase,
+        GetUserByUserNameUseCase,
       ],
     }).compile();
     module.useLogger(false);
 
     userRepository = module.get<UserRepository>(UserRepository);
-    useCase = module.get<GetUserByUserNameUsecase>(GetUserByUserNameUsecase);
+    useCase = module.get<GetUserByUserNameUseCase>(GetUserByUserNameUseCase);
   });
 
   it('should fail if username cannot be created', async () => {

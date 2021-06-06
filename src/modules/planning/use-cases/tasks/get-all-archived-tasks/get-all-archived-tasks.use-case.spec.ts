@@ -4,11 +4,11 @@ import { TaskEntityBuilder } from '../../../../../../test/builder/task-entity.bu
 import { AppErrors } from '../../../../../shared/core';
 import { TaskRepository } from '../../../domain/task.repository';
 import { InMemoryTaskRepository } from '../../../repositories/task/implementations/in-memory-task.repository';
-import { GetAllArchivedTasksUsecase } from './get-all-archived-tasks.usecase';
+import { GetAllArchivedTasksUseCase } from './get-all-archived-tasks.use-case';
 
-describe('GetAllArchivedTasksUsecase', () => {
+describe('GetAllArchivedTasksUseCase', () => {
   let taskRepository: TaskRepository;
-  let useCase: GetAllArchivedTasksUsecase;
+  let useCase: GetAllArchivedTasksUseCase;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -17,13 +17,13 @@ describe('GetAllArchivedTasksUsecase', () => {
           provide: TaskRepository,
           useClass: InMemoryTaskRepository,
         },
-        GetAllArchivedTasksUsecase,
+        GetAllArchivedTasksUseCase,
       ],
     }).compile();
     module.useLogger(false);
 
     taskRepository = module.get<TaskRepository>(TaskRepository);
-    useCase = module.get<GetAllArchivedTasksUsecase>(GetAllArchivedTasksUsecase);
+    useCase = module.get<GetAllArchivedTasksUseCase>(GetAllArchivedTasksUseCase);
   });
 
   it('should fail on any error', async () => {

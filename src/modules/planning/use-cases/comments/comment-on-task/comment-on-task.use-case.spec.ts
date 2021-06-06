@@ -11,13 +11,13 @@ import { InMemoryMemberRepository } from '../../../repositories/member/implement
 import { InMemoryTaskRepository } from '../../../repositories/task/implementations/in-memory-task.repository';
 import { CommentOnTaskDto } from './comment-on-task.dto';
 import { CommentOnTaskErrors } from './comment-on-task.errors';
-import { CommentOnTaskUsecase } from './comment-on-task.usecase';
+import { CommentOnTaskUseCase } from './comment-on-task.use-case';
 
-describe('CommentOnTaskUsecase', () => {
+describe('CommentOnTaskUseCase', () => {
   let memberRepository: MemberRepository;
   let taskRepository: TaskRepository;
   let commentRepository: CommentRepository;
-  let useCase: CommentOnTaskUsecase;
+  let useCase: CommentOnTaskUseCase;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -34,7 +34,7 @@ describe('CommentOnTaskUsecase', () => {
           provide: CommentRepository,
           useClass: InMemoryCommentRepository,
         },
-        CommentOnTaskUsecase,
+        CommentOnTaskUseCase,
       ],
     }).compile();
     module.useLogger(false);
@@ -42,7 +42,7 @@ describe('CommentOnTaskUsecase', () => {
     memberRepository = module.get<MemberRepository>(MemberRepository);
     taskRepository = module.get<TaskRepository>(TaskRepository);
     commentRepository = module.get<CommentRepository>(CommentRepository);
-    useCase = module.get<CommentOnTaskUsecase>(CommentOnTaskUsecase);
+    useCase = module.get<CommentOnTaskUseCase>(CommentOnTaskUseCase);
   });
 
   it('should fail if comment text cannot be created', async () => {

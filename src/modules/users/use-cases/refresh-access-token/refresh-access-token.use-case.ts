@@ -9,8 +9,8 @@ import { AuthService } from '../../services/auth.service';
 type Response = Either<AppErrors.UnexpectedError, Result<AccessToken>>;
 
 @Injectable()
-export class RefreshAccessTokenUsecase implements UseCase<User, Response> {
-  private readonly logger = new Logger(RefreshAccessTokenUsecase.name);
+export class RefreshAccessTokenUseCase implements UseCase<User, Response> {
+  private readonly logger = new Logger(RefreshAccessTokenUseCase.name);
 
   constructor(private readonly userRepository: UserRepository, private readonly authService: AuthService) {}
 

@@ -8,12 +8,12 @@ import { UserPassword } from '../domain/user-password.valueobject';
 import { UserRepository } from '../domain/user.repository';
 import { InMemoryUserRepository } from '../repositories/user/implementations/in-memory-user.repository';
 import { ValidateUserErrors } from '../use-cases/validate-user/validate-user.errors';
-import { ValidateUserUsecase } from '../use-cases/validate-user/validate-user.usecase';
+import { ValidateUserUseCase } from '../use-cases/validate-user/validate-user.use-case';
 import { LocalStrategy } from './local.strategy';
 
 describe('LocalStrategy', () => {
   let userRepository: UserRepository;
-  let validateUserUseCase: ValidateUserUsecase;
+  let validateUserUseCase: ValidateUserUseCase;
   let strategy: LocalStrategy;
 
   beforeAll(async () => {
@@ -23,14 +23,14 @@ describe('LocalStrategy', () => {
           provide: UserRepository,
           useClass: InMemoryUserRepository,
         },
-        ValidateUserUsecase,
+        ValidateUserUseCase,
         LocalStrategy,
       ],
     }).compile();
     module.useLogger(false);
 
     userRepository = module.get<UserRepository>(UserRepository);
-    validateUserUseCase = module.get<ValidateUserUsecase>(ValidateUserUsecase);
+    validateUserUseCase = module.get<ValidateUserUseCase>(ValidateUserUseCase);
     strategy = module.get<LocalStrategy>(LocalStrategy);
   });
 

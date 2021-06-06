@@ -6,8 +6,8 @@ import { AuthService } from '../../services/auth.service';
 type Response = Either<AppErrors.UnexpectedError, Result<void>>;
 
 @Injectable()
-export class LogoutUsecase implements UseCase<User, Response> {
-  private readonly logger = new Logger(LogoutUsecase.name);
+export class LogoutUseCase implements UseCase<User, Response> {
+  private readonly logger = new Logger(LogoutUseCase.name);
 
   constructor(private readonly authService: AuthService) {}
 

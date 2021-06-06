@@ -8,11 +8,11 @@ import { UserRepository } from '../../domain/user.repository';
 import { InMemoryUserRepository } from '../../repositories/user/implementations/in-memory-user.repository';
 import { ValidateUserDto } from './validate-user.dto';
 import { ValidateUserErrors } from './validate-user.errors';
-import { ValidateUserUsecase } from './validate-user.usecase';
+import { ValidateUserUseCase } from './validate-user.use-case';
 
-describe('ValidateUserUsecase', () => {
+describe('ValidateUserUseCase', () => {
   let userRepository: UserRepository;
-  let useCase: ValidateUserUsecase;
+  let useCase: ValidateUserUseCase;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -21,13 +21,13 @@ describe('ValidateUserUsecase', () => {
           provide: UserRepository,
           useClass: InMemoryUserRepository,
         },
-        ValidateUserUsecase,
+        ValidateUserUseCase,
       ],
     }).compile();
     module.useLogger(false);
 
     userRepository = module.get<UserRepository>(UserRepository);
-    useCase = module.get<ValidateUserUsecase>(ValidateUserUsecase);
+    useCase = module.get<ValidateUserUseCase>(ValidateUserUseCase);
   });
 
   it('should fail if username cannot be created', async () => {

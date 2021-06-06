@@ -12,8 +12,8 @@ type Response = Either<
 >;
 
 @Injectable()
-export class GetUserByUserNameUsecase implements UseCase<GetUserByUserNameDto, Response> {
-  private readonly logger = new Logger(GetUserByUserNameUsecase.name);
+export class GetUserByUserNameUseCase implements UseCase<GetUserByUserNameDto, Response> {
+  private readonly logger = new Logger(GetUserByUserNameUseCase.name);
 
   constructor(private readonly userRepository: UserRepository) {}
 

@@ -16,8 +16,8 @@ type Response = Either<
 >;
 
 @Injectable()
-export class ValidateUserUsecase implements UseCase<ValidateUserDto, Response> {
-  private readonly logger = new Logger(ValidateUserUsecase.name);
+export class ValidateUserUseCase implements UseCase<ValidateUserDto, Response> {
+  private readonly logger = new Logger(ValidateUserUseCase.name);
   constructor(private readonly userRepository: UserRepository) {}
 
   async execute(request: ValidateUserDto): Promise<Response> {

@@ -1,13 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { UserRegistered } from '../../users/domain/events/user-registered.domainevent';
-import { CreateMemberUsecase } from '../use-cases/members/create-member/create-member.usecase';
+import { CreateMemberUseCase } from '../use-cases/members/create-member/create-member.use-case';
 
 @Injectable()
 export class AfterUserRegisteredSubscriber {
   private readonly logger = new Logger(AfterUserRegisteredSubscriber.name);
 
-  constructor(private readonly createMemberUsecase: CreateMemberUsecase) {}
+  constructor(private readonly createMemberUsecase: CreateMemberUseCase) {}
 
   @OnEvent(UserRegistered.name)
   public async onUserRegistered(event: UserRegistered): Promise<void> {

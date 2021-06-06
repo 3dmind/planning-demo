@@ -26,8 +26,8 @@ type CommentOnTaskUsecaseErrors =
 type Response = Either<CommentOnTaskUsecaseErrors, Result<void>>;
 
 @Injectable()
-export class CommentOnTaskUsecase implements UseCase<Request, Response> {
-  private readonly logger = new Logger(CommentOnTaskUsecase.name);
+export class CommentOnTaskUseCase implements UseCase<Request, Response> {
+  private readonly logger = new Logger(CommentOnTaskUseCase.name);
 
   constructor(private readonly commentRepository: CommentRepository) {}
 

@@ -4,11 +4,11 @@ import { Strategy } from 'passport-local';
 import { AppErrors } from '../../../shared/core';
 import { User } from '../domain/user.entity';
 import { ValidateUserErrors } from '../use-cases/validate-user/validate-user.errors';
-import { ValidateUserUsecase } from '../use-cases/validate-user/validate-user.usecase';
+import { ValidateUserUseCase } from '../use-cases/validate-user/validate-user.use-case';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
-  constructor(private readonly validateUserUseCase: ValidateUserUsecase) {
+  constructor(private readonly validateUserUseCase: ValidateUserUseCase) {
     super();
   }
 

@@ -7,11 +7,11 @@ import { Task } from '../../../domain/task.entity';
 import { TaskRepository } from '../../../domain/task.repository';
 import { InMemoryTaskRepository } from '../../../repositories/task/implementations/in-memory-task.repository';
 import { EditTaskDto } from './edit-task.dto';
-import { EditTaskUsecase } from './edit-task.usecase';
+import { EditTaskUseCase } from './edit-task.use-case';
 
-describe('EditTaskUsecase', () => {
+describe('EditTaskUseCase', () => {
   let taskRepository: TaskRepository;
-  let useCase: EditTaskUsecase;
+  let useCase: EditTaskUseCase;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -20,13 +20,13 @@ describe('EditTaskUsecase', () => {
           provide: TaskRepository,
           useClass: InMemoryTaskRepository,
         },
-        EditTaskUsecase,
+        EditTaskUseCase,
       ],
     }).compile();
     module.useLogger(false);
 
     taskRepository = module.get<TaskRepository>(TaskRepository);
-    useCase = module.get<EditTaskUsecase>(EditTaskUsecase);
+    useCase = module.get<EditTaskUseCase>(EditTaskUseCase);
   });
 
   it('should fail if new description cannot be created', async () => {
